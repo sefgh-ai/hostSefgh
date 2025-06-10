@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta
+      name="description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs. Perfect for developers, data scientists, and researchers."
+    />
+    <meta
+      name="keywords"
+      content="GitHub search tool, GitHub project discovery, smart GitHub search, find GitHub projects, GitHub repository search engine, discover GitHub gems, open source project finder"
+    />
+    <meta name="author" content="SEFGH" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://sefgh.org/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sefgh.org/" />
+    <meta
+      property="og:title"
+      content="SEFGH - Smart GitHub Project Discovery Tool"
+    />
+    <meta
+      property="og:description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
+    />
+    <meta
+      property="og:image"
+      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="SEFGH" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://sefgh.org/" />
+    <meta
+      property="twitter:title"
+      content="SEFGH - Smart GitHub Project Discovery Tool"
+    />
+    <meta
+      property="twitter:description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
+    />
+    <meta
+      property="twitter:image"
+      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
+    />
+    <meta name="twitter:creator" content="@sefgh" />
+    <meta name="twitter:site" content="@sefgh" />
+
+    <!-- Additional Meta Tags -->
+    <meta name="application-name" content="SEFGH" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SEFGH",
+        "url": "https://sefgh.org",
+        "description": "A smart GitHub project discovery tool that helps developers find repositories using natural language queries and intelligent matching based on LLM'S Agentic Frameworks.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "creator": {
+          "@type": "Organization",
+          "name": "SEFGH",
+          "url": "https://sefgh.org"
+        },
+        "featureList": [
+          "Natural language GitHub search",
+          "Multi-language project discovery",
+          "Smart repository matching",
+          "Hidden gem discovery",
+          "Detailed project analysis",
+          "Search Engine For Github"
+        ]
+      }
+    </script>
+
+    <!-- Additional Structured Data for Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "SEFGH",
+        "url": "https://sefgh.org",
+        "logo": "https://sefgh.org/assets/sefgh-logo.png",
+        "description": "SEFGH is a smart GitHub project discovery tool that helps developers find repositories using natural language queries.",
+        "foundingDate": "2025",
+        "sameAs": ["https://twitter.com/sefgh", "https://github.com/sefgh-ai"]
+      }
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SEFGH – Search Engine for GitHub</title>
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #111111;
+        --bg-card: #1a1a1a;
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --border: #27272a;
+        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+          "Inter", sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-primary);
+        overflow-x: hidden;
+      }
+
+      /* Background Animation */
+      .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.1;
+      }
+
+      .gradient-bg {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+            circle at 20% 80%,
+            #3b82f6 0%,
+            transparent 50%
+          ),
+          radial-gradient(circle at 80% 20%, #8b5cf6 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, #06b6d4 0%, transparent 50%);
+        animation: float 20s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        50% {
+          transform: translate(-50%, -50%) rotate(180deg);
+        }
+      }
+
+      /* Header */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        backdrop-filter: blur(20px);
+        background: rgba(10, 10, 10, 0.8);
+        border-bottom: 1px solid var(--border);
+        transition: all 0.3s ease;
+      }
+
+      .header.scrolled {
+        background: rgba(10, 10, 10, 0.95);
+        box-shadow: var(--shadow);
+      }
+
+      .nav-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.75rem;
+        font-weight: 800;
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        color: var(--text-primary);
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: var(--gradient-accent);
+        transition: width 0.3s ease;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      .cta-nav {
+        background: var(--gradient-accent);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 2rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .cta-nav:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 8rem 2rem 4rem;
+        position: relative;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        z-index: 10;
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.1;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1.25rem, 3vw, 2rem);
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        font-weight: 600;
+      }
+
+      .hero-description {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        margin-bottom: 3rem;
+        line-height: 1.7;
+      }
+
+      .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--gradient-accent);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 3rem;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      }
+
+      .hero-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+      }
+
+      /* Floating Cards */
+      .floating-cards {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .floating-card {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        backdrop-filter: blur(10px);
+        animation: floatCard 6s ease-in-out infinite;
+      }
+
+      .floating-card:nth-child(1) {
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+      }
+      .floating-card:nth-child(2) {
+        top: 30%;
+        right: 15%;
+        animation-delay: 2s;
+      }
+      .floating-card:nth-child(3) {
+        bottom: 30%;
+        left: 20%;
+        animation-delay: 4s;
+      }
+      .floating-card:nth-child(4) {
+        bottom: 20%;
+        right: 10%;
+        animation-delay: 1s;
+      }
+
+      @keyframes floatCard {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(5deg);
+        }
+      }
+
+      /* Section Base */
+      .section {
+        padding: 6rem 0;
+        position: relative;
+      }
+
+      .container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+
+      .section-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .section-subtitle {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.7;
+      }
+
+      /* Features Grid */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+      }
+
+      .feature-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--gradient-accent);
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .feature-icon {
+        width: 4rem;
+        height: 4rem;
+        background: var(--gradient-accent);
+        border-radius: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .feature-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+      }
+
+      /* Problems Section */
+      .problems-section {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .problems-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .problem-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 2rem;
+        border-left: 4px solid var(--accent);
+        transition: all 0.3s ease;
+      }
+
+      .problem-card:hover {
+        transform: translateX(5px);
+        border-left-color: var(--accent-hover);
+      }
+
+      .problem-card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+      }
+
+      .problem-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      /* Steps Section */
+      .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 3rem;
+      }
+
+      .step-card {
+        text-align: center;
+        position: relative;
+      }
+
+      .step-number {
+        width: 5rem;
+        height: 5rem;
+        background: var(--gradient-accent);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin: 0 auto 2rem;
+        color: white;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      }
+
+      .step-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .step-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+      }
+
+      /* Audience Section */
+      .audience-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .audience-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .audience-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-accent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .audience-card:hover::before {
+        opacity: 0.05;
+      }
+
+      .audience-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(59, 130, 246, 0.3);
+      }
+
+      .audience-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .audience-card p {
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      /* Future Features */
+      .future-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+      }
+
+      .future-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .future-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      }
+
+      .future-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .future-card p {
+        color: var(--text-muted);
+        line-height: 1.7;
+      }
+
+      /* CTA Section */
+      .cta-section {
+        background: var(--bg-secondary);
+        border-top: 1px solid var(--border);
+        text-align: center;
+      }
+
+      .cta-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .cta-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: var(--gradient-secondary);
+        color: white;
+        padding: 1.25rem 3rem;
+        border-radius: 3rem;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(245, 87, 108, 0.3);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(245, 87, 108, 0.4);
+      }
+
+      /* Footer */
+      .footer {
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border);
+        padding: 4rem 0 2rem;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+        margin-bottom: 3rem;
+      }
+
+      .footer-section h4 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+      }
+
+      .footer-section a {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: block;
+        margin-bottom: 0.75rem;
+        transition: color 0.3s ease;
+      }
+
+      .footer-section a:hover {
+        color: var(--text-primary);
+      }
+
+      .footer-bottom {
+        border-top: 1px solid var(--border);
+        padding-top: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+      }
+
+      /* Mobile Responsive */
+      .mobile-menu {
+        display: none;
+        flex-direction: column;
+        gap: 0.25rem;
+        cursor: pointer;
+      }
+
+      .mobile-menu span {
+        width: 1.5rem;
+        height: 2px;
+        background: var(--text-primary);
+        transition: all 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .nav-links {
+          display: none;
+        }
+
+        .mobile-menu {
+          display: flex;
+        }
+
+        .hero {
+          padding: 6rem 1rem 4rem;
+        }
+
+        .container {
+          padding: 0 1rem;
+        }
+
+        .features-grid,
+        .steps-grid,
+        .problems-grid,
+        .audience-grid,
+        .future-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .floating-cards {
+          display: none;
+        }
+      }
+
+      /* Animations */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(2rem);
+        transition: all 0.6s ease;
+      }
+
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .stagger-1 {
+        transition-delay: 0.1s;
+      }
+      .stagger-2 {
+        transition-delay: 0.2s;
+      }
+      .stagger-3 {
+        transition-delay: 0.3s;
+      }
+      .stagger-4 {
+        transition-delay: 0.4s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+      <div class="gradient-bg"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+      <div class="nav-container">
+        <a href="https://sefgh.org" class="logo">SEFGH</a>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#community">Community</a></li>
+          </ul>
+        </nav>
+        <a href="https://sefgh.org" class="cta-nav">Get Started</a>
+        <div class="mobile-menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="floating-cards">
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+        <div class="floating-card"></div>
+      </div>
+      <div class="hero-content fade-in">
+        <h1>SEFGH</h1>
+        <p class="hero-subtitle">Search Engine for GitHub</p>
+        <p class="hero-description">
+          A Smarter Way to Discover GitHub Projects. Uncover the GitHub projects
+          that truly match your vision, moving beyond keyword limits to find
+          hidden gems and relevant code.
+        </p>
+        <a href="https://sefgh.org" class="hero-cta" target="_blank">
+          <span>Start Your Search</span>
+          <span>→</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">A Fresh Take on Project Discovery</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card fade-in stagger-1">
+            <div class="feature-icon">🔍</div>
+            <h3>Beyond Keywords</h3>
+            <p>
+              SEFGH revolutionizes project search by understanding full,
+              descriptive requests, no matter how long or detailed. It
+              translates your natural language into sophisticated queries,
+              moving far beyond the limitations of traditional short keyword
+              searches.
+            </p>
+          </div>
+          <div class="feature-card fade-in stagger-2">
+            <div class="feature-icon">💎</div>
+            <h3>Deeper Exploration</h3>
+            <p>
+              Unlike conventional tools that often only surface the most popular
+              results, SEFGH delves deeper. It's designed to uncover projects
+              that genuinely align with your specific needs, reaching into
+              less-known areas of GitHub to find hidden, valuable repositories.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problems Section -->
+    <section class="section problems-section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Addressing Common Search Hurdles</h2>
+        </div>
+        <div class="problems-grid">
+          <div class="problem-card fade-in stagger-1">
+            <h3>No Character Limits</h3>
+            <p>
+              Traditional tools often force you to oversimplify complex needs
+              due to short character limits. SEFGH removes this barrier,
+              allowing for comprehensive descriptions.
+            </p>
+          </div>
+          <div class="problem-card fade-in stagger-2">
+            <h3>Discover Hidden Gems</h3>
+            <p>
+              Popular projects frequently overshadow niche, high-quality
+              repositories. SEFGH prioritizes relevance, ensuring lesser-known
+              but perfect matches are found.
+            </p>
+          </div>
+          <div class="problem-card fade-in stagger-3">
+            <h3>Multi-Language Support</h3>
+            <p>
+              Non-English queries are often poorly handled. SEFGH provides
+              robust support for diverse languages, expanding your search
+              capabilities globally.
+            </p>
+          </div>
+          <div class="problem-card fade-in stagger-4">
+            <h3>Genuine Relevance</h3>
+            <p>
+              Results can sometimes appear relevant on paper but prove useless
+              upon closer inspection. SEFGH delivers truly pertinent results,
+              saving you time and frustration.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">How SEFGH Works</h2>
+          <p class="section-subtitle">The Simple Version</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step-card fade-in stagger-1">
+            <div class="step-number">1</div>
+            <h3>It Listens Carefully</h3>
+            <p>
+              SEFGH meticulously reads your full description, whether it's a few
+              lines or a detailed essay, precisely identifying your true
+              requirements and intent.
+            </p>
+          </div>
+          <div class="step-card fade-in stagger-2">
+            <div class="step-number">2</div>
+            <h3>It Explores Widely</h3>
+            <p>
+              Utilizing creative angles and diverse linguistic interpretations,
+              SEFGH scours GitHub for projects that align with your request,
+              even if phrased differently or in other languages.
+            </p>
+          </div>
+          <div class="step-card fade-in stagger-3">
+            <div class="step-number">3</div>
+            <h3>It Evaluates Thoughtfully</h3>
+            <p>
+              Every found project is rigorously compared against your criteria,
+              receiving a clear similarity score. Only the top-matched options
+              are presented, pre-ranked and explained.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- What Makes SEFGH Special -->
+    <section class="section problems-section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">What Makes SEFGH Special</h2>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card fade-in stagger-1">
+            <div class="feature-icon">⭐</div>
+            <h3>Depth Over Popularity</h3>
+            <p>
+              A project with fewer stars can outrank one with thousands if it
+              better satisfies your specific needs, ensuring highly relevant,
+              niche discoveries.
+            </p>
+          </div>
+          <div class="feature-card fade-in stagger-2">
+            <div class="feature-icon">🌍</div>
+            <h3>Language Flexibility</h3>
+            <p>
+              Describe your ideal project in any language—English today, Spanish
+              tomorrow. SEFGH intelligently processes and matches your query
+              regardless of input language.
+            </p>
+          </div>
+          <div class="feature-card fade-in stagger-3">
+            <div class="feature-icon">🎯</div>
+            <h3>Meaning-First Matching</h3>
+            <p>
+              SEFGH prioritizes the core purpose and functional features of a
+              repository, moving beyond mere keyword matching for truly semantic
+              results.
+            </p>
+          </div>
+          <div class="feature-card fade-in stagger-4">
+            <div class="feature-icon">📊</div>
+            <h3>Transparent Reports & Refinement</h3>
+            <p>
+              Each suggestion comes with a clear, plain-language explanation of
+              its relevance. You also have the freedom to refine searches by
+              weighing criteria like setup simplicity or license type.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who SEFGH Helps -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Who SEFGH Helps</h2>
+        </div>
+        <div class="audience-grid">
+          <div class="audience-card fade-in stagger-1">
+            <h3>Developers</h3>
+            <p>
+              Hunting for starter projects, boilerplates, niche utilities, or
+              specific architectural patterns for their next build.
+            </p>
+          </div>
+          <div class="audience-card fade-in stagger-2">
+            <h3>Data Scientists</h3>
+            <p>
+              Seeking relevant sample notebooks, advanced frameworks, or
+              specialized libraries for data analysis and machine learning.
+            </p>
+          </div>
+          <div class="audience-card fade-in stagger-3">
+            <h3>Educators</h3>
+            <p>
+              Curating compelling classroom examples, open-source projects for
+              student contributions, or robust teaching resources.
+            </p>
+          </div>
+          <div class="audience-card fade-in stagger-4">
+            <h3>Researchers</h3>
+            <p>
+              Exploring new techniques, finding comparative benchmarks, or
+              discovering implementations of cutting-edge algorithms.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Future Features -->
+    <section class="section problems-section">
+      <div class="container">
+        <div class="section-header fade-in">
+          <h2 class="section-title">Looking Forward</h2>
+          <p class="section-subtitle">The Future of SEFGH</p>
+        </div>
+        <div class="future-grid">
+          <div class="future-card fade-in stagger-1">
+            <h3>Richer Language Support</h3>
+            <p>
+              Expanded capabilities for understanding and processing queries in
+              an even wider array of human languages, truly breaking down
+              linguistic barriers.
+            </p>
+          </div>
+          <div class="future-card fade-in stagger-2">
+            <h3>Smarter Ranking Algorithms</h3>
+            <p>
+              Continuously refined algorithms that will deliver even more
+              precise and contextually relevant project matches, learning from
+              user interactions.
+            </p>
+          </div>
+          <div class="future-card fade-in stagger-3">
+            <h3>Custom Search Tailoring</h3>
+            <p>
+              New, innovative ways to personalize search criteria and
+              preferences, allowing users to fine-tune results to their unique
+              goals and priorities.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section" id="search">
+      <div class="container">
+        <div class="cta-content fade-in">
+          <h2 class="section-title">Ready to transform how you search?</h2>
+          <p class="section-subtitle">
+            Give SEFGH your most detailed project wish list today and unlock a
+            new world of discovery.
+          </p>
+          <a href="https://sefgh.org" class="cta-button" target="_blank">
+            <span>Start Your Search</span>
+            <span>✨</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="community">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section fade-in stagger-1">
+            <h4>Resources & Next Steps</h4>
+            <a
+              href="https://medium.com/@sefghai/sefgh-review-2025-revolutionizing-github-project-searches-e5741a6567c7"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Dive into Our Review</a
+            >
+            <a href="#search">Start Your Search</a>
+            <a href="#community">Join Our Community</a>
+          </div>
+          <div class="footer-section fade-in stagger-2">
+            <h4>About SEFGH</h4>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#future">Future Plans</a>
+          </div>
+          <div class="footer-section fade-in stagger-3">
+            <h4>Community</h4>
+            <a href="#developers">For Developers</a>
+            <a href="#researchers">For Researchers</a>
+            <a href="#educators">For Educators</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>
+            Read the in-depth SEFGH 2025 review on Medium. Learn about our
+            impact.
+          </p>
+          <p>
+            Connect with fellow developers. Stay updated on future innovations.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scrolling for navigation links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Header scroll effect
+      let lastScrollY = window.scrollY;
+      const header = document.getElementById("header");
+
+      window.addEventListener("scroll", () => {
+        const scrollY = window.scrollY;
+
+        if (scrollY > 100) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+
+        lastScrollY = scrollY;
+      });
+
+      // Intersection Observer for fade-in animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+          }
+        });
+      }, observerOptions);
+
+      // Observe all elements with fade-in class
+      document.querySelectorAll(".fade-in").forEach((el) => {
+        observer.observe(el);
+      });
+
+      // Parallax effect for background
+      window.addEventListener("scroll", () => {
+        const scrolled = window.pageYOffset;
+        const rate = scrolled * -0.5;
+        const bgAnimation = document.querySelector(".bg-animation");
+        if (bgAnimation) {
+          bgAnimation.style.transform = `translateY(${rate}px)`;
+        }
+      });
+
+      // Mobile menu toggle (placeholder for future implementation)
+      const mobileMenu = document.querySelector(".mobile-menu");
+      if (mobileMenu) {
+        mobileMenu.addEventListener("click", () => {
+          // Mobile menu toggle logic would go here
+          console.log("Mobile menu clicked");
+        });
+      }
+
+      // Add some interactive particles effect
+      function createParticle() {
+        const particle = document.createElement("div");
+        particle.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: rgba(59, 130, 246, 0.6);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 1;
+                animation: particle-float 6s linear forwards;
+            `;
+
+        particle.style.left = Math.random() * 100 + "vw";
+        particle.style.top = "100vh";
+
+        document.body.appendChild(particle);
+
+        setTimeout(() => {
+          particle.remove();
+        }, 6000);
+      }
+
+      // Add particle animation keyframes
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes particle-float {
+                to {
+                    transform: translateY(-100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+      document.head.appendChild(style);
+
+      // Create particles periodically
+      setInterval(createParticle, 2000);
+
+      // Add cursor glow effect
+      const cursor = document.createElement("div");
+      cursor.style.cssText = `
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            transition: transform 0.1s ease;
+        `;
+      document.body.appendChild(cursor);
+
+      document.addEventListener("mousemove", (e) => {
+        cursor.style.left = e.clientX - 10 + "px";
+        cursor.style.top = e.clientY - 10 + "px";
+      });
+
+      // Hide cursor glow on mobile
+      if ("ontouchstart" in window) {
+        cursor.style.display = "none";
+      }
+
+      // Add typing effect to hero subtitle
+      const heroSubtitle = document.querySelector(".hero-subtitle");
+      if (heroSubtitle) {
+        const text = heroSubtitle.textContent;
+        heroSubtitle.textContent = "";
+
+        let i = 0;
+        const typeWriter = () => {
+          if (i < text.length) {
+            heroSubtitle.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 100);
+          }
+        };
+
+        // Start typing effect after a delay
+        setTimeout(typeWriter, 1000);
+      }
+
+      // Add performance monitoring
+      if ("performance" in window) {
+        window.addEventListener("load", () => {
+          setTimeout(() => {
+            const perfData = performance.getEntriesByType("navigation")[0];
+            console.log(
+              "Page load time:",
+              perfData.loadEventEnd - perfData.loadEventStart,
+              "ms"
+            );
+          }, 0);
+        });
+      }
+    </script>
+  </body>
+</html>
