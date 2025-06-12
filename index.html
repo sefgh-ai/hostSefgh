@@ -1,134 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-3J37CNB3YE"
-    ></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEFGH - Intelligent GitHub Search</title>
+    <!-- Tailwind CSS with JIT compiler -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts Import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+
+        /* Custom base styles */
+        body {
+            background-color: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom utility for the background grid pattern */
+        .bg-grid {
+            background-image:
+                linear-gradient(to right, rgba(26, 26, 26, 0.8) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(26, 26, 26, 0.8) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+    </style>
+    
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-3J37CNB3YE");
+        // Custom Tailwind configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'spin-slow': 'spin 25s linear infinite',
+                        'spin-slower': 'spin 30s linear infinite reverse',
+                        'tilt': 'tilt 10s infinite linear',
+                    },
+                    keyframes: {
+                        tilt: {
+                            '0%, 100%': { transform: 'rotate(0deg)' },
+                            '25%': { transform: 'rotate(0.5deg)' },
+                            '75%': { transform: 'rotate(-0.5deg)' },
+                        }
+                    }
+                }
+            }
+        }
     </script>
+</head>
+<body class="bg-[#0a0a0a] text-white font-sans">
 
-    <!-- Primary SEO Tags -->
-    <title>
-      SEFGH - Search engine for github
-    </title>
-    <meta
-      name="description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs. Perfect for developers, data scientists, and researchers."
-    />
-    <meta
-      name="keywords"
-      content="GitHub search tool, GitHub project discovery, smart GitHub search, find GitHub projects, GitHub repository search engine, discover GitHub gems, open source project finder"
-    />
-    <meta name="author" content="SEFGH" />
-    <meta name="robots" content="index, follow" />
+    <!-- Animated Background Component -->
+    <div class="fixed top-0 left-0 w-full h-full -z-50 overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-[#0a0a0a]"></div>
+        <div class="absolute w-[800px] h-[800px] -top-[20%] -left-[20%] bg-gradient-to-tr from-[#0066ff]/30 to-transparent rounded-full animate-spin-slow"></div>
+        <div class="absolute w-[600px] h-[600px] -bottom-[20%] -right-[10%] bg-gradient-to-bl from-[#8b5cf6]/20 to-transparent rounded-full animate-spin-slower"></div>
+        <div class="fixed top-0 left-0 w-full h-full bg-grid [mask-image:linear-gradient(to_bottom,white_30%,transparent_100%)]"></div>
+    </div>
 
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://sefgh.org/" />
+    <div class="relative z-10">
+        <!-- Header Component -->
+        <header class="fixed top-0 left-0 w-full z-50 py-4 px-4 md:px-8 bg-transparent">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white tracking-wider">SEFGH</h1>
+                <button
+                    onclick="handleStartSearching()"
+                    class="group relative inline-flex items-center justify-center px-5 py-2 overflow-hidden font-medium text-white transition-all duration-300 bg-[#1a1a1a] border border-[#27272a] rounded-lg hover:bg-[#0066ff]/20">
+                    <span class="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-[#0066ff] rounded-full group-hover:w-full group-hover:h-full group-hover:opacity-100 opacity-20"></span>
+                    <span class="relative flex items-center gap-2">
+                        Start Searching 
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+        </header>
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sefgh.org/" />
-    <meta
-      property="og:title"
-      content="SEFGH - Search Engine For Github, Smart GitHub Project Discovery Tool"
-    />
-    <meta
-      property="og:description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
-    />
-    <meta
-      property="og:image"
-      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
-    />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="SEFGH" />
+        <main>
+            <!-- Hero Component -->
+            <section class="min-h-screen flex items-center justify-center text-center relative px-4">
+                <div class="z-10 flex flex-col items-center">
+                    <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight">
+                        Find GitHub projects.
+                        <br />
+                        <span class="bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text">
+                            Intelligently.
+                        </span>
+                    </h2>
+                    <p class="max-w-2xl text-lg text-[#a1a1aa] mb-8">
+                        Go beyond keywords. Use natural language to discover repositories that truly match your vision.
+                    </p>
+                    <div class="w-full max-w-2xl relative group">
+                        <div class="absolute -inset-0.5 bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] rounded-xl blur-md opacity-50 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+                        <button
+                            onclick="handleStartSearching()"
+                            class="relative w-full flex items-center p-4 bg-[#0a0a0a] border border-[#27272a] rounded-xl text-left text-[#a1a1aa] hover:border-[#0066ff]/50 transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-3 text-[#a1a1aa]">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <span id="typing-placeholder" class="flex-1"></span>
+                            <span class="hidden md:inline-flex items-center gap-1 text-xs text-[#a1a1aa] border border-[#27272a] rounded-md px-2 py-1">
+                                Enter
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Features Component -->
+            <section class="py-20 px-4">
+                <div class="container mx-auto">
+                    <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-white">Why SEFGH is Different</h2>
+                            <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mt-4">We built a search engine that thinks like a developer, not a database.</p>
+                        </div>
+                    </div>
+                    <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <!-- FeatureCard 1 -->
+                            <div class="bg-[#1a1a1a]/50 border border-[#27272a] p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-[#0066ff]/50 hover:-translate-y-1">
+                                <div class="w-12 h-12 bg-gradient-to-br from-[#0066ff]/20 to-[#8b5cf6]/20 flex items-center justify-center rounded-xl mb-4 border border-[#27272a]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#0066ff]">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mb-2">Semantic Search</h3>
+                                <p class="text-[#a1a1aa]">Understand the intent behind your query, not just the keywords. Find repositories by what they do.</p>
+                            </div>
+                            <!-- FeatureCard 2 -->
+                            <div class="bg-[#1a1a1a]/50 border border-[#27272a] p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-[#0066ff]/50 hover:-translate-y-1" style="transition-delay: 100ms;">
+                                <div class="w-12 h-12 bg-gradient-to-br from-[#0066ff]/20 to-[#8b5cf6]/20 flex items-center justify-center rounded-xl mb-4 border border-[#27272a]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#00ff88]">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mb-2">Discover Hidden Gems</h3>
+                                <p class="text-[#a1a1aa]">Our ranking algorithm surfaces relevant projects, not just the most popular ones. Uncover true innovation.</p>
+                            </div>
+                            <!-- FeatureCard 3 -->
+                            <div class="bg-[#1a1a1a]/50 border border-[#27272a] p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-[#0066ff]/50 hover:-translate-y-1" style="transition-delay: 200ms;">
+                                <div class="w-12 h-12 bg-gradient-to-br from-[#0066ff]/20 to-[#8b5cf6]/20 flex items-center justify-center rounded-xl mb-4 border border-[#27272a]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#8b5cf6]">
+                                        <polyline points="16 18 22 12 16 6"></polyline>
+                                        <polyline points="8 6 2 12 8 18"></polyline>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-white mb-2">Code-Aware Analysis</h3>
+                                <p class="text-[#a1a1aa]">SEFGH analyzes repository structure and READMEs to provide a deeper, more accurate match score.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://sefgh.org/" />
-    <meta property="twitter:title" content="SEFGH - Search Engine For Github" />
-    <meta
-      property="twitter:description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
-    />
-    <meta
-      property="twitter:image"
-      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
-    />
-    <meta name="twitter:creator" content="@sefgh" />
-    <meta name="twitter:site" content="@sefgh" />
+            <!-- How It Works Component -->
+            <section class="py-20 px-4">
+                <div class="container mx-auto">
+                    <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-white">Simple, Powerful, Fast.</h2>
+                        </div>
+                    </div>
+                    <div class="max-w-4xl mx-auto relative">
+                        <div class="absolute top-1/2 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#27272a] to-transparent -z-10"></div>
+                        <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
+                            <div class="grid md:grid-cols-3 gap-8 text-center">
+                                <div class="relative">
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#0066ff]/10 rounded-full blur-2xl"></div>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text mb-4">1. Ask</h3>
+                                    <p class="text-[#a1a1aa]">Describe the project you're looking for in plain English. The more detail, the better.</p>
+                                </div>
+                                <div class="relative">
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#00ff88]/10 rounded-full blur-2xl"></div>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#00ff88] to-[#0066ff] text-transparent bg-clip-text mb-4">2. Analyze</h3>
+                                    <p class="text-[#a1a1aa]">Our AI agents scour GitHub, analyzing code, READMEs, and metadata to find the best matches.</p>
+                                </div>
+                                 <div class="relative">
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#8b5cf6]/10 rounded-full blur-2xl"></div>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#8b5cf6] to-[#00ff88] text-transparent bg-clip-text mb-4">3. Discover</h3>
+                                    <p class="text-[#a1a1aa]">Get a curated list of relevant repositories, ranked by a clear similarity score.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- Additional Meta Tags -->
-    <meta name="application-name" content="SEFGH" />
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="msapplication-TileColor" content="#2563eb" />
+            <!-- CTA Component -->
+            <section class="py-20 px-4">
+                <div class="container mx-auto text-center">
+                    <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
+                        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Ready to find your next project?</h2>
+                        <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mb-8">Stop scrolling, start building. Your perfect repository is just a search away.</p>
+                        <button
+                            onclick="handleStartSearching()"
+                            class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] rounded-xl">
+                            <span class="absolute -inset-0.5 bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] rounded-xl blur-md opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></span>
+                            <span class="relative">Start Your Search Now</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Footer Component -->
+        <footer class="py-8 px-4 border-t border-[#27272a]">
+            <div class="container mx-auto text-center text-[#71717a]">
+                <p>&copy; <span id="footer-year"></span> SEFGH. All rights reserved.</p>
+                <div class="flex justify-center gap-4 mt-4">
+                    <a href="https://sefgh.org/about" class="hover:text-white transition-colors">About</a>
+                    <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                </div>
+            </div>
+        </footer>
+    </div>
 
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "SEFGH",
-        "url": "https://sefgh.org",
-        "description": "A smart GitHub project discovery tool that helps developers find repositories using natural language queries and intelligent matching based on LLM'S Agentic Frameworks.",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "creator": {
-          "@type": "Organization",
-          "name": "SEFGH",
-          "url": "https://sefgh.org"
-        },
-        "featureList": [
-          "Natural language GitHub search",
-          "Multi-language project discovery",
-          "Smart repository matching",
-          "Hidden gem discovery",
-          "Detailed project analysis",
-          "Search Engine For Github"
-        ]
-      }
+
+    <script>
+        // --- EVENT HANDLERS ---
+              // --- EVENT HANDLERS ---
+        function handleStartSearching() {
+            // Redirect to the search page
+            window.location.href = "http://sefgh.org/searchpage";
+        }
+
+        // --- DYNAMIC CONTENT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current year in footer
+            document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+            // --- Typing animation for the hero search bar ---
+            const placeholderEl = document.getElementById('typing-placeholder');
+            const placeholders = [
+                "a 3D rendering engine in Rust...",
+                "a real-time data visualization library...",
+                "a lightweight mobile OS in Swift...",
+                "a game engine built with C++ and Lua...",
+                "a full-stack Next.js boilerplate with auth..."
+            ];
+            let placeholderIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            const typingSpeed = 80;
+            const deletingSpeed = 40;
+            const delayAtEnd = 2000;
+
+            function type() {
+                const currentText = placeholders[placeholderIndex];
+                let displayText = '';
+
+                if (isDeleting) {
+                    displayText = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    displayText = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                placeholderEl.textContent = displayText;
+                placeholderEl.style.borderRight = '2px solid #a1a1aa'; // Cursor effect
+
+                let timeout = isDeleting ? deletingSpeed : typingSpeed;
+
+                if (!isDeleting && charIndex === currentText.length) {
+                    isDeleting = true;
+                    timeout = delayAtEnd;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+                }
+                
+                setTimeout(type, timeout);
+            }
+            type();
+            
+            // --- Fade-in on scroll animation using Intersection Observer ---
+            const faders = document.querySelectorAll('.fade-in-section');
+            if (faders.length > 0) {
+                const appearOptions = {
+                    threshold: 0.1,
+                    rootMargin: "0px 0px -50px 0px"
+                };
+
+                const appearOnScroll = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(entry => {
+                        if (!entry.isIntersecting) {
+                            return;
+                        } else {
+                            entry.target.classList.remove('opacity-0', 'translate-y-10');
+                            entry.target.classList.add('opacity-100', 'translate-y-0');
+                            // Unobserve the element after it has faded in
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, appearOptions);
+
+                faders.forEach(fader => {
+                    appearOnScroll.observe(fader);
+                });
+            }
+        });
     </script>
-
-    <!-- Additional Structured Data for Organization -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "SEFGH",
-        "url": "https://sefgh.org",
-        "logo": "https://sefgh.org/assets/sefgh-logo.png",
-        "description": "SEFGH is a smart GitHub project discovery tool that helps developers find repositories using natural language queries.",
-        "foundingDate": "2025",
-        "sameAs": ["https://twitter.com/sefghai", "https://github.com/sefgh-ai"]
-      }
-    </script>
-
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="./assets/favicon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" crossorigin src="./assets/index-D15aWuWx.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BFzyzoie.css" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+</body>
 </html>
