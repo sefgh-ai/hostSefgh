@@ -1,10 +1,124 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
+      <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-3J37CNB3YE"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-3J37CNB3YE");
+    </script>
+
+    <meta
+      name="description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs. Perfect for developers, data scientists, and researchers."
+    />
+    <meta
+      name="keywords"
+      content="GitHub search tool, GitHub project discovery, smart GitHub search, find GitHub projects, GitHub repository search engine, discover GitHub gems, open source project finder"
+    />
+    <meta name="author" content="SEFGH" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://sefgh.org/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sefgh.org/" />
+    <meta
+      property="og:title"
+      content="SEFGH - Search Engine For Github, Smart GitHub Project Discovery Tool"
+    />
+    <meta
+      property="og:description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
+    />
+    <meta
+      property="og:image"
+      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="SEFGH" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://sefgh.org/" />
+    <meta property="twitter:title" content="SEFGH - Search Engine For Github" />
+    <meta
+      property="twitter:description"
+      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
+    />
+    <meta
+      property="twitter:image"
+      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
+    />
+    <meta name="twitter:creator" content="@sefgh" />
+    <meta name="twitter:site" content="@sefgh" />
+
+    <!-- Additional Meta Tags -->
+    <meta name="application-name" content="SEFGH" />
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="msapplication-TileColor" content="#2563eb" />
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "SEFGH",
+        "url": "https://sefgh.org",
+        "description": "A smart GitHub project discovery tool that helps developers find repositories using natural language queries and intelligent matching based on LLM'S Agentic Frameworks.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web Browser",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "creator": {
+          "@type": "Organization",
+          "name": "SEFGH",
+          "url": "https://sefgh.org"
+        },
+        "featureList": [
+          "Natural language GitHub search",
+          "Multi-language project discovery",
+          "Smart repository matching",
+          "Hidden gem discovery",
+          "Detailed project analysis",
+          "Search Engine For Github"
+        ]
+      }
+    </script>
+
+    <!-- Additional Structured Data for Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "SEFGH",
+        "url": "https://sefgh.org",
+        "logo": "https://sefgh.org/assets/sefgh-logo.png",
+        "description": "SEFGH is a smart GitHub project discovery tool that helps developers find repositories using natural language queries.",
+        "foundingDate": "2025",
+        "sameAs": ["https://twitter.com/sefghai", "https://github.com/sefgh-ai"]
+      }
+    </script>
+
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SEFGH - AI-Powered GitHub Repository Search</title>
-
+    <link rel="icon" type="image/png" href="./assets/favicon.png" />
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -221,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const [
         htmlEl,
         navChatBtn,
-        navSearchBtn, // NEW
+        navSearchBtn,
         navHistoryBtn,
         toggleSearchBtn,
         chatPanel,
@@ -240,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ] = [
         document.documentElement,
         getEl('nav-chat-btn'),
-        getEl('nav-search-btn'), // NEW
+        getEl('nav-search-btn'),
         getEl('nav-history-btn'),
         getEl('toggle-search-btn'),
         getEl('chat-panel'),
@@ -292,11 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleSearchView = () => {
         state.isSearchVisible = !state.isSearchVisible;
         
-        // Sync sidebar button style
         navSearchBtn.classList.toggle('active-nav', state.isSearchVisible);
         navSearchBtn.classList.toggle('inactive-nav', !state.isSearchVisible);
         
-        // Sync header button style
         toggleSearchBtn.innerHTML = `<i data-lucide="${state.isSearchVisible ? 'message-square' : 'search'}" class="w-5 h-5"></i>`;
         toggleSearchBtn.title = state.isSearchVisible ? "Hide Search" : "Show Search";
 
@@ -378,37 +490,62 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     };
 
-    // --- "Intelligent" AI Response Logic ---
-    const processUserMessage = (userInput) => {
+    // --- NEW: Real AI Response Logic ---
+    const processUserMessage = async (userInput) => {
         state.isTyping = true;
         renderMessages();
-        const lowerInput = userInput.toLowerCase();
-        const selectedVersion = state.versions.find(v => v.id === state.selectedVersionId);
-        const extractSearchQuery = (text) => { const aiKeywords = { languages: ['javascript', 'python', 'typescript', 'go', 'rust', 'java', 'c#', 'c++', 'php', 'swift'], frameworks: ['react', 'vue', 'angular', 'svelte', 'django', 'flask', 'fastapi', 'next.js', 'node.js', 'express'], concepts: ['ai', 'ml', 'game', 'chat', 'database', 'testing', 'chart', 'graph', 'data visualization', 'state management', 'todo', 'api', 'server', 'client'], qualifiers: ['lightweight', 'simple', 'fast', 'minimal', 'advanced', 'modern', 'template', 'starter'] }; const allKeywords = [...aiKeywords.languages, ...aiKeywords.frameworks, ...aiKeywords.concepts, ...aiKeywords.qualifiers]; const foundKeywords = allKeywords.filter(kw => text.includes(kw)); const uniqueKeywords = foundKeywords.filter(kw1 => !foundKeywords.some(kw2 => kw1 !== kw2 && kw2.includes(kw1))); return uniqueKeywords.join(' '); };
-        const query = extractSearchQuery(lowerInput);
-        
-        setTimeout(() => {
-            if (query) {
-                const response = `${selectedVersion.persona}Searching for repositories about "${query}" for you.`;
-                addMessage(response, 'assistant');
-                setActiveView('chat');
-                handleSearchTrigger(query);
-                if (selectedVersion.id === 'v3') {
-                    state.isTyping = true; renderMessages();
-                    setTimeout(() => {
-                        let followup = "Are there any other criteria, like a minimum star count?";
-                        if (query.includes('react') || query.includes('vue')) { followup = "While you browse, are you interested in full apps or smaller utility libraries?"; } else if (query.includes('game')) { followup = "Interesting! Are you looking for a specific game engine, or projects made from scratch?"; }
-                        state.isTyping = false; addMessage(followup, 'assistant');
-                    }, 1500);
-                } else { state.isTyping = false; updateChatInputState(); }
-            } else {
-                state.isTyping = false;
-                let response = "I can help with that. Could you be more specific about the technology or project you're looking for?";
-                if (lowerInput.includes('hello') || lowerInput.includes('hi')) { response = "Hello! How can I help you find a repository today?"; }
-                addMessage(response, 'assistant');
+        updateChatInputState(); // Disable input while waiting for response
+
+        const API_URL = 'https://api.sefgh.org';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ message: userInput }),
+            });
+
+            // Stop the typing indicator once we get any response
+            state.isTyping = false;
+
+            if (!response.ok) {
+                // Handle HTTP errors like 404, 500, etc.
+                let errorText = `An API error occurred: ${response.status} ${response.statusText}`;
+                try {
+                    // Attempt to parse a more specific error message from the API's response body
+                    const errorData = await response.json();
+                    errorText = errorData.detail || errorData.message || errorText;
+                } catch (jsonError) {
+                    // If the error response isn't valid JSON, we'll stick with the HTTP status text.
+                }
+                throw new Error(errorText);
             }
-            updateChatInputState();
-        }, 1200);
+
+            const data = await response.json();
+
+            if (data && data.answer) {
+                // Add the LLM's answer to the chat
+                addMessage(data.answer, 'assistant');
+            } else {
+                // Handle cases where the response is 200 OK but the JSON is not in the expected format
+                throw new Error("Received an incomplete or invalid response from the AI.");
+            }
+
+        } catch (error) {
+            // Handle network errors (e.g., user is offline) or errors thrown from the try block
+            console.error("LLM API Call failed:", error);
+            state.isTyping = false; // Ensure typing is off on any failure
+            const userFriendlyError = "My apologies, I'm having trouble connecting to my core intelligence right now. Please check your internet connection or try again in a moment.";
+            addMessage(userFriendlyError, 'assistant');
+        } finally {
+            // This block always runs, ensuring the UI is reset correctly
+            if (state.isTyping) { state.isTyping = false; }
+            renderMessages(); // Re-render to remove the typing indicator for sure
+            updateChatInputState(); // Re-enable the chat input
+        }
     };
 
     // --- Event Listeners Setup ---
@@ -416,10 +553,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sidebar listeners
         navChatBtn.addEventListener('click', () => setActiveView('chat'));
         navHistoryBtn.addEventListener('click', () => setActiveView('history'));
-        navSearchBtn.addEventListener('click', handleSearchToggle); // NEW
+        navSearchBtn.addEventListener('click', handleSearchToggle);
         
         // Header listeners
-        toggleSearchBtn.addEventListener('click', handleSearchToggle); // UPDATED
+        toggleSearchBtn.addEventListener('click', handleSearchToggle);
         getEl('theme-toggle-btn').addEventListener('click', () => { state.theme = state.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', state.theme); htmlEl.className = state.theme; getEl('theme-toggle-btn').innerHTML = state.theme === 'dark' ? '<i data-lucide="sun" class="w-5 h-5"></i>' : '<i data-lucide="moon" class="w-5 h-5"></i>'; lucide.createIcons(); });
         
         // Chat listeners
