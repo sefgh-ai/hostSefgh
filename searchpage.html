@@ -1,134 +1,477 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-3J37CNB3YE"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-
-      gtag("config", "G-3J37CNB3YE");
-    </script>
-
-    <!-- Primary SEO Tags -->
-    <title>
-      SEFGH - Search engine for github
-    </title>
-    <meta
-      name="description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs. Perfect for developers, data scientists, and researchers."
-    />
-    <meta
-      name="keywords"
-      content="GitHub search tool, GitHub project discovery, smart GitHub search, find GitHub projects, GitHub repository search engine, discover GitHub gems, open source project finder"
-    />
-    <meta name="author" content="SEFGH" />
-    <meta name="robots" content="index, follow" />
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://sefgh.org/" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sefgh.org/" />
-    <meta
-      property="og:title"
-      content="SEFGH - Search Engine For Github, Smart GitHub Project Discovery Tool"
-    />
-    <meta
-      property="og:description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
-    />
-    <meta
-      property="og:image"
-      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
-    />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:site_name" content="SEFGH" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://sefgh.org/" />
-    <meta property="twitter:title" content="SEFGH - Search Engine For Github" />
-    <meta
-      property="twitter:description"
-      content="Discover hidden GitHub gems with SEFGH's intelligent search. Go beyond keywords with natural language queries and find projects that truly match your needs."
-    />
-    <meta
-      property="twitter:image"
-      content="https://sefgh.org/assets/sefgh-social-preview.jpg"
-    />
-    <meta name="twitter:creator" content="@sefgh" />
-    <meta name="twitter:site" content="@sefgh" />
-
-    <!-- Additional Meta Tags -->
-    <meta name="application-name" content="SEFGH" />
-    <meta name="theme-color" content="#2563eb" />
-    <meta name="msapplication-TileColor" content="#2563eb" />
-
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "SEFGH",
-        "url": "https://sefgh.org",
-        "description": "A smart GitHub project discovery tool that helps developers find repositories using natural language queries and intelligent matching based on LLM'S Agentic Frameworks.",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "creator": {
-          "@type": "Organization",
-          "name": "SEFGH",
-          "url": "https://sefgh.org"
-        },
-        "featureList": [
-          "Natural language GitHub search",
-          "Multi-language project discovery",
-          "Smart repository matching",
-          "Hidden gem discovery",
-          "Detailed project analysis",
-          "Search Engine For Github"
-        ]
-      }
-    </script>
-
-    <!-- Additional Structured Data for Organization -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "SEFGH",
-        "url": "https://sefgh.org",
-        "logo": "https://sefgh.org/assets/sefgh-logo.png",
-        "description": "SEFGH is a smart GitHub project discovery tool that helps developers find repositories using natural language queries.",
-        "foundingDate": "2025",
-        "sameAs": ["https://twitter.com/sefghai", "https://github.com/sefgh-ai"]
-      }
-    </script>
-
-    <!-- Preconnect for Performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
+<html lang="en" class="light">
+<head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="./assets/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script type="module" crossorigin src="./assets/index-D15aWuWx.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BFzyzoie.css" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <title>SEFGH - AI-Powered GitHub Repository Search</title>
+
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Stalinist+One&display=swap" rel="stylesheet">
+
+    <!-- Meta Tags -->
+    <meta name="description" content="Discover and explore GitHub repositories with AI-powered chat assistance. Search, filter, and analyze projects with intelligent recommendations." />
+    <meta name="keywords" content="GitHub, repositories, search, AI, chat, development, code, projects" />
+    <meta name="theme-color" content="#111827" />
+    
+    <!-- CDNs for Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Tailwind Configuration -->
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              'stalinist': ['"Stalinist One"', 'sans-serif'],
+            },
+            animation: {
+              'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'rainbow-shine': 'rainbow-shine 2s linear infinite',
+            },
+            keyframes: {
+              'rainbow-shine': {
+                '0%': { 'background-position': '0% 50%' },
+                '100%': { 'background-position': '200% 50%' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Custom CSS Styles -->
+    <style type="text/tailwindcss">
+      @layer base {
+        html { scroll-behavior: smooth; }
+        body { @apply antialiased bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200; }
+      }
+      @layer utilities {
+        .backdrop-blur-md { backdrop-filter: blur(12px); }
+        .active-nav { @apply bg-gray-300 dark:bg-gray-700 text-black dark:text-white; }
+        .inactive-nav { @apply text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/60; }
+
+        .hover-rainbow-shine {
+            @apply bg-clip-text text-transparent;
+        }
+        .hover-rainbow-shine:hover {
+            background-image: linear-gradient(to right, #ef4444, #f97316, #eab308, #84cc16, #22c55e, #14b8a6, #06b6d4, #3b82f6, #8b5cf6, #d946ef, #ef4444);
+            background-size: 200% auto;
+            @apply animate-rainbow-shine;
+        }
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar { width: 8px; height: 8px; }
+      ::-webkit-scrollbar-track { @apply bg-gray-100 dark:bg-gray-800; }
+      ::-webkit-scrollbar-thumb { @apply bg-gray-400 dark:bg-gray-600 rounded-full; }
+      ::-webkit-scrollbar-thumb:hover { @apply bg-gray-500 dark:bg-gray-500; }
+
+      /* Focus & Selection */
+      :focus-visible { @apply ring-2 ring-gray-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900 outline-none; }
+      ::selection { @apply bg-black text-white; }
+      ::-moz-selection { @apply bg-black text-white; }
+
+      /* Panel transition styles */
+      #chat-panel, #search-panel {
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      /* Dropdown transition */
+      #version-menu {
+        transition: opacity 150ms ease-out, transform 150ms ease-out;
+      }
+    </style>
+</head>
+<body class="overflow-hidden flex">
+
+    <!-- Sidebar -->
+    <nav class="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4 flex-shrink-0">
+        <button id="nav-chat-btn" title="Chat" class="p-2 rounded-lg transition-colors">
+            <i data-lucide="message-square" class="w-6 h-6"></i>
+        </button>
+        <!-- NEW Search Toggle Button -->
+        <button id="nav-search-btn" title="Toggle Repository Search" class="p-2 rounded-lg transition-colors inactive-nav">
+            <i data-lucide="search" class="w-6 h-6"></i>
+        </button>
+        <button id="nav-history-btn" title="Search History" class="p-2 rounded-lg transition-colors">
+            <i data-lucide="history" class="w-6 h-6"></i>
+        </button>
+    </nav>
+
+    <div id="app-container" class="h-screen flex flex-col flex-1">
+
+        <!-- Header -->
+        <header class="h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 sm:px-6 z-50 flex-shrink-0">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                
+                <span class="text-lg sm:text-xl font-bold font-stalinist hover-rainbow-shine bg-gradient-to-r from-gray-900 to-gray-900 dark:from-gray-200 dark:to-gray-200">SEFGH</span>
+            </div>
+            <div class="flex items-center space-x-2 sm:space-4">
+                <button id="toggle-search-btn" title="Show Search" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
+                <button id="theme-toggle-btn" title="Toggle theme" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <i data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+                <button title="Settings" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="panel-container" class="flex-1 overflow-hidden flex relative">
+            
+            <!-- Chat Panel -->
+            <section id="chat-panel" class="h-full flex flex-col bg-white dark:bg-gray-900" style="width: 100%;">
+                <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <!-- Version Switcher Dropdown -->
+                    <div id="version-switcher" class="relative">
+                        <button id="version-toggle-btn" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                            <span id="version-name" class="font-semibold text-lg text-gray-900 dark:text-white"></span>
+                            <i id="version-chevron" data-lucide="chevron-down" class="w-5 h-5 text-gray-500"></i>
+                        </button>
+                        <div id="version-menu" class="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-slate-800/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-10 hidden origin-top-left" style="transform: scale(0.95); opacity: 0;">
+                            <!-- Version items will be injected by JS -->
+                        </div>
+                    </div>
+                    <button id="clear-history-btn" title="Clear chat history" class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors hidden">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                <form id="chat-form" class="p-4 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <div class="flex items-end space-x-3">
+                        <button type="button" title="Attach file" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"><i data-lucide="paperclip" class="w-5 h-5"></i></button>
+                        <div class="flex-1 relative">
+                            <textarea id="chat-textarea" placeholder="e.g., 'Find a lightweight charting library for React'" rows="1" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg resize-none text-sm max-h-32"></textarea>
+                        </div>
+                        <button id="send-btn" type="submit" title="Send message" class="p-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><i data-lucide="send" class="w-5 h-5"></i></button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Resize Handle -->
+            <div id="resize-handle" class="w-1.5 bg-gray-200 dark:bg-gray-700 hover:bg-gray-600 dark:hover:bg-gray-500 cursor-col-resize flex-shrink-0 transition-colors group relative hidden">
+                 <div class="absolute inset-y-0 -left-1.5 -right-1.5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div class="w-1 h-8 bg-gray-600 dark:bg-gray-500 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Search Panel -->
+            <section id="search-panel" class="h-full flex flex-col bg-gray-50 dark:bg-gray-800" style="width: 0%; display: none;">
+                 <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                        <input id="search-input" type="text" placeholder="Search GitHub repositories..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm">
+                    </div>
+                 </div>
+                 <div id="search-results-container" class="flex-1 overflow-y-auto p-4">
+                    <!-- Search results will be injected here -->
+                 </div>
+            </section>
+
+             <!-- History Panel -->
+            <section id="history-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-800" style="display: none;">
+                 <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Search History</h2>
+                    <button id="clear-search-history-btn" title="Clear search history" class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                 </div>
+                 <div id="history-container" class="flex-1 overflow-y-auto p-4">
+                    <!-- History items will be injected here -->
+                 </div>
+            </section>
+        </main>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DOM Element Selectors ---
+    const getEl = (id) => document.getElementById(id);
+    const appContainer = getEl('app-container');
+    const panelContainer = getEl('panel-container');
+
+    // --- State Management ---
+    let state = {
+        theme: localStorage.getItem('theme') || 'light',
+        isSearchVisible: false,
+        isTyping: false,
+        messages: JSON.parse(localStorage.getItem('chatMessages')) || [],
+        searchHistory: JSON.parse(localStorage.getItem('searchHistory')) || [],
+        activeView: 'chat', // 'chat' or 'history'
+        isResizing: false,
+        isVersionDropdownOpen: false,
+        selectedVersionId: localStorage.getItem('selectedVersionId') || 'v3',
+        versions: [
+            { id: 'v3', name: 'SEFGH v3.0', description: 'Advanced model with contextual understanding.', persona: "Got it. " },
+            { id: 'v2', name: 'SEFGH v2.0', description: 'Stable model for reliable keyword searches.', persona: "Okay, " },
+            { id: 'v1', name: 'SEFGH v1.0', description: 'Legacy model for direct search term matching.', persona: "Searching: " }
+        ]
+    };
+    
+    // --- Get all DOM elements ---
+    const [
+        htmlEl,
+        navChatBtn,
+        navSearchBtn, // NEW
+        navHistoryBtn,
+        toggleSearchBtn,
+        chatPanel,
+        searchPanel,
+        historyPanel,
+        resizeHandle,
+        messagesContainer,
+        chatForm,
+        chatTextarea,
+        sendBtn,
+        clearHistoryBtn,
+        searchInput,
+        searchResultsContainer,
+        historyContainer,
+        clearSearchHistoryBtn,
+    ] = [
+        document.documentElement,
+        getEl('nav-chat-btn'),
+        getEl('nav-search-btn'), // NEW
+        getEl('nav-history-btn'),
+        getEl('toggle-search-btn'),
+        getEl('chat-panel'),
+        getEl('search-panel'),
+        getEl('history-panel'),
+        getEl('resize-handle'),
+        getEl('messages-container'),
+        getEl('chat-form'),
+        getEl('chat-textarea'),
+        getEl('send-btn'),
+        getEl('clear-history-btn'),
+        getEl('search-input'),
+        getEl('search-results-container'),
+        getEl('history-container'),
+        getEl('clear-search-history-btn'),
+    ];
+    
+    // --- Utility Functions ---
+    const debounce = (func, delay) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; };
+    const formatNumber = (num) => num > 999 ? `${(num / 1000).toFixed(1)}k` : num;
+
+    // --- View & UI Logic ---
+    const setActiveView = (view) => {
+        if (state.activeView === view) return;
+        state.activeView = view;
+        const isHistoryView = view === 'history';
+
+        if (isHistoryView && state.isSearchVisible) {
+            toggleSearchView(); // Close search panel if switching to history
+        }
+
+        historyPanel.style.display = isHistoryView ? 'flex' : 'none';
+        chatPanel.style.display = isHistoryView ? 'none' : 'flex';
+        const searchShouldBeVisible = !isHistoryView && state.isSearchVisible;
+        searchPanel.style.display = searchShouldBeVisible ? 'flex' : 'none';
+        resizeHandle.style.display = searchShouldBeVisible ? 'flex' : 'none';
+
+        navChatBtn.classList.toggle('active-nav', !isHistoryView);
+        navChatBtn.classList.toggle('inactive-nav', isHistoryView);
+        navHistoryBtn.classList.toggle('active-nav', isHistoryView);
+        navHistoryBtn.classList.toggle('inactive-nav', !isHistoryView);
+        
+        toggleSearchBtn.disabled = isHistoryView;
+        navSearchBtn.disabled = isHistoryView;
+        
+        lucide.createIcons();
+    };
+
+    const toggleSearchView = () => {
+        state.isSearchVisible = !state.isSearchVisible;
+        
+        // Sync sidebar button style
+        navSearchBtn.classList.toggle('active-nav', state.isSearchVisible);
+        navSearchBtn.classList.toggle('inactive-nav', !state.isSearchVisible);
+        
+        // Sync header button style
+        toggleSearchBtn.innerHTML = `<i data-lucide="${state.isSearchVisible ? 'message-square' : 'search'}" class="w-5 h-5"></i>`;
+        toggleSearchBtn.title = state.isSearchVisible ? "Hide Search" : "Show Search";
+
+        if (state.isSearchVisible) {
+            searchPanel.style.display = 'flex';
+            setTimeout(() => {
+                chatPanel.style.width = '40%';
+                searchPanel.style.width = '60%';
+                resizeHandle.classList.remove('hidden');
+            }, 10);
+        } else {
+            chatPanel.style.width = '100%';
+            searchPanel.style.width = '0%';
+            resizeHandle.classList.add('hidden');
+            setTimeout(() => searchPanel.style.display = 'none', 400);
+        }
+        lucide.createIcons();
+    };
+
+    const handleSearchToggle = () => {
+        if (state.activeView !== 'chat') {
+            setActiveView('chat');
+        }
+        toggleSearchView();
+    };
+    
+    // --- Chat History Logic ---
+    const saveMessages = () => localStorage.setItem('chatMessages', JSON.stringify(state.messages));
+    const renderMessages = () => { messagesContainer.innerHTML = ''; const renderSingleMessage = (msg, isTyping = false) => { const isUser = msg.role === 'user'; const formattedTime = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); return `<div class="flex items-start space-x-3 ${isUser ? 'justify-end' : ''}">${!isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>` : ''}<div class="max-w-xs lg:max-w-md xl:max-w-lg ${isUser ? 'order-1' : ''}"><div class="px-4 py-3 rounded-lg ${isUser ? 'bg-black text-white' : 'bg-gray-100 dark:bg-gray-800'}"><div class="text-sm whitespace-pre-wrap">${msg.content}${isTyping ? '<span class="inline-flex items-center ml-2"><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-150 ml-1"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-300 ml-1"></span></span>' : ''}</div></div>${!isTyping ? `<div class="mt-1 text-xs text-gray-500 dark:text-gray-400 ${isUser ? 'text-right' : ''}">${formattedTime}</div>` : ''}</div>${isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center order-2"><i data-lucide="user" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i></div>` : ''}</div>`; }; if (state.messages.length === 0 && !state.isTyping) { messagesContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="message-square" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">Welcome to SEFGH!</h3><p class="text-sm">How can I help you explore GitHub today?</p></div>`; clearHistoryBtn.classList.add('hidden'); } else { messagesContainer.innerHTML = state.messages.map(msg => renderSingleMessage(msg)).join(''); clearHistoryBtn.classList.remove('hidden'); } if (state.isTyping) { messagesContainer.innerHTML += renderSingleMessage({ role: 'assistant', content: '' }, true); } messagesContainer.scrollTop = messagesContainer.scrollHeight; lucide.createIcons(); };
+    const addMessage = (content, role) => { state.messages.push({ id: Date.now(), content, role, timestamp: new Date() }); saveMessages(); renderMessages(); };
+    const clearChatHistory = () => { state.messages = []; saveMessages(); renderMessages(); };
+    const handleSendMessage = (e) => { e.preventDefault(); const message = chatTextarea.value.trim(); if (message && !state.isTyping) { addMessage(message, 'user'); chatTextarea.value = ''; chatTextarea.style.height = 'auto'; updateChatInputState(); processUserMessage(message); } };
+    const updateChatInputState = () => { const hasText = chatTextarea.value.trim().length > 0; sendBtn.disabled = !hasText || state.isTyping; chatTextarea.disabled = state.isTyping; };
+
+    // --- Search History Logic ---
+    const saveSearchHistory = (query) => {
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery || state.searchHistory.includes(trimmedQuery)) return;
+        state.searchHistory.unshift(trimmedQuery);
+        if (state.searchHistory.length > 50) state.searchHistory.pop();
+        localStorage.setItem('searchHistory', JSON.stringify(state.searchHistory));
+        renderHistoryPanel();
+    };
+    const renderHistoryPanel = () => {
+        if (state.searchHistory.length === 0) {
+            historyContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">No Search History</h3><p class="text-sm">Your past searches will appear here.</p></div>`;
+            clearSearchHistoryBtn.classList.add('hidden');
+        } else {
+            historyContainer.innerHTML = `<ul class="space-y-2">${state.searchHistory.map(term => `<li><button class="history-item-btn w-full text-left p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700/80 transition-colors flex justify-between items-center" data-query="${term}"><span class="font-medium text-gray-800 dark:text-gray-200 pointer-events-none">${term}</span><i data-lucide="search" class="w-4 h-4 text-gray-400 pointer-events-none"></i></button></li>`).join('')}</ul>`;
+            clearSearchHistoryBtn.classList.remove('hidden');
+        }
+        lucide.createIcons();
+    };
+    const clearSearchHistory = () => { state.searchHistory = []; localStorage.removeItem('searchHistory'); renderHistoryPanel(); };
+
+    // --- Repository Search Logic ---
+    const searchRepositories = async (query) => { if (!query || query.length < 2) { renderSearchInitial(); return; } saveSearchHistory(query); renderSearchLoading(); try { const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=20`); if (!response.ok) throw new Error((await response.json()).message || `API Error: ${response.status}`); const data = await response.json(); if (data.items.length === 0) renderSearchEmpty(query); else renderSearchResults(data.items); } catch (error) { renderSearchError(error.message); } };
+    const renderSearchInitial = () => { searchResultsContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="folder-search" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">Repository Search</h3><p class="text-sm">Results from your chat will appear here.</p></div>`; lucide.createIcons(); };
+    const renderSearchLoading = () => { let skeletons = Array(5).fill('').map(() => `<div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-sm animate-pulse-fast"><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4 mb-3"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-4"></div><div class="flex items-center space-x-4"><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div></div></div>`).join(''); searchResultsContainer.innerHTML = `<div class="space-y-4">${skeletons}</div>`; };
+    const renderSearchResults = (items) => { const cardsHtml = items.map(item => `<div class="bg-white dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600/50 hover:shadow-lg hover:border-gray-500 dark:hover:border-gray-400 transition-all duration-200"><div class="flex justify-between items-start"><a href="${item.html_url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-800 dark:text-gray-200 hover:underline mb-1 pr-2">${item.full_name}</a><div class="flex-shrink-0 flex items-center space-x-3 text-gray-500 dark:text-gray-400"><span class="flex items-center text-sm"><i data-lucide="star" class="w-4 h-4 mr-1 text-yellow-500"></i>${formatNumber(item.stargazers_count)}</span><span class="flex items-center text-sm"><i data-lucide="git-fork" class="w-4 h-4 mr-1"></i>${formatNumber(item.forks_count)}</span></div></div><p class="text-sm text-gray-600 dark:text-gray-300 my-2">${item.description || 'No description provided.'}</p><div class="flex items-center justify-between mt-3 text-xs text-gray-500 dark:text-gray-400"><div class="flex items-center space-x-4">${item.language ? `<span class="flex items-center"><i data-lucide="code" class="w-3 h-3 mr-1.5"></i>${item.language}</span>` : ''}${item.license ? `<span class="flex items-center"><i data-lucide="scale" class="w-3 h-3 mr-1.5"></i>${item.license.spdx_id}</span>` : ''}</div><span>Updated ${new Date(item.updated_at).toLocaleDateString()}</span></div><div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600 flex items-center space-x-2"><button class="copy-btn text-xs bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 px-2 py-1 rounded-md flex items-center" data-copy="${item.html_url}"><i data-lucide="link" class="w-3 h-3 mr-1.5"></i>Copy URL</button><button class="copy-btn text-xs bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 px-2 py-1 rounded-md flex items-center" data-copy="${item.clone_url}"><i data-lucide="terminal" class="w-3 h-3 mr-1.5"></i>Copy Clone</button></div></div>`).join(''); searchResultsContainer.innerHTML = `<div class="space-y-4">${cardsHtml}</div>`; lucide.createIcons(); };
+    const renderSearchEmpty = (query) => { searchResultsContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">No Results Found</h3><p class="text-sm">Your search for "${query}" did not match any repositories.</p></div>`; lucide.createIcons(); };
+    const renderSearchError = (message) => { searchResultsContainer.innerHTML = `<div class="text-center text-red-500 dark:text-red-400 mt-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg"><i data-lucide="alert-triangle" class="w-16 h-16 mx-auto mb-4"></i><h3 class="text-lg font-medium mb-2">An Error Occurred</h3><p class="text-sm">${message}</p></div>`; lucide.createIcons(); };
+    const handleSearchTrigger = (query) => { if (!state.isSearchVisible) { toggleSearchView(); } searchInput.value = query; searchRepositories(query); };
+    
+    // --- Resize Logic ---
+    const handleResizeMouseDown = (e) => { e.preventDefault(); state.isResizing = true; appContainer.style.cursor = 'col-resize'; document.addEventListener('mousemove', handleResizeMouseMove); document.addEventListener('mouseup', handleResizeMouseUp); };
+    const handleResizeMouseMove = (e) => { if (!state.isResizing) return; const containerRect = panelContainer.getBoundingClientRect(); const newChatWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100; const constrainedChatWidth = Math.max(25, Math.min(75, newChatWidth)); chatPanel.style.width = `${constrainedChatWidth}%`; searchPanel.style.width = `${100 - constrainedChatWidth}%`; };
+    const handleResizeMouseUp = () => { state.isResizing = false; appContainer.style.cursor = 'default'; document.removeEventListener('mousemove', handleResizeMouseMove); document.removeEventListener('mouseup', handleResizeMouseUp); };
+    
+    // --- Version Switcher Logic ---
+    const renderVersionDropdown = () => {
+        const versionMenu = getEl('version-menu');
+        const versionName = getEl('version-name');
+        const versionChevron = getEl('version-chevron');
+        const selectedVersion = state.versions.find(v => v.id === state.selectedVersionId);
+        versionName.textContent = selectedVersion.name;
+        if (state.isVersionDropdownOpen) { versionMenu.classList.remove('hidden'); setTimeout(() => { versionMenu.style.transform = 'scale(1)'; versionMenu.style.opacity = '1'; }, 10); versionChevron.setAttribute('data-lucide', 'chevron-up'); } else { versionMenu.style.transform = 'scale(0.95)'; versionMenu.style.opacity = '0'; setTimeout(() => { versionMenu.classList.add('hidden'); }, 150); versionChevron.setAttribute('data-lucide', 'chevron-down'); }
+        versionMenu.innerHTML = state.versions.map(v => `<button class="version-item w-full text-left flex flex-col p-3 hover:bg-gray-100 dark:hover:bg-slate-700/50 transition-colors" data-version-id="${v.id}"><span class="font-semibold pointer-events-none ${v.id === state.selectedVersionId ? 'text-black dark:text-white' : 'text-gray-800 dark:text-gray-200'}">${v.name}</span><span class="text-sm text-gray-500 dark:text-gray-400 mt-1 pointer-events-none">${v.description}</span></button>`).join('');
+        lucide.createIcons();
+    };
+
+    // --- "Intelligent" AI Response Logic ---
+    const processUserMessage = (userInput) => {
+        state.isTyping = true;
+        renderMessages();
+        const lowerInput = userInput.toLowerCase();
+        const selectedVersion = state.versions.find(v => v.id === state.selectedVersionId);
+        const extractSearchQuery = (text) => { const aiKeywords = { languages: ['javascript', 'python', 'typescript', 'go', 'rust', 'java', 'c#', 'c++', 'php', 'swift'], frameworks: ['react', 'vue', 'angular', 'svelte', 'django', 'flask', 'fastapi', 'next.js', 'node.js', 'express'], concepts: ['ai', 'ml', 'game', 'chat', 'database', 'testing', 'chart', 'graph', 'data visualization', 'state management', 'todo', 'api', 'server', 'client'], qualifiers: ['lightweight', 'simple', 'fast', 'minimal', 'advanced', 'modern', 'template', 'starter'] }; const allKeywords = [...aiKeywords.languages, ...aiKeywords.frameworks, ...aiKeywords.concepts, ...aiKeywords.qualifiers]; const foundKeywords = allKeywords.filter(kw => text.includes(kw)); const uniqueKeywords = foundKeywords.filter(kw1 => !foundKeywords.some(kw2 => kw1 !== kw2 && kw2.includes(kw1))); return uniqueKeywords.join(' '); };
+        const query = extractSearchQuery(lowerInput);
+        
+        setTimeout(() => {
+            if (query) {
+                const response = `${selectedVersion.persona}Searching for repositories about "${query}" for you.`;
+                addMessage(response, 'assistant');
+                setActiveView('chat');
+                handleSearchTrigger(query);
+                if (selectedVersion.id === 'v3') {
+                    state.isTyping = true; renderMessages();
+                    setTimeout(() => {
+                        let followup = "Are there any other criteria, like a minimum star count?";
+                        if (query.includes('react') || query.includes('vue')) { followup = "While you browse, are you interested in full apps or smaller utility libraries?"; } else if (query.includes('game')) { followup = "Interesting! Are you looking for a specific game engine, or projects made from scratch?"; }
+                        state.isTyping = false; addMessage(followup, 'assistant');
+                    }, 1500);
+                } else { state.isTyping = false; updateChatInputState(); }
+            } else {
+                state.isTyping = false;
+                let response = "I can help with that. Could you be more specific about the technology or project you're looking for?";
+                if (lowerInput.includes('hello') || lowerInput.includes('hi')) { response = "Hello! How can I help you find a repository today?"; }
+                addMessage(response, 'assistant');
+            }
+            updateChatInputState();
+        }, 1200);
+    };
+
+    // --- Event Listeners Setup ---
+    const setupEventListeners = () => {
+        // Sidebar listeners
+        navChatBtn.addEventListener('click', () => setActiveView('chat'));
+        navHistoryBtn.addEventListener('click', () => setActiveView('history'));
+        navSearchBtn.addEventListener('click', handleSearchToggle); // NEW
+        
+        // Header listeners
+        toggleSearchBtn.addEventListener('click', handleSearchToggle); // UPDATED
+        getEl('theme-toggle-btn').addEventListener('click', () => { state.theme = state.theme === 'light' ? 'dark' : 'light'; localStorage.setItem('theme', state.theme); htmlEl.className = state.theme; getEl('theme-toggle-btn').innerHTML = state.theme === 'dark' ? '<i data-lucide="sun" class="w-5 h-5"></i>' : '<i data-lucide="moon" class="w-5 h-5"></i>'; lucide.createIcons(); });
+        
+        // Chat listeners
+        chatForm.addEventListener('submit', handleSendMessage);
+        clearHistoryBtn.addEventListener('click', clearChatHistory);
+        chatTextarea.addEventListener('input', () => { chatTextarea.style.height = 'auto'; chatTextarea.style.height = `${chatTextarea.scrollHeight}px`; updateChatInputState(); });
+        chatTextarea.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(e); } });
+
+        // Search & History Listeners
+        resizeHandle.addEventListener('mousedown', handleResizeMouseDown);
+        searchInput.addEventListener('input', debounce(() => searchRepositories(searchInput.value), 500));
+        searchResultsContainer.addEventListener('click', (e) => { const button = e.target.closest('.copy-btn'); if (button) { navigator.clipboard.writeText(button.dataset.copy).then(() => { const originalText = button.innerHTML; button.innerHTML = `<i data-lucide="check" class="w-3 h-3 mr-1.5 text-green-500"></i>Copied!`; lucide.createIcons(); setTimeout(() => { button.innerHTML = originalText; lucide.createIcons(); }, 2000); }); } });
+        historyContainer.addEventListener('click', (e) => { const button = e.target.closest('.history-item-btn'); if (button) { const query = button.dataset.query; setActiveView('chat'); handleSearchTrigger(query); } });
+        clearSearchHistoryBtn.addEventListener('click', clearSearchHistory);
+
+        // Version Switcher Listeners
+        const versionToggleBtn = getEl('version-toggle-btn');
+        const versionMenu = getEl('version-menu');
+        versionToggleBtn.addEventListener('click', (e) => { e.stopPropagation(); state.isVersionDropdownOpen = !state.isVersionDropdownOpen; renderVersionDropdown(); });
+        document.addEventListener('click', () => { if (state.isVersionDropdownOpen) { state.isVersionDropdownOpen = false; renderVersionDropdown(); } });
+        versionMenu.addEventListener('click', (e) => {
+            const item = e.target.closest('.version-item');
+            if (item) {
+                e.stopPropagation(); const versionId = item.dataset.versionId;
+                if (state.selectedVersionId !== versionId) {
+                    state.selectedVersionId = versionId; localStorage.setItem('selectedVersionId', versionId);
+                    const newVersion = state.versions.find(v => v.id === versionId);
+                    addMessage(`Switched to ${newVersion.name}.`, 'assistant');
+                }
+                state.isVersionDropdownOpen = false; renderVersionDropdown();
+            }
+        });
+    };
+
+    // --- Initialization ---
+    const init = () => {
+        htmlEl.className = state.theme;
+        getEl('theme-toggle-btn').innerHTML = state.theme === 'dark' ? '<i data-lucide="sun" class="w-5 h-5"></i>' : '<i data-lucide="moon" class="w-5 h-5"></i>';
+        renderMessages();
+        renderSearchInitial();
+        renderVersionDropdown();
+        renderHistoryPanel();
+        setActiveView('chat');
+        updateChatInputState();
+        setupEventListeners();
+        lucide.createIcons();
+    };
+    
+    // --- Run application ---
+    init();
+});
+</script>
+
+</body>
 </html>
