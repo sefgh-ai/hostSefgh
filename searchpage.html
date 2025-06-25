@@ -323,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activeView: 'chat', // 'chat' or 'history'
         isResizing: false,
         isVersionDropdownOpen: false,
+        editingMessageId: null, // --- NEW: To track which message is being edited
         selectedVersionId: localStorage.getItem('selectedVersionId') || 'v3',
         versions: [
             { id: 'v3', name: 'SEFGH v3.0', description: 'Advanced model with contextual understanding.', persona: "Got it. " },
@@ -437,7 +438,67 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Chat History Logic ---
     const saveMessages = () => localStorage.setItem('chatMessages', JSON.stringify(state.messages));
-    const renderMessages = () => { messagesContainer.innerHTML = ''; const renderSingleMessage = (msg, isTyping = false) => { const isUser = msg.role === 'user'; const formattedTime = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); return `<div class="flex items-start space-x-3 ${isUser ? 'justify-end' : ''}">${!isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>` : ''}<div class="max-w-xs lg:max-w-md xl:max-w-lg ${isUser ? 'order-1' : ''}"><div class="px-4 py-3 rounded-lg ${isUser ? 'bg-black text-white' : 'bg-gray-100 dark:bg-gray-800'}"><div class="text-sm whitespace-pre-wrap">${msg.content}${isTyping ? '<span class="inline-flex items-center ml-2"><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-150 ml-1"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-300 ml-1"></span></span>' : ''}</div></div>${!isTyping ? `<div class="mt-1 text-xs text-gray-500 dark:text-gray-400 ${isUser ? 'text-right' : ''}">${formattedTime}</div>` : ''}</div>${isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center order-2"><i data-lucide="user" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i></div>` : ''}</div>`; }; if (state.messages.length === 0 && !state.isTyping) { messagesContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="message-square" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">Welcome to SEFGH!</h3><p class="text-sm">How can I help you explore GitHub today?</p></div>`; clearHistoryBtn.classList.add('hidden'); } else { messagesContainer.innerHTML = state.messages.map(msg => renderSingleMessage(msg)).join(''); clearHistoryBtn.classList.remove('hidden'); } if (state.isTyping) { messagesContainer.innerHTML += renderSingleMessage({ role: 'assistant', content: '' }, true); } messagesContainer.scrollTop = messagesContainer.scrollHeight; lucide.createIcons(); };
+    
+    // --- MODIFIED: `renderMessages` and `renderSingleMessage` for new icon placement ---
+    const renderMessages = () => {
+        messagesContainer.innerHTML = '';
+        const renderSingleMessage = (msg, isTyping = false) => {
+            const isUser = msg.role === 'user';
+            const formattedTime = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            if (state.editingMessageId === msg.id) {
+                return `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="max-w-xs lg:max-w-md xl:max-w-lg order-1 w-full">
+                        <div class="p-3 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600">
+                            <textarea class="w-full px-2 py-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-md resize-y text-sm" rows="3">${msg.content}</textarea>
+                            <div class="mt-2 flex justify-end space-x-2">
+                                <button data-action="cancel-edit" class="px-3 py-1 text-xs font-semibold rounded-md hover:bg-gray-200 dark:hover:bg-gray-700">Cancel</button>
+                                <button data-action="save-edit" data-message-id="${msg.id}" class="px-3 py-1 text-xs font-semibold rounded-md bg-black text-white hover:bg-gray-800">Save & Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0 w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center order-2"><i data-lucide="user" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i></div>
+                </div>`;
+            }
+
+            const actionButtons = `
+                <div class="mt-1 flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? 'justify-end' : ''}">
+                    ${isUser ? `<button data-action="edit" data-message-id="${msg.id}" title="Edit" class="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><i data-lucide="pencil" class="w-3.5 h-3.5 pointer-events-none"></i></button>` : ''}
+                    ${!isUser ? `<button data-action="regenerate" data-message-id="${msg.id}" title="Regenerate" class="p-1 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><i data-lucide="refresh-cw" class="w-3.5 h-3.5 pointer-events-none"></i></button>` : ''}
+                </div>
+            `;
+
+            return `
+            <div class="flex items-start space-x-3 ${isUser ? 'justify-end' : ''} group relative">
+                ${!isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-700 dark:bg-gray-600 rounded-full flex items-center justify-center"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>` : ''}
+                <div class="max-w-xs lg:max-w-md xl:max-w-lg ${isUser ? 'order-1' : ''}">
+                    <div class="px-4 py-3 rounded-lg ${isUser ? 'bg-black text-white' : 'bg-gray-100 dark:bg-gray-800'}">
+                        <div class="text-sm whitespace-pre-wrap">${msg.content}${isTyping ? '<span class="inline-flex items-center ml-2"><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-150 ml-1"></span><span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse delay-300 ml-1"></span></span>' : ''}</div>
+                    </div>
+                    <div class="mt-1 flex items-center justify-between">
+                        ${!isTyping ? `<div class="text-xs text-gray-500 dark:text-gray-400 ${isUser ? 'ml-auto' : ''}">${formattedTime}</div>` : '<div></div>' }
+                    </div>
+                    ${!isTyping && !state.isTyping ? actionButtons : ''}
+                </div>
+                ${isUser ? `<div class="flex-shrink-0 w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center order-2"><i data-lucide="user" class="w-4 h-4 text-gray-600 dark:text-gray-400"></i></div>` : ''}
+            </div>`;
+        };
+
+        if (state.messages.length === 0 && !state.isTyping) {
+            messagesContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="message-square" class="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-gray-600"></i><h3 class="text-lg font-medium mb-2">Welcome to SEFGH!</h3><p class="text-sm">How can I help you explore GitHub today?</p></div>`;
+            clearHistoryBtn.classList.add('hidden');
+        } else {
+            messagesContainer.innerHTML = state.messages.map(msg => renderSingleMessage(msg)).join('');
+            clearHistoryBtn.classList.remove('hidden');
+        }
+        if (state.isTyping) {
+            messagesContainer.innerHTML += renderSingleMessage({ role: 'assistant', content: '' }, true);
+        }
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        lucide.createIcons();
+    };
+    
     const addMessage = (content, role) => { state.messages.push({ id: Date.now(), content, role, timestamp: new Date() }); saveMessages(); renderMessages(); };
     const clearChatHistory = () => { state.messages = []; saveMessages(); renderMessages(); };
     const handleSendMessage = (e) => { e.preventDefault(); const message = chatTextarea.value.trim(); if (message && !state.isTyping) { addMessage(message, 'user'); chatTextarea.value = ''; chatTextarea.style.height = 'auto'; updateChatInputState(); processUserMessage(message); } };
@@ -490,61 +551,45 @@ document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     };
 
-    // --- NEW: Real AI Response Logic ---
+    // --- AI Response Logic ---
     const processUserMessage = async (userInput) => {
         state.isTyping = true;
         renderMessages();
-        updateChatInputState(); // Disable input while waiting for response
+        updateChatInputState(); 
 
         const API_URL = 'https://api.sefgh.org';
 
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', },
                 body: JSON.stringify({ message: userInput }),
             });
 
-            // Stop the typing indicator once we get any response
             state.isTyping = false;
-
             if (!response.ok) {
-                // Handle HTTP errors like 404, 500, etc.
                 let errorText = `An API error occurred: ${response.status} ${response.statusText}`;
                 try {
-                    // Attempt to parse a more specific error message from the API's response body
                     const errorData = await response.json();
                     errorText = errorData.detail || errorData.message || errorText;
-                } catch (jsonError) {
-                    // If the error response isn't valid JSON, we'll stick with the HTTP status text.
-                }
+                } catch (jsonError) {}
                 throw new Error(errorText);
             }
-
             const data = await response.json();
-
             if (data && data.answer) {
-                // Add the LLM's answer to the chat
                 addMessage(data.answer, 'assistant');
             } else {
-                // Handle cases where the response is 200 OK but the JSON is not in the expected format
                 throw new Error("Received an incomplete or invalid response from the AI.");
             }
-
         } catch (error) {
-            // Handle network errors (e.g., user is offline) or errors thrown from the try block
             console.error("LLM API Call failed:", error);
-            state.isTyping = false; // Ensure typing is off on any failure
+            state.isTyping = false;
             const userFriendlyError = "My apologies, I'm having trouble connecting to my core intelligence right now. Please check your internet connection or try again in a moment.";
             addMessage(userFriendlyError, 'assistant');
         } finally {
-            // This block always runs, ensuring the UI is reset correctly
             if (state.isTyping) { state.isTyping = false; }
-            renderMessages(); // Re-render to remove the typing indicator for sure
-            updateChatInputState(); // Re-enable the chat input
+            renderMessages();
+            updateChatInputState();
         }
     };
 
@@ -564,6 +609,62 @@ document.addEventListener('DOMContentLoaded', () => {
         clearHistoryBtn.addEventListener('click', clearChatHistory);
         chatTextarea.addEventListener('input', () => { chatTextarea.style.height = 'auto'; chatTextarea.style.height = `${chatTextarea.scrollHeight}px`; updateChatInputState(); });
         chatTextarea.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(e); } });
+
+        // Event delegation for message actions (Edit, Save, Cancel, Regenerate)
+        messagesContainer.addEventListener('click', (e) => {
+            if (state.isTyping) return; // Don't allow actions while AI is responding
+            const button = e.target.closest('button[data-action]');
+            if (!button) return;
+
+            const action = button.dataset.action;
+            const messageId = parseInt(button.dataset.messageId, 10);
+
+            switch(action) {
+                case 'edit':
+                    state.editingMessageId = messageId;
+                    renderMessages();
+                    break;
+                
+                case 'cancel-edit':
+                    state.editingMessageId = null;
+                    renderMessages();
+                    break;
+                
+                case 'save-edit':
+                    const messageWrapper = button.closest('.max-w-xs');
+                    const textarea = messageWrapper.querySelector('textarea');
+                    const newContent = textarea.value.trim();
+                    const msgIndex = state.messages.findIndex(m => m.id === messageId);
+
+                    if (newContent && msgIndex !== -1 && state.messages[msgIndex].content !== newContent) {
+                        // Prune conversation from this point
+                        state.messages = state.messages.slice(0, msgIndex);
+                        state.editingMessageId = null;
+                        
+                        // Add the edited message back and re-submit
+                        addMessage(newContent, 'user');
+                        processUserMessage(newContent);
+                    } else {
+                        // Content is the same or empty, just cancel
+                        state.editingMessageId = null;
+                        renderMessages();
+                    }
+                    break;
+                
+                case 'regenerate':
+                    const assistantMsgIndex = state.messages.findIndex(m => m.id === messageId);
+                    // Find the user prompt that came right before this assistant message
+                    if (assistantMsgIndex > 0 && state.messages[assistantMsgIndex - 1].role === 'user') {
+                        const userPrompt = state.messages[assistantMsgIndex - 1].content;
+                        // Prune conversation from the assistant message onwards
+                        state.messages = state.messages.slice(0, assistantMsgIndex);
+                        saveMessages();
+                        renderMessages();
+                        processUserMessage(userPrompt);
+                    }
+                    break;
+            }
+        });
 
         // Search & History Listeners
         resizeHandle.addEventListener('mousedown', handleResizeMouseDown);
