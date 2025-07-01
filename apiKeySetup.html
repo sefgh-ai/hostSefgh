@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini API Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .step {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        
+        .highlight {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1.1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        
+        .status.error {
+            background: #ffeaea;
+            color: #c62828;
+            border: 1px solid #f44336;
+        }
+        
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-dot.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+        
+        .privacy-note {
+            background: #f0f8ff;
+            border: 1px solid #e1f5fe;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .privacy-note h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        ol {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        
+        li {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="steps-indicator">
+            <div class="step-dot active"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+        </div>
+        
+        <!-- Step 1: Welcome -->
+        <div class="step active" id="step1">
+            <h1>🤖 Welcome to Your AI Assistant</h1>
+            <p>To get started, you'll need a Google Gemini API key. This process takes just 2 minutes and keeps your data completely private.</p>
+            
+            <div class="privacy-note">
+                <h3>🔒 Your Privacy Matters</h3>
+                <p>Your API key is stored only in your browser and never sent to our servers. We have zero access to your data or conversations.</p>
+            </div>
+            
+            <button class="btn" onclick="nextStep()">Get Started</button>
+        </div>
+        
+        <!-- Step 2: Instructions -->
+        <div class="step" id="step2">
+            <h2>📝 Get Your API Key</h2>
+            <p>Follow these simple steps to get your free Gemini API key:</p>
+            
+            <ol>
+                <li>Click the button below to open Google AI Studio</li>
+                <li>Sign in with your Google account</li>
+                <li>Click "Get API Key" in the top right</li>
+                <li>Copy the generated API key</li>
+                <li>Come back here and paste it below</li>
+            </ol>
+            
+            <div class="highlight">
+                <strong>💡 Tip:</strong> Keep the Google AI Studio tab open - you'll need to copy the key from there!
+            </div>
+            
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="btn">
+                🚀 Open Google AI Studio
+            </a>
+            <button class="btn btn-secondary" onclick="nextStep()">I Have My Key</button>
+        </div>
+        
+        <!-- Step 3: Enter Key -->
+        <div class="step" id="step3">
+            <h2>🔑 Enter Your API Key</h2>
+            <p>Paste your Gemini API key below. It will be stored securely in your browser.</p>
+            
+            <div class="input-group">
+                <label for="apiKey">Gemini API Key:</label>
+                <input type="password" id="apiKey" placeholder="AIza..." autocomplete="off">
+            </div>
+            
+            <div id="status" class="status" style="display: none;"></div>
+            
+            <div class="privacy-note">
+                <h3>🛡️ Security & Privacy</h3>
+                <p><strong>Local Storage Only:</strong> Your key is stored in your browser's local storage and never transmitted to our servers.</p>
+                <p><strong>Open Source:</strong> Our code is publicly available on GitHub for full transparency.</p>
+                <p><strong>No Tracking:</strong> We don't collect, store, or analyze any of your data.</p>
+            </div>
+            
+            <button class="btn" onclick="validateAndSaveKey()">Save & Continue</button>
+            <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+        </div>
+        
+        <!-- Success Step -->
+        <div class="step" id="success">
+            <h1>🎉 You're All Set!</h1>
+            <p>Your API key has been saved and validated. You can now start using the AI assistant!</p>
+            
+            <div class="status success">
+                ✅ API Key validated and saved successfully
+            </div>
+            
+            <button class="btn" onclick="startUsing()">Start Using AI Assistant</button>
+            <button class="btn btn-secondary" onclick="showKeyManagement()">Manage API Key</button>
+        </div>
+        
+        <!-- Key Management -->
+        <div class="step" id="keyManagement">
+            <h2>🔧 Manage Your API Key</h2>
+            <p>Current Status: <span id="keyStatus">Loading...</span></p>
+            
+            <div class="input-group">
+                <label for="currentKey">Current API Key:</label>
+                <input type="password" id="currentKey" readonly>
+                <button class="btn btn-secondary" onclick="toggleKeyVisibility()" id="toggleBtn">Show</button>
+            </div>
+            
+            <button class="btn" onclick="updateKey()">Update Key</button>
+            <button class="btn" onclick="removeKey()" style="background: #f44336;">Remove Key</button>
+            <button class="btn btn-secondary" onclick="goToSuccess()">Back</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateStepIndicator();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateStepIndicator();
+            }
+        }
+        
+        function updateStepIndicator() {
+            const dots = document.querySelectorAll('.step-dot');
+            dots.forEach((dot, index) => {
+                if (index < currentStep) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        async function validateAndSaveKey() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const statusDiv = document.getElementById('status');
+            
+            if (!apiKey) {
+                showStatus('Please enter your API key', 'error');
+                return;
+            }
+            
+            if (!apiKey.startsWith('AIza')) {
+                showStatus('Invalid API key format. Gemini API keys start with "AIza"', 'error');
+                return;
+            }
+            
+            showStatus('Validating API key...', 'info');
+            
+            try {
+                // Test the API key with a simple request
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models?key=' + apiKey);
+                
+                if (response.ok) {
+                    // Save to localStorage
+                    localStorage.setItem('gemini_api_key', apiKey);
+                    showStatus('API key validated and saved successfully!', 'success');
+                    
+                    setTimeout(() => {
+                        goToSuccess();
+                    }, 1500);
+                } else {
+                    showStatus('Invalid API key. Please check and try again.', 'error');
+                }
+            } catch (error) {
+                showStatus('Error validating API key. Please check your internet connection.', 'error');
+            }
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.style.display = 'block';
+        }
+        
+        function goToSuccess() {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('success').classList.add('active');
+            updateKeyManagementInfo();
+        }
+        
+        function startUsing() {
+            // Redirect to your main app
+            window.location.href = 'main-app.html'; // Replace with your actual app URL
+        }
+        
+        function showKeyManagement() {
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('keyManagement').classList.add('active');
+            updateKeyManagementInfo();
+        }
+        
+        function updateKeyManagementInfo() {
+            const apiKey = localStorage.getItem('gemini_api_key');
+            const statusSpan = document.getElementById('keyStatus');
+            const currentKeyInput = document.getElementById('currentKey');
+            
+            if (apiKey) {
+                statusSpan.textContent = '✅ Active';
+                statusSpan.style.color = '#2e7d32';
+                currentKeyInput.value = apiKey;
+            } else {
+                statusSpan.textContent = '❌ Not Set';
+                statusSpan.style.color = '#c62828';
+                currentKeyInput.value = '';
+            }
+        }
+        
+        function toggleKeyVisibility() {
+            const input = document.getElementById('currentKey');
+            const btn = document.getElementById('toggleBtn');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = 'Hide';
+            } else {
+                input.type = 'password';
+                btn.textContent = 'Show';
+            }
+        }
+        
+        function updateKey() {
+            currentStep = 3;
+            document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step3').classList.add('active');
+            document.getElementById('apiKey').value = '';
+        }
+        
+        function removeKey() {
+            if (confirm('Are you sure you want to remove your API key? You\'ll need to set it up again to use the AI assistant.')) {
+                localStorage.removeItem('gemini_api_key');
+                alert('API key removed successfully.');
+                updateKeyManagementInfo();
+            }
+        }
+        
+        // Check if key already exists on page load
+        window.addEventListener('load', () => {
+            const existingKey = localStorage.getItem('gemini_api_key');
+            if (existingKey) {
+                goToSuccess();
+            }
+        });
+        
+        // Utility function to get API key (use this in your main app)
+        function getGeminiApiKey() {
+            return localStorage.getItem('gemini_api_key');
+        }
+        
+        // Utility function to check if API key is set (use this in your main app)
+        function hasGeminiApiKey() {
+            return localStorage.getItem('gemini_api_key') !== null;
+        }
+    </script>
+</body>
+</html>
