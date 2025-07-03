@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-3J37CNB3YE"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3J37CNB3YE" defer></script> <!-- Added 'defer' for non-critical script loading -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag() {
@@ -98,64 +98,72 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Preload critical fonts to improve LCP and FCP -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Stalinist+One&display=swap" />
 <link href="https://fonts.googleapis.com/css2?family=Stalinist+One&display=swap" rel="stylesheet" />
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
    
-    <!-- Tailwind CSS with JIT compiler -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Import -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<!-- IMPORTANT: For production, avoid using Tailwind CSS via CDN. -->
+<!-- Instead, install Tailwind locally via npm and use a build process (e.g., PostCSS) -->
+<!-- with 'purge' or 'content' configuration to tree-shake unused CSS classes. -->
+<!-- This significantly reduces CSS bundle size (from ~400KB to 20-40KB), improving performance. -->
+<script src="https://cdn.tailwindcss.com"></script> <!-- Uncommented to fix 'tailwind is not defined' error -->
     
-    <style type="text/tailwindcss">
-        @tailwind base;
-        @tailwind components;
-        @tailwind utilities;
-
-        /* Custom base styles */
-        body {
-            background-color: #0a0a0a;
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        /* Custom utility for the background grid pattern */
-        .bg-grid {
-            background-image:
-                linear-gradient(to right, rgba(26, 26, 26, 0.8) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(26, 26, 26, 0.8) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-    </style>
+<!-- Google Fonts Import -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Preload critical fonts to improve LCP and FCP -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     
-    <script>
-        // Custom Tailwind configuration
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'spin-slow': 'spin 25s linear infinite',
-                        'spin-slower': 'spin 30s linear infinite reverse',
-                        'tilt': 'tilt 10s infinite linear',
-                    },
-                    keyframes: {
-                        tilt: {
-                            '0%, 100%': { transform: 'rotate(0deg)' },
-                            '25%': { transform: 'rotate(0.5deg)' },
-                            '75%': { transform: 'rotate(-0.5deg)' },
-                        }
+<style type="text/tailwindcss">
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    /* Custom base styles */
+    body {
+        background-color: #0a0a0a;
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Custom utility for the background grid pattern */
+    .bg-grid {
+        background-image:
+            linear-gradient(to right, rgba(26, 26, 26, 0.8) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(26, 26, 26, 0.8) 1px, transparent 1px);
+        background-size: 30px 30px;
+    }
+</style>
+    
+<script>
+    // Custom Tailwind configuration
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                },
+                animation: {
+                    'spin-slow': 'spin 25s linear infinite',
+                    'spin-slower': 'spin 30s linear infinite reverse',
+                    'tilt': 'tilt 10s infinite linear',
+                },
+                keyframes: {
+                    tilt: {
+                        '0%, 100%': { transform: 'rotate(0deg)' },
+                        '25%': { transform: 'rotate(0.5deg)' },
+                        '75%': { transform: 'rotate(-0.5deg)' },
                     }
                 }
             }
         }
-    </script>
+    }
+</script>
 </head>
 <body class="bg-[#0a0a0a] text-white font-sans">
 
@@ -333,7 +341,6 @@
 
     <script>
         // --- EVENT HANDLERS ---
-              // --- EVENT HANDLERS ---
         function handleStartSearching() {
             // Redirect to the search page
             window.location.href = "http://sefgh.org/searchpage";
