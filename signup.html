@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://v1.sefgh.org/assets/favicon.png" type="image/png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons (eye icon, GitHub icon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a2e; /* Dark background color */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .image-bg {
+            /* Background image for the left section */
+            background-image: url('https://v1.sefgh.org/assets/starsSignup.avif');
+            background-size: cover; /* Cover the entire area */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            border-radius: 1.5rem; /* Rounded corners */
+            overflow: hidden; /* Ensures image respects border-radius */
+            position: relative; /* Needed for absolute positioning of text */
+        }
+        /* Modal specific styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #2a2a4a; /* Dark background for modal */
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .modal-content h4 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .modal-content p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #d1d5db; /* Light gray text */
+            margin-bottom: 0.75rem;
+        }
+        .modal-content a {
+            color: #a78bfa; /* Purple link */
+            text-decoration: underline;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .modal-buttons button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        .modal-buttons .decline-btn {
+            background-color: #4a4a6a;
+            color: white;
+        }
+        .modal-buttons .decline-btn:hover {
+            background-color: #5a5a7a;
+        }
+        .modal-buttons .accept-btn {
+            background-color: #8b5cf6; /* Purple */
+            color: white;
+        }
+        .modal-buttons .accept-btn:hover {
+            background-color: #7c3aed; /* Darker purple */
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .modal-content {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        /* Advanced Text animation styles */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animated-text-1 {
+            animation: fadeInSlideUp 1.2s ease-out forwards;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Add some text shadow for readability */
+        }
+
+        .animated-text-2 {
+            animation: fadeInSlideUp 1.2s ease-out forwards;
+            animation-delay: 0.3s; /* Stagger the animation */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Add some text shadow for readability */
+        }
+    </style>
+</head>
+<body class="selection:bg-purple-500 selection:text-white">
+    <div class="flex flex-col md:flex-row bg-[#2a2a4a] rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full">
+        <!-- Left Section (Image Background with Animated Text) -->
+        <div class="w-full md:w-1/2 p-4 flex items-center justify-center image-bg min-h-[250px] md:min-h-[auto]">
+            <div class="text-white text-center p-4">
+                <h1 class="text-3xl md:text-4xl font-bold animated-text-1">Join Our Community!</h1>
+                <p class="mt-2 text-lg animated-text-2">Discover a world of possibilities.</p>
+            </div>
+        </div>
+
+        <!-- Right Section (Sign-up Form) -->
+        <div class="w-full md:w-1/2 p-8 md:p-12 text-white">
+            <h2 class="text-3xl font-semibold mb-2">Create an account</h2>
+            <p class="text-gray-400 mb-6 text-sm">
+                Already have an account? <a href="https://v1.sefgh.org/login" class="text-purple-400 hover:underline" title="Click to log in if you already have an account">Log in</a>
+            </p>
+
+            <form class="space-y-4">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="w-full sm:w-1/2">
+                        <label for="first-name" class="sr-only">Username</label>
+                        <input type="text" id="first-name" placeholder="Username"
+                               class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                               title="Enter your desired username">
+                    </div>
+                    <div class="w-full sm:w-1/2">
+                        <label for="last-name" class="sr-only">User Handle</label>
+                        <input type="text" id="last-name" placeholder="@user handle"
+                               class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                               title="Enter your unique user handle (e.g., @yourhandle)">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="sr-only">Email</label>
+                    <input type="email" id="email" placeholder="Email"
+                           class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                           title="Enter your email address">
+                </div>
+
+                <div class="relative">
+                    <label for="password" class="sr-only">Enter your password</label>
+                    <input type="password" id="password" placeholder="Enter your password"
+                           class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-500 placeholder-gray-400 text-white text-sm pr-10"
+                           title="Enter your password (minimum 8 characters)">
+                    <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
+                          onclick="togglePasswordVisibility()" title="Toggle password visibility">
+                        <i class="fas fa-eye" id="password-toggle-icon"></i>
+                    </span>
+                </div>
+
+                <div class="flex items-center text-sm">
+                    <input type="checkbox" id="terms" class="form-checkbox h-4 w-4 text-purple-600 bg-[#3a3a5a] border-[#4a4a6a] rounded-md focus:ring-purple-500 cursor-pointer"
+                           title="Agree to terms and conditions">
+                    <label for="terms" class="ml-2 text-gray-400">
+                        I agree to the <a href="#" id="terms-link" class="text-purple-400 hover:underline" title="Read our terms and conditions">terms & conditions</a>
+                    </label>
+                </div>
+
+                <button type="submit"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition duration-300 ease-in-out shadow-lg"
+                        title="Click to create your account">
+                    Create account
+                </button>
+            </form>
+
+            <div class="text-center text-gray-400 text-sm my-6">
+                Or register with
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] text-white hover:bg-[#4a4a6a] transition duration-300 ease-in-out shadow-md"
+                        title="Sign up with your Google account">
+                    <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo" class="w-5 h-5 mr-3">
+                    Google
+                </button>
+                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] text-white hover:bg-[#4a4a6a] transition duration-300 ease-in-out shadow-md"
+                        title="Sign up with your GitHub account">
+                    <i class="fab fa-github w-5 h-5 mr-3 text-white"></i> <!-- GitHub icon from Font Awesome -->
+                    GitHub
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="terms-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="flex justify-end items-center mb-4">
+                <!-- Removed Norwegian language option -->
+                <button class="text-gray-400 hover:text-white" title="Help">Help</button>
+            </div>
+
+            <h3>Terms and Conditions</h3>
+
+            <h4>1. Acceptance of Terms</h4>
+            <p>By accessing or using this service, you agree to be bound by these terms and conditions. If you do not agree with any part of these terms, you may not use our service.</p>
+
+            <h4>2. Use of the Service</h4>
+            <p>You are responsible for maintaining the confidentiality of any login information associated with your account. You must notify us immediately of any unauthorized use of your account.</p>
+
+            <h4>3. Privacy Policy</h4>
+            <p>Your use of this service is also governed by our Privacy Policy, which can be found at <a href="#" title="Read our Privacy Policy">Privacy Policy</a>. Please review the Privacy Policy to understand our practices.</p>
+
+            <h4>4. Termination</h4>
+            <p>We reserve the right to terminate or suspend your account and access to the service at our sole discretion, without prior notice or liability, for any reason whatsoever.</p>
+
+            <h4>5. Intellectual Property</h4>
+            <p>The content provided through this service, including text, graphics, logos, and images, is the property of our company or its licensors and is protected by copyright and other intellectual property laws.</p>
+
+            <div class="modal-buttons">
+                <button id="decline-terms" class="decline-btn" title="Decline terms and close">Decline</button>
+                <button id="accept-terms" class="accept-btn" title="Accept terms and close">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle password visibility
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const passwordToggleIcon = document.getElementById('password-toggle-icon');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordToggleIcon.classList.remove('fa-eye');
+                passwordToggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                passwordToggleIcon.classList.remove('fa-eye-slash');
+                passwordToggleIcon.classList.add('fa-eye');
+            }
+        }
+
+        // Get elements for modal functionality
+        const termsLink = document.getElementById('terms-link');
+        const termsModal = document.getElementById('terms-modal');
+        const declineButton = document.getElementById('decline-terms');
+        const acceptButton = document.getElementById('accept-terms');
+        const termsCheckbox = document.getElementById('terms');
+
+        // Function to show the modal
+        function showModal() {
+            termsModal.classList.add('show');
+        }
+
+        // Function to hide the modal
+        function hideModal() {
+            termsModal.classList.remove('show');
+        }
+
+        // Event listener for the "terms & conditions" link
+        termsLink.addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            showModal();
+        });
+
+        // Event listener for the "Decline" button
+        declineButton.addEventListener('click', function() {
+            termsCheckbox.checked = false; // Uncheck the checkbox if declined
+            hideModal();
+        });
+
+        // Event listener for the "Accept" button
+        acceptButton.addEventListener('click', function() {
+            termsCheckbox.checked = true; // Check the checkbox if accepted
+            hideModal();
+        });
+
+        // Close modal if clicking outside the content (optional, but good UX)
+        termsModal.addEventListener('click', function(event) {
+            if (event.target === termsModal) {
+                hideModal();
+            }
+        });
+    </script>
+</body>
+</html>
