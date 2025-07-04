@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing | SEFGH - AI</title>
+    <!-- Favicon -->
+    <link rel="icon" href="https://v1.sefgh.org/assets/favicon.png" type="image/png">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better aesthetics */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden; /* Prevent horizontal scroll due to subtle background effects */
+        }
+        /* Primary button style for a corporate look */
+        .btn-primary {
+            background-color: #3b82f6; /* Blue-600 */
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Blue-700 */
+            transform: translateY(-2px);
+        }
+        /* Secondary button style for less emphasis */
+        .btn-secondary {
+            background-color: #4b5563; /* Gray-600 */
+            color: #ffffff;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #374151; /* Gray-700 */
+            transform: translateY(-2px);
+        }
+        /* Accent color for highlights */
+        .text-accent {
+            color: #6366f1; /* Indigo-500 */
+        }
+        /* Class for selected card highlight */
+        .card-selected {
+            border-color: #3b82f6; /* Blue-600 */
+            background-color: #1a202c; /* Darker background for selected card */
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.2), 0 0 60px rgba(59, 130, 246, 0.6); /* Enhanced shadow with blue glow */
+            transform: translateY(-8px); /* More pronounced lift */
+        }
+
+        /* Background gradient overlay */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.1) 0%, transparent 30%),
+                        radial-gradient(circle at bottom right, rgba(99, 102, 241, 0.1) 0%, transparent 30%);
+            z-index: -1;
+        }
+
+        /* Subtle fade-in animation for content */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-1 { animation-delay: 0.1s; }
+        .fade-in-2 { animation-delay: 0.2s; }
+        .fade-in-3 { animation-delay: 0.3s; }
+        .fade-in-4 { animation-delay: 0.4s; }
+        .fade-in-5 { animation-delay: 0.5s; }
+        .fade-in-6 { animation-delay: 0.6s; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4 relative">
+
+    <!-- Background Gradient Overlay -->
+    <div class="gradient-overlay"></div>
+
+    <!-- Header Section -->
+    <header class="text-center mb-12 mt-8 fade-in fade-in-1">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">
+            Flexible Plans for Every <span class="text-accent">Innovation</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto">
+            Choose the SEFGH - AI plan that aligns with your scale and ambition, from individual projects to enterprise-level solutions.
+        </p>
+    </header>
+
+    <!-- Pricing Tiers Container -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl w-full mb-12">
+
+        <!-- Individual Plan Card -->
+        <div class="pricing-card bg-gray-800 rounded-xl shadow-lg p-8 flex flex-col items-center border border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer fade-in fade-in-2">
+            <h2 class="text-3xl font-bold text-white mb-4">Individual</h2>
+            <p class="text-5xl font-extrabold text-white mb-6">
+                Free<span class="text-lg font-medium text-gray-400"> / forever</span>
+            </p>
+            <p class="text-gray-400 text-center mb-8 flex-grow">
+                Ideal for personal projects and exploring the power of SEFGH - AI.
+            </p>
+            <ul class="text-gray-300 text-left w-full mb-8 space-y-3">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Up to 50 advanced searches / month
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Meaning-first matching capabilities
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Transparent search reports
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Community forum access
+                </li>
+            </ul>
+            <a href="#" class="w-full text-center py-3 px-6 rounded-lg font-semibold btn-secondary shadow-md transition-all duration-300">
+                Get Started
+            </a>
+        </div>
+
+        <!-- Professional Plan Card (Recommended) -->
+        <div class="pricing-card bg-gray-800 rounded-xl shadow-xl p-8 flex flex-col items-center border-2 border-blue-600 relative overflow-hidden card-selected transition-all duration-300 cursor-pointer fade-in fade-in-3">
+            <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                Most Popular
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">Professional</h2>
+            <p class="text-5xl font-extrabold text-white mb-6">
+                $29<span class="text-lg font-medium text-gray-400"> / month</span>
+            </p>
+            <p class="text-gray-400 text-center mb-8 flex-grow">
+                For dedicated developers and data scientists requiring robust search capabilities.
+            </p>
+            <ul class="text-gray-300 text-left w-full mb-8 space-y-3">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Unlimited advanced searches
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Enhanced language flexibility
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Priority email support
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Early access to new features
+                </li>
+            </ul>
+            <a href="#" class="w-full text-center py-3 px-6 rounded-lg font-semibold btn-primary shadow-md transition-all duration-300">
+                Choose Professional
+            </a>
+        </div>
+
+        <!-- Enterprise Plan Card -->
+        <div class="pricing-card bg-gray-800 rounded-xl shadow-lg p-8 flex flex-col items-center border border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer fade-in fade-in-4">
+            <h2 class="text-3xl font-bold text-white mb-4">Enterprise</h2>
+            <p class="text-5xl font-extrabold text-white mb-6">
+                Custom<span class="text-lg font-medium text-gray-400"> / quote</span>
+            </p>
+            <p class="text-gray-400 text-center mb-8 flex-grow">
+                Tailored for large organizations, research institutions, and custom requirements.
+            </p>
+            <ul class="text-gray-300 text-left w-full mb-8 space-y-3">
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    All Professional features
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Dedicated account management
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Custom API access & integrations
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    On-site training and workshops
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Dedicated technical support
+                </li>
+            </ul>
+            <a href="#" class="w-full text-center py-3 px-6 rounded-lg font-semibold btn-secondary shadow-md transition-all duration-300">
+                Contact Sales
+            </a>
+        </div>
+
+    </div>
+
+    <!-- FAQ Section -->
+    <section class="max-w-4xl w-full mx-auto mb-16 px-4 fade-in fade-in-5">
+        <h2 class="text-3xl font-bold text-white text-center mb-8">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <!-- FAQ Item 1 -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold text-white mb-2">How does "meaning-first" search benefit me?</h3>
+                <p class="text-gray-400">
+                    Our meaning-first search technology allows you to describe your project needs in natural language, enabling SEFGH - AI to understand context and intent, leading to more relevant and comprehensive results than traditional keyword-based searches.
+                </p>
+            </div>
+            <!-- FAQ Item 2 -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold text-white mb-2">Can I transition between plans?</h3>
+                <p class="text-gray-400">
+                    Yes, you can seamlessly upgrade or downgrade your subscription at any time through your account dashboard. Adjustments to billing will be automatically prorated.
+                </p>
+            </div>
+            <!-- FAQ Item 3 -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold text-white mb-2">What level of support can I expect?</h3>
+                <p class="text-gray-400">
+                    Individual users have access to our comprehensive community forum. Professional subscribers receive priority email support. Enterprise clients benefit from a dedicated account manager and specialized technical support.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-gray-500 text-sm py-8 fade-in fade-in-6">
+        &copy; 2025 SEFGH - AI. All rights reserved.
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const pricingCards = document.querySelectorAll('.pricing-card');
+
+            // Function to remove highlight from all cards
+            const removeHighlights = () => {
+                pricingCards.forEach(card => {
+                    card.classList.remove('card-selected');
+                    // Reset original border and shadow for non-selected cards
+                    card.classList.remove('border-blue-600', 'border-2');
+                    card.classList.add('border-gray-700', 'border');
+                    card.style.boxShadow = ''; // Clear inline style for shadow
+                    card.style.transform = ''; // Clear inline style for transform
+                });
+            };
+
+            // Function to add highlight to a specific card
+            const addHighlight = (card) => {
+                removeHighlights(); // Ensure only one card is highlighted at a time
+                card.classList.add('card-selected');
+                // Apply specific border and shadow for selected card
+                card.classList.remove('border-gray-700', 'border');
+                card.classList.add('border-blue-600', 'border-2');
+            };
+
+            // Add click event listeners to each card
+            pricingCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    addHighlight(card);
+                });
+            });
+
+            // Set the "Professional" card as selected by default on load
+            const professionalCard = document.querySelector('.pricing-card:nth-child(2)'); // Assuming Professional is the second card
+            if (professionalCard) {
+                addHighlight(professionalCard);
+            }
+        });
+    </script>
+</body>
+</html>
