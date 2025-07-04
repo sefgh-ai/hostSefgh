@@ -306,7 +306,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getAuth, 
-            signInAnonymously, 
+            // Removed signInAnonymously as it's causing the error if not enabled in Firebase project
             signInWithCustomToken, 
             onAuthStateChanged,
             createUserWithEmailAndPassword,
@@ -318,8 +318,18 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- Firebase Initialization ---
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqQbPoF5XFB_Ii-n1UWiMt0rAcbTBZIzk",
+            authDomain: "sefgh-authentication.firebaseapp.com",
+            projectId: "sefgh-authentication",
+            storageBucket: "sefgh-authentication.firebasestorage.app",
+            messagingSenderId: "66121663860",
+            appId: "1:66121663860:web:343d5c56531cebc3a81821",
+            measurementId: "G-V7RTYHH228"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app); // Initialize Firestore
@@ -406,34 +416,9 @@
             }
         });
 
-        // Initial anonymous sign-in if no custom token is provided
-        (async () => {
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                try {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                    console.log("Signed in with custom token.");
-                } catch (error) {
-                    console.error("Error signing in with custom token:", error);
-                    showMessage(`Failed to sign in automatically: ${error.message}`, 'error');
-                    // Fallback to anonymous sign-in if custom token fails
-                    try {
-                        await signInAnonymously(auth);
-                        console.log("Signed in anonymously as fallback.");
-                    } catch (anonError) {
-                        console.error("Error signing in anonymously:", anonError);
-                        showMessage(`Failed to sign in anonymously: ${anonError.message}`, 'error');
-                    }
-                }
-            } else {
-                try {
-                    await signInAnonymously(auth);
-                    console.log("Signed in anonymously.");
-                } catch (error) {
-                    console.error("Error signing in anonymously:", error);
-                    showMessage(`Failed to sign in anonymously: ${error.message}`, 'error');
-                }
-            }
-        })();
+        // Removed the automatic anonymous sign-in block that was causing the error
+        // as it's not strictly necessary for the core signup/login functionality
+        // and requires specific Firebase project configuration (Anonymous Auth enabled).
 
 
         // --- Email/Password Signup ---
