@@ -1,31 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://web.address.of.your.nifty.website/</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/404.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/about.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/apiKeySetup.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/loginPanel.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/pricing.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
-<url>
-<loc>https://web.address.of.your.nifty.website/searchpage.html</loc>
-<lastmod>2025-07-04T06:52:00+00:00</lastmod>
-</url>
+  <url><loc>https://v1.sefgh.org/apiKeySetup.html</loc></url>
+  <url><loc>https://v1.sefgh.org/searchpage.html</loc></url>
+  <url><loc>https://v1.sefgh.org/about.html</loc></url>
+  <url><loc>https://v1.sefgh.org/404.html</loc></url>
+  <url><loc>https://v1.sefgh.org/index.html</loc></url>
+  <url><loc>https://v1.sefgh.org/pricing.html</loc></url>
+  <url><loc>https://v1.sefgh.org/loginPanel.html</loc></url>
 </urlset>
