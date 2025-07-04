@@ -26,6 +26,8 @@ This is the metadata and SEO block that should be included in the <head> section
 <meta name="robots" content="index, follow" />
 <link rel="canonical" href="https://sefgh.org/" />
 <link rel="icon" type="image/png" href="./assets/favicon.png" />
+<link rel="sitemap" type="application/xml" title="Sitemap" href="sitemap.xml" />
+
 
 <!-- Open Graph / Facebook Meta Tags -->
 <meta property="og:type" content="website" />
