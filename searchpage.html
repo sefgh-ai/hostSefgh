@@ -335,7 +335,7 @@
                 <button id="theme-toggle-btn" title="Toggle theme" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                     <i data-lucide="moon" class="w-5 h-5"></i>
                 </button>
-                <button title="User Account" class="p-2 rounded-lg text-green-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                <button id="user-account-btn" title="User Account" class="p-2 rounded-lg text-green-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -447,6 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: 'v1', name: 'SEFGH v1.0', description: 'Legacy model for direct search term matching.', persona: "Searching: " }
         ],
         editingMessageId: null, // --- NEW: To track which message is being edited
+        isLoggedIn: false, // --- NEW: Placeholder for login state
     };
     
     // --- Get all DOM elements ---
@@ -473,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
         versionChevron,
         // New search panel close button
         closeSearchPanelBtn,
+        userAccountBtn, // --- NEW: User account button
     ] = [
         document.documentElement,
         getEl('toggle-search-btn'),
@@ -496,6 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
         getEl('version-chevron'),
         // New search panel close button
         getEl('close-search-panel-btn'),
+        getEl('user-account-btn'), // --- NEW: Get user account button
     ];
     
     // --- Utility Functions ---
@@ -1122,7 +1125,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         button.innerHTML = originalCopyHtml;
                         lucide.createIcons();
                     }, 2000);
-                    showNotification("Message copied to clipboard!", 'success', 3000); // Changed to 'success'
+                    showNotification("Message copied to clipboard!", 'success', 3000); 
                     break;
 
                 case 'delete-message':
@@ -1187,10 +1190,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.selectedVersionId = versionId; 
                     localStorage.setItem('selectedVersionId', versionId);
                     const newVersion = state.versions.find(v => v.id === versionId);
-                    showNotification(`Switched to ${newVersion.name}.`, 'info'); // Changed to notification
+                    showNotification(`Switched to ${newVersion.name}.`, 'info'); 
                 }
                 state.isVersionDropdownOpen = false; 
                 renderVersionDropdown();
+            }
+        });
+
+        // --- NEW: User Account Button Listener ---
+        userAccountBtn.addEventListener('click', () => {
+            console.log("User account button clicked.");
+            if (!state.isLoggedIn) {
+                console.log("User not logged in. Redirecting to login panel.");
+                window.open('https://v1.sefgh.org/loginPanel', '_blank');
+            } else {
+                console.log("User is logged in. (No action defined for logged-in state yet).");
+                // Future: Add logic here for logged-in user, e.g., show profile, logout options.
             }
         });
     };
