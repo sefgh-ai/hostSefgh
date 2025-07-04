@@ -1,29 +1,34 @@
-name: Generate Sitemap with Action
+name: Manual Sitemap Generator
 
 on:
   push:
-    branches: [main]
+    branches: [main]  # Change if your default branch is different
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  generate:
+  generate-sitemap:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout the repository
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Generate sitemap.xml
-      uses: cicirello/generate-sitemap@v1.10.0  # Explicit latest version
-      with:
-        base-url: 'https://v1.sefgh.org'        # ✅ no trailing slash
+    - name: Generate sitemap.xml manually
+      run: |
+        echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
+        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
+        for file in $(find . -name "*.html" -not -path "./.github/*"); do
+          clean_path=$(echo $file | sed 's|^\./||')
+          echo "  <url><loc>https://v1.sefgh.org/$clean_path</loc></url>" >> sitemap.xml
+        done
+        echo '</urlset>' >> sitemap.xml
 
-    - name: Commit sitemap  
+    - name: Commit and push sitemap.xml
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add sitemap.xml
-        git commit -m "Auto-generate sitemap.xml" || echo "No changes to commit"
+        git commit -m "Auto-generated sitemap.xml" || echo "No changes to commit"
         git push
