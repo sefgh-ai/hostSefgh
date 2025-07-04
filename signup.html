@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Create Account</title>
     <!-- Favicon -->
     <link rel="icon" href="https://v1.sefgh.org/assets/favicon.png" type="image/png">
     <!-- Tailwind CSS CDN -->
@@ -15,7 +15,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #1a1a2e; /* Dark background color */
+            background-color: #121212; /* Darker background color for unity with login page */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -54,7 +54,7 @@
             visibility: visible;
         }
         .modal-content {
-            background-color: #2a2a4a; /* Dark background for modal */
+            background-color: #1e1e1e; /* Dark background for modal, consistent with new theme */
             border-radius: 1.5rem;
             padding: 2rem;
             max-width: 600px;
@@ -103,11 +103,11 @@
             transition: background-color 0.2s ease;
         }
         .modal-buttons .decline-btn {
-            background-color: #4a4a6a;
+            background-color: #333333; /* Darker gray for decline */
             color: white;
         }
         .modal-buttons .decline-btn:hover {
-            background-color: #5a5a7a;
+            background-color: #444444;
         }
         .modal-buttons .accept-btn {
             background-color: #8b5cf6; /* Purple */
@@ -153,7 +153,7 @@
     </style>
 </head>
 <body class="selection:bg-purple-500 selection:text-white">
-    <div class="flex flex-col md:flex-row bg-[#2a2a4a] rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full">
+    <div class="flex flex-col md:flex-row bg-[#1e1e1e] rounded-3xl shadow-2xl overflow-hidden max-w-4xl w-full">
         <!-- Left Section (Image Background with Animated Text) -->
         <div class="w-full md:w-1/2 p-4 flex items-center justify-center image-bg min-h-[250px] md:min-h-[auto]">
             <div class="text-white text-center p-4">
@@ -174,13 +174,13 @@
                     <div class="w-full sm:w-1/2">
                         <label for="first-name" class="sr-only">Username</label>
                         <input type="text" id="first-name" placeholder="Username"
-                               class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                               class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
                                title="Enter your desired username">
                     </div>
                     <div class="w-full sm:w-1/2">
                         <label for="last-name" class="sr-only">User Handle</label>
                         <input type="text" id="last-name" placeholder="@user handle"
-                               class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                               class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
                                title="Enter your unique user handle (e.g., @yourhandle)">
                     </div>
                 </div>
@@ -188,14 +188,14 @@
                 <div>
                     <label for="email" class="sr-only">Email</label>
                     <input type="email" id="email" placeholder="Email"
-                           class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
+                           class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
                            title="Enter your email address">
                 </div>
 
                 <div class="relative">
                     <label for="password" class="sr-only">Enter your password</label>
                     <input type="password" id="password" placeholder="Enter your password"
-                           class="w-full px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] focus:outline-none focus:ring-2 focus:ring-500 placeholder-gray-400 text-white text-sm pr-10"
+                           class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm pr-10"
                            title="Enter your password (minimum 8 characters)">
                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
                           onclick="togglePasswordVisibility()" title="Toggle password visibility">
@@ -204,7 +204,7 @@
                 </div>
 
                 <div class="flex items-center text-sm">
-                    <input type="checkbox" id="terms" class="form-checkbox h-4 w-4 text-purple-600 bg-[#3a3a5a] border-[#4a4a6a] rounded-md focus:ring-purple-500 cursor-pointer"
+                    <input type="checkbox" id="terms" class="form-checkbox h-4 w-4 text-purple-600 bg-[#282828] border-[#3a3a3a] rounded-md focus:ring-purple-500 cursor-pointer"
                            title="Agree to terms and conditions">
                     <label for="terms" class="ml-2 text-gray-400">
                         I agree to the <a href="#" id="terms-link" class="text-purple-400 hover:underline" title="Read our terms and conditions">terms & conditions</a>
@@ -223,12 +223,12 @@
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4">
-                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] text-white hover:bg-[#4a4a6a] transition duration-300 ease-in-out shadow-md"
+                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
                         title="Sign up with your Google account">
                     <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo" class="w-5 h-5 mr-3">
                     Google
                 </button>
-                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#3a3a5a] border border-[#4a4a6a] text-white hover:bg-[#4a4a6a] transition duration-300 ease-in-out shadow-md"
+                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
                         title="Sign up with your GitHub account">
                     <i class="fab fa-github w-5 h-5 mr-3 text-white"></i> <!-- GitHub icon from Font Awesome -->
                     GitHub
@@ -241,7 +241,6 @@
     <div id="terms-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="flex justify-end items-center mb-4">
-                <!-- Removed Norwegian language option -->
                 <button class="text-gray-400 hover:text-white" title="Help">Help</button>
             </div>
 
