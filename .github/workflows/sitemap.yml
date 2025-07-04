@@ -1,39 +1,127 @@
-name: Manual Sitemap Generator
-
+name: Smart Sitemap Generator
 on:
   push:
     branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: write
-
 jobs:
   generate-sitemap:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
-    - name: Generate sitemap.xml with lastmod
+      with:
+        fetch-depth: 0  # Fetch full history to compare changes
+    
+    - name: Generate/Update sitemap.xml intelligently
       run: |
-        echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
-        echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
-        for file in $(find . -name "*.html" -not -path "./.github/*"); do
-          clean_path=$(echo $file | sed 's|^\./||')
-          mod_date=$(git log -1 --format="%cI" -- "$file" || date -u +"%Y-%m-%dT%H:%M:%SZ")
-          echo "  <url>" >> sitemap.xml
-          echo "    <loc>https://v1.sefgh.org/$clean_path</loc>" >> sitemap.xml
-          echo "    <lastmod>$mod_date</lastmod>" >> sitemap.xml
-          echo "  </url>" >> sitemap.xml
-        done
-        echo '</urlset>' >> sitemap.xml
-
+        # Create backup of existing sitemap if it exists
+        if [ -f "sitemap.xml" ]; then
+          cp sitemap.xml sitemap.xml.bak
+        fi
+        
+        # Initialize sitemap if it doesn't exist
+        if [ ! -f "sitemap.xml" ]; then
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
+          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
+          echo '</urlset>' >> sitemap.xml
+        fi
+        
+        # Get list of changed HTML files in the last commit
+        changed_files=$(git diff --name-only HEAD~1 HEAD -- "*.html" | grep -v "^\.github/" || true)
+        deleted_files=$(git diff --name-status HEAD~1 HEAD -- "*.html" | grep "^D" | cut -f2 || true)
+        
+        # If this is the first run or no previous commit, process all files
+        if [ -z "$changed_files" ] && [ -z "$deleted_files" ]; then
+          echo "First run or no changes detected, processing all HTML files..."
+          changed_files=$(find . -name "*.html" -not -path "./.github/*" | sed 's|^\./||')
+        fi
+        
+        # Remove deleted files from sitemap
+        if [ -n "$deleted_files" ]; then
+          echo "Removing deleted files from sitemap..."
+          for deleted_file in $deleted_files; do
+            if [ -f "sitemap.xml" ]; then
+              # Remove the URL entry for deleted file
+              sed -i "/https:\/\/v1\.sefgh\.org\/$deleted_file/,+2d" sitemap.xml
+              echo "Removed: $deleted_file"
+            fi
+          done
+        fi
+        
+        # Process changed/new files
+        if [ -n "$changed_files" ]; then
+          echo "Processing changed/new files..."
+          
+          # Create temporary file for processing
+          temp_file=$(mktemp)
+          
+          # Read existing sitemap content
+          if [ -f "sitemap.xml" ]; then
+            cp sitemap.xml "$temp_file"
+          fi
+          
+          for file in $changed_files; do
+            # Skip if file doesn't exist (might be deleted)
+            if [ ! -f "$file" ]; then
+              continue
+            fi
+            
+            clean_path="$file"
+            mod_date=$(git log -1 --format="%cI" -- "$file" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
+            
+            # Remove existing entry for this file if it exists
+            if [ -f "sitemap.xml" ]; then
+              sed -i "/https:\/\/v1\.sefgh\.org\/$clean_path/,+2d" sitemap.xml
+            fi
+            
+            # Add/update entry just before closing </urlset> tag
+            sed -i "s|</urlset>|  <url>\n    <loc>https://v1.sefgh.org/$clean_path</loc>\n    <lastmod>$mod_date</lastmod>\n  </url>\n</urlset>|" sitemap.xml
+            
+            echo "Updated: $clean_path (lastmod: $mod_date)"
+          done
+        else
+          echo "No HTML files changed."
+        fi
+        
+        # Clean up any potential formatting issues
+        if [ -f "sitemap.xml" ]; then
+          # Ensure proper XML structure
+          sed -i 's/^[[:space:]]*$//' sitemap.xml  # Remove empty lines
+          sed -i '/^$/d' sitemap.xml  # Remove completely empty lines
+        fi
+        
+        # Validate that we have a proper sitemap structure
+        if ! grep -q "<?xml version" sitemap.xml; then
+          echo "Regenerating sitemap from scratch..."
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
+          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
+          for file in $(find . -name "*.html" -not -path "./.github/*"); do
+            clean_path=$(echo $file | sed 's|^\./||')
+            mod_date=$(git log -1 --format="%cI" -- "$file" || date -u +"%Y-%m-%dT%H:%M:%SZ")
+            echo "  <url>" >> sitemap.xml
+            echo "    <loc>https://v1.sefgh.org/$clean_path</loc>" >> sitemap.xml
+            echo "    <lastmod>$mod_date</lastmod>" >> sitemap.xml
+            echo "  </url>" >> sitemap.xml
+          done
+          echo '</urlset>' >> sitemap.xml
+        fi
+        
+        echo "Sitemap generation completed!"
+    
     - name: Commit and push sitemap.xml
       run: |
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
-        git add sitemap.xml
-        git commit -m "Auto-generated sitemap.xml with lastmod" || echo "No changes to commit"
-        git pull --rebase
-        git push
+        
+        # Check if sitemap.xml has actually changed
+        if git diff --quiet sitemap.xml; then
+          echo "No changes to sitemap.xml, skipping commit"
+        else
+          git add sitemap.xml
+          git commit -m "Update sitemap.xml for changed files"
+          git pull --rebase
+          git push
+          echo "Sitemap updated and pushed!"
+        fi
