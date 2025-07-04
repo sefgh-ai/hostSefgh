@@ -1,4 +1,4 @@
-# SEFGH License (Custom Freemium License)
+# SEFGH License
 
 Version 1.0  
 Effective Date: 2025-07-04 (UTC)  
