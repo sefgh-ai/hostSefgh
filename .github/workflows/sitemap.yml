@@ -2,7 +2,7 @@ name: Manual Sitemap Generator
 
 on:
   push:
-    branches: [main]  # Change if your default branch is different
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,13 +15,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Generate sitemap.xml manually
+    - name: Generate sitemap.xml with lastmod
       run: |
         echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
         echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
         for file in $(find . -name "*.html" -not -path "./.github/*"); do
           clean_path=$(echo $file | sed 's|^\./||')
-          echo "  <url><loc>https://v1.sefgh.org/$clean_path</loc></url>" >> sitemap.xml
+          mod_date=$(git log -1 --format="%cI" -- "$file" || date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "  <url>" >> sitemap.xml
+          echo "    <loc>https://v1.sefgh.org/$clean_path</loc>" >> sitemap.xml
+          echo "    <lastmod>$mod_date</lastmod>" >> sitemap.xml
+          echo "  </url>" >> sitemap.xml
         done
         echo '</urlset>' >> sitemap.xml
 
@@ -30,5 +34,5 @@ jobs:
         git config --global user.name 'github-actions'
         git config --global user.email 'github-actions@github.com'
         git add sitemap.xml
-        git commit -m "Auto-generated sitemap.xml" || echo "No changes to commit"
+        git commit -m "Auto-generated sitemap.xml with lastmod" || echo "No changes to commit"
         git push
