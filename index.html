@@ -111,8 +111,12 @@
 <!-- Instead, install Tailwind locally via npm and use a build process (e.g., PostCSS) -->
 <!-- with 'purge' or 'content' configuration to tree-shake unused CSS classes. -->
 <!-- This significantly reduces CSS bundle size (from ~400KB to 20-40KB), improving performance. -->
-<script src="https://cdn.tailwindcss.com"></script> <!-- Uncommented to fix 'tailwind is not defined' error -->
+<script src="https://cdn.tailwindcss.com"></script> 
     
+<!-- This empty style tag with type="text/tailwindcss" is crucial for the Tailwind JIT compiler to initialize -->
+<!-- It allows Tailwind's CDN script to process and apply all utility classes correctly. -->
+<style type="text/tailwindcss"></style>
+
 <!-- Google Fonts Import -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -120,12 +124,8 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     
-<style type="text/tailwindcss">
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
-
-    /* Custom base styles */
+<style>
+    /* Custom base styles - moved here to be parsed directly by the browser */
     body {
         background-color: #0a0a0a;
         font-family: 'Inter', sans-serif;
@@ -133,7 +133,7 @@
         -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Custom utility for the background grid pattern */
+    /* Custom utility for the background grid pattern - moved here */
     .bg-grid {
         background-image:
             linear-gradient(to right, rgba(26, 26, 26, 0.8) 1px, transparent 1px),
@@ -215,7 +215,8 @@
                     <button
                         onclick="handleStartSearching()"
                         class="group relative inline-flex items-center justify-center px-5 py-2 overflow-hidden font-medium text-white transition-all duration-300 bg-[#1a1a1a] border border-[#27272a] rounded-lg hover:bg-[#0066ff]/20">
-                        <span class="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-[#0066ff] rounded-full group-hover:w-full group-hover:h-full group-hover:opacity-100 opacity-20"></span>
+                        <!-- Changed rounded-full to rounded-lg for consistent border-radius on hover -->
+                        <span class="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-[#0066ff] rounded-lg group-hover:w-full group-hover:h-full group-hover:opacity-100 opacity-20"></span>
                         <span class="relative flex items-center gap-2" data-i18n="startSearching">
                             Start Searching 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
