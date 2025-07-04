@@ -1,6 +1,11 @@
 # hostSefgh
 well this si for hosting sefgh in case main server is down
 
+## License
+This project is licensed for non-commercial use only. Attribution is required.  
+Commercial use is prohibited without written permission.  
+See [LICENSE.md](./LICENSE.md) for full terms.
+
 This is the metadata and SEO block that should be included in the <head> section of important pages (e.g., search pages) when hosting SEFGH, especially as a fallback in case the main server is down.
 
 ✅ Required <head> Block
