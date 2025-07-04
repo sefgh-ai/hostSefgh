@@ -117,7 +117,7 @@
 
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SEFGH - AI-Powered GitHub Repository Search</title>
+    <title data-i18n="pageTitle">SEFGH - AI-Powered GitHub Repository Search</title>
     <link rel="icon" type="image/png" href="./assets/favicon.png" />
     
     <!-- Google Fonts -->
@@ -191,12 +191,6 @@
               'fade-in-up': {
                 '0%': { opacity: '0', transform: 'translateY(10px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              /* New keyframe for bounce-in animation */
-              'bounce-in': {
-                '0%': { opacity: '0', transform: 'scale(0.5) translateY(20px)' },
-                '60%': { opacity: '1', transform: 'scale(1.1) translateY(-5px)' },
-                '100%': { transform: 'scale(1) translateY(0)' },
               }
             }
           }
@@ -209,12 +203,12 @@
       @layer base {
         html { scroll-behavior: smooth; }
         /* Updated body to use Inter as the default font */
-        body { @apply antialiased bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 font-sans; }
+        body { @apply antialiased bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-200 font-sans overflow-hidden; } /* RE-ADDED overflow-hidden */
       }
       @layer utilities {
         .backdrop-blur-md { backdrop-filter: blur(12px); }
         /* Updated active/inactive nav colors for better contrast */
-        .active-nav { @apply bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100; }
+        .active-nav { @apply bg-primary-100 dark:bg-primary-800 text-primary-800 dark:text-primary-100 font-medium; }
         .inactive-nav { @apply text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700/60; }
 
         .hover-rainbow-shine {
@@ -240,7 +234,7 @@
       ::-moz-selection { @apply bg-primary-700 text-white; }
 
       /* Panel transition styles */
-      #chat-panel, #search-panel {
+      #nav-panel, #chat-panel, #search-panel {
         transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       }
       
@@ -286,20 +280,7 @@
       }
     </style>
 </head>
-<body class="overflow-hidden flex">
-
-    <!-- Removed Sidebar -->
-    <!-- <nav class="w-16 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col items-center py-4 space-y-4 flex-shrink-0">
-        <button id="nav-chat-btn" title="Chat" class="p-2 rounded-lg transition-colors">
-            <i data-lucide="message-square" class="w-6 h-6"></i>
-        </button>
-        <button id="nav-search-btn" title="Toggle Repository Search" class="p-2 rounded-lg transition-colors inactive-nav">
-            <i data-lucide="search" class="w-6 h-6"></i>
-        </button>
-        <button id="nav-history-btn" title="Search History" class="p-2 rounded-lg transition-colors inactive-nav">
-            <i data-lucide="history" class="w-6 h-6"></i>
-        </button>
-    </nav> -->
+<body class="flex">
 
     <div id="app-container" class="h-screen flex flex-col flex-1">
 
@@ -325,8 +306,8 @@
                 <button title="GitHub Repository" class="p-2 rounded-lg text-purple-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0" onclick="window.open('https://github.com/sefgh-ai/hostSefgh', '_blank')">
                     <i data-lucide="github" class="w-5 h-5"></i>
                 </button>
-                <!-- New grid icon button -->
-                <button title="Layout" class="p-2 rounded-lg text-teal-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                <!-- New layout grid icon button (renamed to toggle-nav-btn) -->
+                <button id="toggle-nav-btn" title="Toggle Navigation" class="p-2 rounded-lg text-teal-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
                 </button>
                 <button id="toggle-search-btn" title="Show Search" class="p-2 rounded-lg text-blue-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
@@ -335,57 +316,226 @@
                 <button id="theme-toggle-btn" title="Toggle theme" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
                     <i data-lucide="moon" class="w-5 h-5"></i>
                 </button>
-                <button id="user-account-btn" title="User Account" class="p-2 rounded-lg text-green-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                <button id="user-account-btn" title="User Account" class="p-2 rounded-lg text-green-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0" onclick="window.open('https://v1.sefgh.org/login', '_blank')">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </button>
             </div>
         </header>
 
         <!-- Main Content Area -->
-        <!-- Added gap-x-2 for visual separation between chat and search panels -->
-        <main id="panel-container" class="flex-1 overflow-hidden flex relative md:gap-x-2">
+        <!-- Added gap-x-2 for visual separation between panels -->
+        <main id="panel-container" class="flex-1 flex relative md:gap-x-2 overflow-hidden">
             
-            <!-- Chat Panel -->
-            <section id="chat-panel" class="h-full flex flex-col bg-white dark:bg-gray-950 w-full">
-                <!-- Removed border-b from this div -->
-                <div class="flex items-center justify-end p-4 flex-shrink-0">
-                    <button id="clear-history-btn" title="Clear chat history" class="p-2 text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors hidden">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <!-- Navigation Panel (New Sidebar) -->
+            <nav id="nav-panel" class="h-full flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 hidden" style="width: 240px;">
+                <div class="p-4 flex-shrink-0">
+                    <h2 data-i18n="navigationTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Navigation</h2>
+                </div>
+                <div id="nav-items-container" class="flex-1 overflow-y-auto p-4 space-y-1">
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="chat" data-i18n="newChat">
+                        <i data-lucide="message-square" class="w-5 h-5"></i>
+                        <span>New Chat</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="chat-history" data-i18n="chatHistory">
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                        <span>Chat History</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="docs" data-i18n="docs">
+                        <i data-lucide="book" class="w-5 h-5"></i>
+                        <span>Docs</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="playground" data-i18n="playground">
+                        <i data-lucide="flask-conical" class="w-5 h-5"></i>
+                        <span>Playground</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="console" data-i18n="console">
+                        <i data-lucide="terminal" class="w-5 h-5"></i>
+                        <span>Console</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="proxy" data-i18n="proxy">
+                        <i data-lucide="shield" class="w-5 h-5"></i>
+                        <span>Proxy</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="language" data-i18n="language">
+                        <i data-lucide="globe" class="w-5 h-5"></i>
+                        <span>Language</span>
+                    </button>
+                    <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="settings" data-i18n="settings">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
                     </button>
                 </div>
-                <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
-                <form id="chat-form" class="py-2 px-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md flex-shrink-0">
-                    <!-- Changed items-end to items-center for vertical alignment -->
-                    <div class="flex items-center space-x-2 flex-nowrap">
-                        <button type="button" title="Find similar repos" class="p-2 text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex-shrink-0"><i data-lucide="paperclip" class="w-5 h-5"></i></button>
-                        <div class="flex-1 relative">
-                            <textarea id="chat-textarea" placeholder="e.g., 'Find a lightweight charting library for React'" rows="1" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg resize-none text-sm max-h-32"></textarea>
-                        </div>
-                        <!-- Updated send button style -->
-                        <button id="send-btn" type="submit" title="Send message" class="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md flex-shrink-0">
-                            <i data-lucide="send" class="w-5 h-5"></i>
+            </nav>
+
+            <!-- Navigation Resize Handle -->
+            <div id="nav-resize-handle" class="w-1 h-full bg-gray-300 dark:bg-gray-700 hover:bg-gray-500 dark:hover:bg-gray-600 cursor-col-resize flex-shrink-0 transition-colors hidden md:flex items-center justify-center">
+                 <div class="w-1.5 h-8 bg-gray-600 dark:bg-gray-500 rounded-full opacity-100"></div>
+            </div>
+            
+            <!-- Main Content Wrapper -->
+            <div id="main-content-wrapper" class="flex-1 flex flex-col">
+                <!-- Chat Panel -->
+                <section id="chat-panel" class="h-full flex flex-col bg-white dark:bg-gray-950 w-full">
+                    <div class="flex items-center justify-end p-4 flex-shrink-0">
+                        <button id="clear-history-btn" title="Clear chat history" class="p-2 text-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors hidden">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
-                </form>
-                <!-- New footer message -->
-                <div class="text-xs text-center text-gray-500 dark:text-gray-400 py-1 px-4">
-                    SEFGH-Ai is evolving. Confirm essential information
-                </div>
-            </section>
+                    <div id="messages-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                    <form id="chat-form" class="py-2 px-4 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md flex-shrink-0">
+                        <div class="flex items-center space-x-2 flex-nowrap">
+                            <button type="button" title="Find similar repos" class="p-2 text-orange-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors flex-shrink-0"><i data-lucide="paperclip" class="w-5 h-5"></i></button>
+                            <div class="flex-1 relative">
+                                <textarea id="chat-textarea" data-i18n="chatPlaceholder" placeholder="e.g., 'Find a lightweight charting library for React'" rows="1" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg resize-none text-sm max-h-32"></textarea>
+                            </div>
+                            <button id="send-btn" type="submit" title="Send message" class="p-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md flex-shrink-0">
+                                <i data-lucide="send" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <div data-i18n="disclaimer" class="text-xs text-center text-gray-500 dark:text-gray-400 py-1 px-4">
+                        SEFGH-Ai is evolving. Confirm essential information
+                    </div>
+                </section>
 
-            <!-- Resize Handle -->
-            <!-- Adjusted width and added back the inner rounded indicator -->
-            <div id="resize-handle" class="w-1 h-full bg-gray-300 dark:bg-gray-700 hover:bg-gray-500 dark:hover:bg-gray-600 cursor-col-resize flex-shrink-0 transition-colors hidden md:flex items-center justify-center">
+                <!-- History Panel (Now used for Chat History) -->
+                <section id="history-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                     <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h2 data-i18n="chatHistoryTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Chat History</h2>
+                        <button id="clear-search-history-btn" title="Clear chat history" class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                     </div>
+                     <div id="history-container" class="flex-1 overflow-y-auto p-4">
+                        <!-- History items will be injected here -->
+                        <div class="text-center text-gray-500 dark:text-gray-400 mt-8">
+                            <i data-lucide="history" class="w-16 h-16 mx-auto mb-4 text-primary-400"></i>
+                            <h3 data-i18n="noChatHistory" class="text-lg font-medium mb-2">No Chat History</h3>
+                            <p data-i18n="chatHistoryEmptyMessage" class="text-sm">Your past conversations will appear here.</p>
+                        </div>
+                     </div>
+                </section>
+
+                <!-- Proxy Panel (New) -->
+                <section id="proxy-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h2 data-i18n="proxySettingsTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Proxy Settings</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="proxyDescription" class="mb-4">Configure your proxy settings here.</p>
+                        <!-- Example proxy settings form -->
+                        <form class="space-y-4">
+                            <div>
+                                <label for="proxy-address" data-i18n="proxyAddressLabel" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Proxy Address</label>
+                                <input type="text" id="proxy-address" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm" placeholder="e.g., http://myproxy.com:8080">
+                            </div>
+                            <div>
+                                <label for="proxy-username" data-i18n="proxyUsernameLabel" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Username (Optional)</label>
+                                <input type="text" id="proxy-username" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="proxy-password" data-i18n="proxyPasswordLabel" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password (Optional)</label>
+                                <input type="password" id="proxy-password" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:text-sm">
+                            </div>
+                            <button type="submit" data-i18n="saveProxySettingsBtn" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                Save Proxy Settings
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Language Panel (New) -->
+                <section id="language-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                        <h2 data-i18n="languageSettingsTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Language Settings</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="languageDescription" class="mb-4">Select your preferred language for the application interface:</p>
+                        <div class="mt-4 space-y-2">
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="en">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>English (EN)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="es">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>Español (ES)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="fr">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>Français (FR)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="de">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>Deutsch (DE)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="ja">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>日本語 (JA)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="zh">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>中文 (ZH)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="hi">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>हिन्दी (HI)</span>
+                            </button>
+                            <button class="lang-select-btn w-full text-left p-3 rounded-xl transition-colors flex items-center space-x-3" data-lang="te">
+                                <span class="lang-check-icon"><i data-lucide="circle" class="w-5 h-5 text-gray-400"></i></span>
+                                <span>తెలుగు (TE)</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Placeholder for other panels like Settings, Console, Playground, Docs -->
+                <section id="settings-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                        <h2 data-i18n="settingsTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Settings</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="settingsDescription">Application settings will be configured here.</p>
+                    </div>
+                </section>
+                <section id="console-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                        <h2 data-i18n="consoleTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Console</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="consoleDescription">Developer console output will appear here.</p>
+                    </div>
+                </section>
+                <section id="docs-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                        <h2 data-i18n="docsTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Documentation</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="docsDescription">Documentation for SEFGH will be displayed here.</p>
+                    </div>
+                </section>
+                <section id="playground-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
+                    <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                        <h2 data-i18n="playgroundTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Playground</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto p-4 text-gray-600 dark:text-gray-300">
+                        <p data-i18n="playgroundDescription">Experiment with SEFGH features in this playground.</p>
+                    </div>
+                </section>
+            </div>
+
+
+            <!-- Search Panel Resize Handle -->
+            <div id="search-resize-handle" class="w-1 h-full bg-gray-300 dark:bg-gray-700 hover:bg-gray-500 dark:hover:bg-gray-600 cursor-col-resize flex-shrink-0 transition-colors hidden md:flex items-center justify-center">
                  <div class="w-1.5 h-8 bg-gray-600 dark:bg-gray-500 rounded-full opacity-100"></div>
             </div>
 
             <!-- Search Panel -->
-            <section id="search-panel" class="h-full flex flex-col bg-gray-50 dark:bg-gray-900 absolute inset-0 md:relative hidden">
+            <section id="search-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 absolute inset-0 md:relative hidden">
                 <!-- New header for search panel -->
                 <div class="flex items-center justify-between py-2 px-4 flex-shrink-0">
                     <div class="flex items-center space-x-2">
                         <i data-lucide="github" class="w-6 h-6 text-gray-600 dark:text-gray-400"></i>
-                        <span class="text-base font-semibold text-gray-800 dark:text-gray-200">Repo Search</span>
+                        <span data-i18n="repoSearchTitle" class="text-base font-semibold text-gray-800 dark:text-gray-200">Repo Search</span>
                     </div>
                     <button id="close-search-panel-btn" title="Close Search" class="p-2 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <i data-lucide="x" class="w-5 h-5"></i>
@@ -395,24 +545,20 @@
                     <div class="relative">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                         <!-- Updated search input style -->
-                        <input id="search-input" type="text" placeholder="Search GitHub repositories..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm shadow-sm">
+                        <input id="search-input" type="text" data-i18n="searchPlaceholder" placeholder="Search GitHub repositories..." class="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm shadow-sm">
+                        <!-- Clear Search Input Button -->
+                        <button id="clear-search-input-btn" title="Clear search" class="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
                     </div>
                  </div>
-                 <div id="search-results-container" class="flex-1 overflow-y-auto p-4">
+                 <div id="search-results-container" class="flex-1 overflow-y-auto p-4 min-h-0">
                     <!-- Search results will be injected here -->
-                 </div>
-            </section>
-
-             <!-- History Panel -->
-            <section id="history-panel" class="h-full w-full flex-col bg-gray-50 dark:bg-gray-900 hidden">
-                 <div class="p-4 flex-shrink-0 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Search History</h2>
-                    <button id="clear-search-history-btn" title="Clear search history" class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
-                        <i data-lucide="trash-2" class="w-5 h-5"></i>
-                    </button>
-                 </div>
-                 <div id="history-container" class="flex-1 overflow-y-auto p-4">
-                    <!-- History items will be injected here -->
+                    <div class="text-center text-gray-500 dark:text-gray-400 mt-8">
+                        <i data-lucide="folder-search" class="w-16 h-16 mx-auto mb-4 text-primary-400"></i>
+                        <h3 data-i18n="repoSearchInitialTitle" class="text-lg font-medium mb-2">Repository Search</h3>
+                        <p data-i18n="repoSearchInitialMessage" class="text-sm">Results from your chat will appear here.</p>
+                    </div>
                  </div>
             </section>
         </main>
@@ -428,82 +574,492 @@ document.addEventListener('DOMContentLoaded', () => {
     const getEl = (id) => document.getElementById(id);
     const appContainer = getEl('app-container');
     const panelContainer = getEl('panel-container');
-    const notificationContainer = getEl('notification-container'); // New notification container
+    const notificationContainer = getEl('notification-container');
+
+    // --- Utility Functions ---
+    // Debounce function (moved to top for scope)
+    const debounce = (func, delay) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; };
+    const formatNumber = (num) => num > 999 ? `${(num / 1000).toFixed(1)}k` : num;
 
     // --- State Management ---
     let state = {
         theme: localStorage.getItem('theme') || 'light',
         isSearchVisible: false,
+        isNavOpen: false,
         isTyping: false,
         messages: JSON.parse(localStorage.getItem('chatMessages')) || [],
         searchHistory: JSON.parse(localStorage.getItem('searchHistory')) || [],
-        activeView: 'chat', // 'chat' or 'history'
-        isResizing: false,
-        isVersionDropdownOpen: false, // Re-added for header dropdown
-        selectedVersionId: localStorage.getItem('selectedVersionId') || 'v1', // Changed default to 'v1'
-        versions: [ // Re-added
+        activeView: 'chat', // Default to 'chat' for initial display
+        isResizing: null,
+        navWidth: parseInt(localStorage.getItem('navWidth')) || 240,
+        searchWidth: parseInt(localStorage.getItem('searchWidth')) || 400,
+        isVersionDropdownOpen: false,
+        selectedVersionId: localStorage.getItem('selectedVersionId') || 'v1',
+        versions: [
             { id: 'v3', name: 'SEFGH v3.0', description: 'Advanced model with contextual understanding.', persona: "Got it. " },
             { id: 'v2', name: 'SEFGH v2.0', description: 'Stable model for reliable keyword searches.', persona: "Okay, " },
             { id: 'v1', name: 'SEFGH v1.0', description: 'Legacy model for direct search term matching.', persona: "Searching: " }
         ],
-        editingMessageId: null, // --- NEW: To track which message is being edited
-        isLoggedIn: false, // --- NEW: Placeholder for login state
+        editingMessageId: null,
+        isLoggedIn: false,
+        selectedLanguage: localStorage.getItem('selectedLanguage') || 'en', // NEW: Default language
     };
     
     // --- Get all DOM elements ---
     const [
         htmlEl,
         toggleSearchBtn,
+        toggleNavBtn,
         chatPanel,
         searchPanel,
-        historyPanel,
-        resizeHandle,
+        navPanel,
+        historyPanel, // Renamed from search-history-panel
+        languagePanel, // NEW
+        settingsPanel, // NEW
+        consolePanel, // NEW
+        docsPanel, // NEW
+        playgroundPanel, // NEW
+        proxyPanel, // NEW
+        navResizeHandle,
+        searchResizeHandle,
         messagesContainer,
         chatForm,
         chatTextarea,
         sendBtn,
-        clearHistoryBtn,
+        clearChatHistoryBtn, // Renamed from clear-history-btn for clarity
         searchInput,
         searchResultsContainer,
         historyContainer,
         clearSearchHistoryBtn,
-        // Re-added version switcher elements
         versionToggleBtn,
         versionMenu,
         versionName,
         versionChevron,
-        // New search panel close button
         closeSearchPanelBtn,
-        userAccountBtn, // --- NEW: User account button
+        userAccountBtn,
+        navItemsContainer, // NEW
+        mainContentWrapper, // NEW
+        clearSearchInputBtn, // NEW
     ] = [
         document.documentElement,
         getEl('toggle-search-btn'),
+        getEl('toggle-nav-btn'),
         getEl('chat-panel'),
         getEl('search-panel'),
+        getEl('nav-panel'),
         getEl('history-panel'),
-        getEl('resize-handle'),
+        getEl('language-panel'),
+        getEl('settings-panel'),
+        getEl('console-panel'),
+        getEl('docs-panel'),
+        getEl('playground-panel'),
+        getEl('proxy-panel'), // NEW
+        getEl('nav-resize-handle'),
+        getEl('search-resize-handle'),
         getEl('messages-container'),
         getEl('chat-form'),
         getEl('chat-textarea'),
         getEl('send-btn'),
-        getEl('clear-history-btn'),
+        getEl('clear-history-btn'), // Still using this ID from HTML
         getEl('search-input'),
         getEl('search-results-container'),
         getEl('history-container'),
         getEl('clear-search-history-btn'),
-        // Re-added version switcher elements
         getEl('version-toggle-btn'),
         getEl('version-menu'),
         getEl('version-name'),
         getEl('version-chevron'),
-        // New search panel close button
         getEl('close-search-panel-btn'),
-        getEl('user-account-btn'), // --- NEW: Get user account button
+        getEl('user-account-btn'),
+        getEl('nav-items-container'),
+        getEl('main-content-wrapper'),
+        getEl('clear-search-input-btn'), // NEW
     ];
     
-    // --- Utility Functions ---
-    const debounce = (func, delay) => { let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), delay); }; };
-    const formatNumber = (num) => num > 999 ? `${(num / 1000).toFixed(1)}k` : num;
+    // Map data-view names to actual panel elements
+    const contentPanels = {
+        'chat': chatPanel,
+        'chat-history': historyPanel, // 'chat-history' maps to the historyPanel
+        'language': languagePanel,
+        'settings': settingsPanel,
+        'console': consolePanel,
+        'docs': docsPanel,
+        'playground': playgroundPanel,
+        'proxy': proxyPanel, // NEW
+        // 'search' is handled separately as it's a side panel
+    };
+
+    // --- Translations Object (NEW) ---
+    const translations = {
+        en: {
+            pageTitle: "SEFGH - AI-Powered GitHub Repository Search",
+            navigationTitle: "Navigation",
+            newChat: "New Chat",
+            chatHistory: "Chat History",
+            docs: "Docs",
+            playground: "Playground",
+            console: "Console",
+            proxy: "Proxy",
+            language: "Language",
+            settings: "Settings",
+            chatPlaceholder: "e.g., 'Find a lightweight charting library for React'",
+            disclaimer: "SEFGH-Ai is evolving. Confirm essential information",
+            chatHistoryTitle: "Chat History",
+            noChatHistory: "No Chat History",
+            chatHistoryEmptyMessage: "Your past conversations will appear here.",
+            proxySettingsTitle: "Proxy Settings",
+            proxyDescription: "Configure your proxy settings here.",
+            proxyAddressLabel: "Proxy Address",
+            proxyUsernameLabel: "Username (Optional)",
+            proxyPasswordLabel: "Password (Optional)",
+            saveProxySettingsBtn: "Save Proxy Settings",
+            languageSettingsTitle: "Language Settings",
+            languageDescription: "Select your preferred language for the application interface:",
+            settingsTitle: "Settings",
+            settingsDescription: "Application settings will be configured here.",
+            consoleTitle: "Console",
+            consoleDescription: "Developer console output will appear here.",
+            docsTitle: "Documentation",
+            docsDescription: "Documentation for SEFGH will be displayed here.",
+            playgroundTitle: "Playground",
+            playgroundDescription: "Experiment with SEFGH features in this playground.",
+            repoSearchTitle: "Repo Search",
+            searchPlaceholder: "Search GitHub repositories...",
+            repoSearchInitialTitle: "Repository Search",
+            repoSearchInitialMessage: "Results from your chat will appear here.",
+            noResultsFoundTitle: "No Results Found",
+            noResultsFoundMessage: (query) => `Your search for "${query}" did not match any repositories.`,
+            anErrorOccurred: "An Error Occurred",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "My apologies, I'm having trouble connecting to my core intelligence right now. Please check your internet connection or try again in a moment.",
+            messageCopied: "Message copied to clipboard!",
+            messageDeleted: "Message deleted.",
+            switchedToVersion: (versionName) => `Switched to ${versionName}.`,
+            aiInitiatedSearch: (query) => `AI initiated search for: "${query}"`,
+        },
+        es: {
+            pageTitle: "SEFGH - Búsqueda de Repositorios GitHub con IA",
+            navigationTitle: "Navegación",
+            newChat: "Nuevo Chat",
+            chatHistory: "Historial de Chat",
+            docs: "Documentos",
+            playground: "Patio de Juegos",
+            console: "Consola",
+            proxy: "Proxy",
+            language: "Idioma",
+            settings: "Ajustes",
+            chatPlaceholder: "Ej: 'Encontrar una librería de gráficos ligera para React'",
+            disclaimer: "SEFGH-Ai está evolucionando. Confirme la información esencial",
+            chatHistoryTitle: "Historial de Chat",
+            noChatHistory: "No hay Historial de Chat",
+            chatHistoryEmptyMessage: "Tus conversaciones anteriores aparecerán aquí.",
+            proxySettingsTitle: "Configuración de Proxy",
+            proxyDescription: "Configure aquí la configuración de su proxy.",
+            proxyAddressLabel: "Dirección del Proxy",
+            proxyUsernameLabel: "Nombre de Usuario (Opcional)",
+            proxyPasswordLabel: "Contraseña (Opcional)",
+            saveProxySettingsBtn: "Guardar Configuración de Proxy",
+            languageSettingsTitle: "Configuración de Idioma",
+            languageDescription: "Seleccione su idioma preferido para la interfaz de la aplicación:",
+            settingsTitle: "Ajustes",
+            settingsDescription: "La configuración de la aplicación se configurará aquí.",
+            consoleTitle: "Consola",
+            consoleDescription: "La salida de la consola de desarrollador aparecerá aquí.",
+            docsTitle: "Documentación",
+            docsDescription: "La documentación de SEFGH se mostrará aquí.",
+            playgroundTitle: "Patio de Juegos",
+            playgroundDescription: "Experimente con las funciones de SEFGH en este patio de juegos.",
+            repoSearchTitle: "Búsqueda de Repositorios",
+            searchPlaceholder: "Buscar repositorios de GitHub...",
+            repoSearchInitialTitle: "Búsqueda de Repositorios",
+            repoSearchInitialMessage: "Los resultados de tu chat aparecerán aquí.",
+            noResultsFoundTitle: "No se Encontraron Resultados",
+            noResultsFoundMessage: (query) => `Tu búsqueda de "${query}" no coincidió con ningún repositorio.`,
+            anErrorOccurred: "Ha Ocurrido un Error",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "Disculpe, estoy teniendo problemas para conectarme a mi inteligencia central en este momento. Por favor, verifique su conexión a internet o intente de nuevo en un momento.",
+            messageCopied: "Mensaje copiado al portapapeles!",
+            messageDeleted: "Mensaje eliminado.",
+            switchedToVersion: (versionName) => `Cambiado a ${versionName}.`,
+            aiInitiatedSearch: (query) => `Búsqueda iniciada por IA para: "${query}"`,
+        },
+        fr: {
+            pageTitle: "SEFGH - Recherche de Dépôts GitHub Alimentée par l'IA",
+            navigationTitle: "Navigation",
+            newChat: "Nouveau Chat",
+            chatHistory: "Historique du Chat",
+            docs: "Docs",
+            playground: "Aire de Jeux",
+            console: "Console",
+            proxy: "Proxy",
+            language: "Langue",
+            settings: "Paramètres",
+            chatPlaceholder: "Ex: 'Trouver une bibliothèque de graphiques légère pour React'",
+            disclaimer: "SEFGH-Ai évolue. Confirmez les informations essentielles",
+            chatHistoryTitle: "Historique du Chat",
+            noChatHistory: "Aucun Historique de Chat",
+            chatHistoryEmptyMessage: "Vos conversations passées apparaîtront ici.",
+            proxySettingsTitle: "Paramètres Proxy",
+            proxyDescription: "Configurez vos paramètres proxy ici.",
+            proxyAddressLabel: "Adresse Proxy",
+            proxyUsernameLabel: "Nom d'utilisateur (Facultatif)",
+            proxyPasswordLabel: "Mot de passe (Facultatif)",
+            saveProxySettingsBtn: "Enregistrer les Paramètres Proxy",
+            languageSettingsTitle: "Paramètres de Langue",
+            languageDescription: "Sélectionnez votre langue préférée pour l'interface de l'application :",
+            settingsTitle: "Paramètres",
+            settingsDescription: "Les paramètres de l'application seront configurés ici.",
+            consoleTitle: "Console",
+            consoleDescription: "La sortie de la console développeur apparaîtra ici.",
+            docsTitle: "Documentation",
+            docsDescription: "La documentation de SEFGH sera affichée ici.",
+            playgroundTitle: "Aire de Jeux",
+            playgroundDescription: "Expérimentez les fonctionnalités de SEFGH dans cette aire de jeux.",
+            repoSearchTitle: "Recherche de Dépôts",
+            searchPlaceholder: "Rechercher des dépôts GitHub...",
+            repoSearchInitialTitle: "Recherche de Dépôts",
+            repoSearchInitialMessage: "Les résultats de votre chat apparaîtront ici.",
+            noResultsFoundTitle: "Aucun Résultat Trouvé",
+            noResultsFoundMessage: (query) => `Votre recherche pour "${query}" n'a donné aucun dépôt.`,
+            anErrorOccurred: "Une Erreur est Survenue",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "Mes excuses, je rencontre des difficultés pour me connecter à mon intelligence centrale en ce moment. Veuillez vérifier votre connexion internet ou réessayer dans un instant.",
+            messageCopied: "Message copié dans le presse-papiers !",
+            messageDeleted: "Message supprimé.",
+            switchedToVersion: (versionName) => `Passé à ${versionName}.`,
+            aiInitiatedSearch: (query) => `Recherche initiée par l'IA pour : "${query}"`,
+        },
+        de: {
+            pageTitle: "SEFGH - KI-gestützte GitHub-Repository-Suche",
+            navigationTitle: "Navigation",
+            newChat: "Neuer Chat",
+            chatHistory: "Chat-Verlauf",
+            docs: "Dokumente",
+            playground: "Spielplatz",
+            console: "Konsole",
+            proxy: "Proxy",
+            language: "Sprache",
+            settings: "Einstellungen",
+            chatPlaceholder: "Z.B. 'Eine leichte Diagrammbibliothek für React finden'",
+            disclaimer: "SEFGH-Ai entwickelt sich weiter. Bestätigen Sie wesentliche Informationen",
+            chatHistoryTitle: "Chat-Verlauf",
+            noChatHistory: "Kein Chat-Verlauf",
+            chatHistoryEmptyMessage: "Ihre vergangenen Gespräche werden hier angezeigt.",
+            proxySettingsTitle: "Proxy-Einstellungen",
+            proxyDescription: "Konfigurieren Sie hier Ihre Proxy-Einstellungen.",
+            proxyAddressLabel: "Proxy-Adresse",
+            proxyUsernameLabel: "Benutzername (Optional)",
+            proxyPasswordLabel: "Passwort (Optional)",
+            saveProxySettingsBtn: "Proxy-Einstellungen speichern",
+            languageSettingsTitle: "Spracheinstellungen",
+            languageDescription: "Wählen Sie Ihre bevorzugte Sprache für die Anwendungsoberfläche:",
+            settingsTitle: "Einstellungen",
+            settingsDescription: "Anwendungseinstellungen werden hier konfiguriert.",
+            consoleTitle: "Konsole",
+            consoleDescription: "Die Konsolenausgabe des Entwicklers wird hier angezeigt.",
+            docsTitle: "Dokumentation",
+            docsDescription: "Die Dokumentation für SEFGH wird hier angezeigt.",
+            playgroundTitle: "Spielplatz",
+            playgroundDescription: "Experimentieren Sie mit SEFGH-Funktionen auf diesem Spielplatz.",
+            repoSearchTitle: "Repo-Suche",
+            searchPlaceholder: "GitHub-Repositories durchsuchen...",
+            repoSearchInitialTitle: "Repository-Suche",
+            repoSearchInitialMessage: "Ergebnisse aus Ihrem Chat werden hier angezeigt.",
+            noResultsFoundTitle: "Keine Ergebnisse gefunden",
+            noResultsFoundMessage: (query) => `Ihre Suche nach „${query}“ ergab keine Übereinstimmungen mit Repositorys.`,
+            anErrorOccurred: "Ein Fehler ist aufgetreten",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "Entschuldigen Sie, ich habe derzeit Probleme, mich mit meiner Kernintelligenz zu verbinden. Bitte überprüfen Sie Ihre Internetverbindung oder versuchen Sie es in einem Moment erneut.",
+            messageCopied: "Nachricht in die Zwischenablage kopiert!",
+            messageDeleted: "Nachricht gelöscht.",
+            switchedToVersion: (versionName) => `Gewechselt zu ${versionName}.`,
+            aiInitiatedSearch: (query) => `KI-initiierte Suche nach: „${query}“`,
+        },
+        ja: {
+            pageTitle: "SEFGH - AI搭載GitHubリポジトリ検索",
+            navigationTitle: "ナビゲーション",
+            newChat: "新しいチャット",
+            chatHistory: "チャット履歴",
+            docs: "ドキュメント",
+            playground: "プレイグラウンド",
+            console: "コンソール",
+            proxy: "プロキシ",
+            language: "言語",
+            settings: "設定",
+            chatPlaceholder: "例: 'React用の軽量チャートライブラリを見つける'",
+            disclaimer: "SEFGH-Aiは進化しています。重要な情報を確認してください",
+            chatHistoryTitle: "チャット履歴",
+            noChatHistory: "チャット履歴なし",
+            chatHistoryEmptyMessage: "過去の会話がここに表示されます。",
+            proxySettingsTitle: "プロキシ設定",
+            proxyDescription: "ここでプロキシ設定を構成します。",
+            proxyAddressLabel: "プロキシアドレス",
+            proxyUsernameLabel: "ユーザー名 (オプション)",
+            proxyPasswordLabel: "パスワード (オプション)",
+            saveProxySettingsBtn: "プロキシ設定を保存",
+            languageSettingsTitle: "言語設定",
+            languageDescription: "アプリケーションインターフェースの優先言語を選択してください:",
+            settingsTitle: "設定",
+            settingsDescription: "アプリケーション設定はここで構成されます。",
+            consoleTitle: "コンソール",
+            consoleDescription: "開発者コンソール出力がここに表示されます。",
+            docsTitle: "ドキュメント",
+            docsDescription: "SEFGHのドキュメントがここに表示されます。",
+            playgroundTitle: "プレイグラウンド",
+            playgroundDescription: "このプレイグラウンドでSEFGHの機能を試してください。",
+            repoSearchTitle: "リポジトリ検索",
+            searchPlaceholder: "GitHubリポジトリを検索...",
+            repoSearchInitialTitle: "リポジトリ検索",
+            repoSearchInitialMessage: "チャットからの結果がここに表示されます。",
+            noResultsFoundTitle: "結果が見つかりません",
+            noResultsFoundMessage: (query) => `「${query}」の検索では、リポジトリが見つかりませんでした。`,
+            anErrorOccurred: "エラーが発生しました",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "申し訳ありません、現在、私の中心的な知能に接続するのに問題があります。インターネット接続を確認するか、しばらくしてからもう一度お試しください。",
+            messageCopied: "メッセージがクリップボードにコピーされました！",
+            messageDeleted: "メッセージが削除されました。",
+            switchedToVersion: (versionName) => `${versionName}に切り替えました。`,
+            aiInitiatedSearch: (query) => `AIが検索を開始しました: 「${query}」`,
+        },
+        zh: {
+            pageTitle: "SEFGH - AI驱动的GitHub仓库搜索",
+            navigationTitle: "导航",
+            newChat: "新聊天",
+            chatHistory: "聊天历史",
+            docs: "文档",
+            playground: "游乐场",
+            console: "控制台",
+            proxy: "代理",
+            language: "语言",
+            settings: "设置",
+            chatPlaceholder: "例如：'查找一个轻量级的React图表库'",
+            disclaimer: "SEFGH-Ai正在发展中。请确认重要信息",
+            chatHistoryTitle: "聊天历史",
+            noChatHistory: "无聊天历史",
+            chatHistoryEmptyMessage: "您过去的对话将显示在此处。",
+            proxySettingsTitle: "代理设置",
+            proxyDescription: "在此处配置您的代理设置。",
+            proxyAddressLabel: "代理地址",
+            proxyUsernameLabel: "用户名（可选）",
+            proxyPasswordLabel: "密码（可选）",
+            saveProxySettingsBtn: "保存代理设置",
+            languageSettingsTitle: "语言设置",
+            languageDescription: "请选择您偏好的应用程序界面语言：",
+            settingsTitle: "设置",
+            settingsDescription: "应用程序设置将在此处配置。",
+            consoleTitle: "控制台",
+            consoleDescription: "开发者控制台输出将显示在此处。",
+            docsTitle: "文档",
+            docsDescription: "SEFGH的文档将显示在此处。",
+            playgroundTitle: "游乐场",
+            playgroundDescription: "在此游乐场中体验SEFGH的功能。",
+            repoSearchTitle: "仓库搜索",
+            searchPlaceholder: "搜索GitHub仓库...",
+            repoSearchInitialTitle: "仓库搜索",
+            repoSearchInitialMessage: "您的聊天结果将显示在此处。",
+            noResultsFoundTitle: "未找到结果",
+            noResultsFoundMessage: (query) => `您对“${query}”的搜索未匹配到任何仓库。`,
+            anErrorOccurred: "发生错误",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "非常抱歉，我目前无法连接到我的核心智能。请检查您的互联网连接或稍后再试。",
+            messageCopied: "消息已复制到剪贴板！",
+            messageDeleted: "消息已删除。",
+            switchedToVersion: (versionName) => `已切换到 ${versionName}。`,
+            aiInitiatedSearch: (query) => `AI发起了搜索："${query}"`,
+        },
+        hi: {
+            pageTitle: "SEFGH - एआई-पावर्ड गिटहब रिपॉजिटरी खोज",
+            navigationTitle: "नेविगेशन",
+            newChat: "नई चैट",
+            chatHistory: "चैट इतिहास",
+            docs: "दस्तावेज़",
+            playground: "प्लेग्राउंड",
+            console: "कंसोल",
+            proxy: "प्रॉक्सी",
+            language: "भाषा",
+            settings: "सेटिंग्स",
+            chatPlaceholder: "उदाहरन: 'रिएक्ट के लिए एक हल्की चार्टिंग लाइब्रेरी खोजें'",
+            disclaimer: "SEFGH-Ai विकसित हो रहा है। आवश्यक जानकारी की पुष्टि करें",
+            chatHistoryTitle: "चैट इतिहास",
+            noChatHistory: "कोई चैट इतिहास नहीं",
+            chatHistoryEmptyMessage: "आपकी पिछली बातचीत यहां दिखाई देगी।",
+            proxySettingsTitle: "प्रॉक्सी सेटिंग्स",
+            proxyDescription: "अपनी प्रॉक्सी सेटिंग्स यहां कॉन्फ़िगर करें।",
+            proxyAddressLabel: "प्रॉक्सी पता",
+            proxyUsernameLabel: "उपयोगकर्ता नाम (वैकल्पिक)",
+            proxyPasswordLabel: "पासवर्ड (वैकल्पिक)",
+            saveProxySettingsBtn: "प्रॉक्सी सेटिंग्स सहेजें",
+            languageSettingsTitle: "भाषा सेटिंग्स",
+            languageDescription: "एप्लिकेशन इंटरफ़ेस के लिए अपनी पसंदीदा भाषा चुनें:",
+            settingsTitle: "सेटिंग्स",
+            settingsDescription: "एप्लिकेशन सेटिंग्स यहां कॉन्फ़िगर की जाएंगी।",
+            consoleTitle: "कंसोल",
+            consoleDescription: "डेवलपर कंसोल आउटपुट यहां दिखाई देगा।",
+            docsTitle: "दस्तावेज़",
+            docsDescription: "SEFGH के लिए दस्तावेज़ यहां प्रदर्शित किए जाएंगे।",
+            playgroundTitle: "प्लेग्राउंड",
+            playgroundDescription: "इस प्लेग्राउंड में SEFGH सुविधाओं के साथ प्रयोग करें।",
+            repoSearchTitle: "रेपो खोज",
+            searchPlaceholder: "गिटहब रिपॉजिटरी खोजें...",
+            repoSearchInitialTitle: "रिपॉजिटरी खोज",
+            repoSearchInitialMessage: "आपके चैट के परिणाम यहां दिखाई देंगे।",
+            noResultsFoundTitle: "कोई परिणाम नहीं मिला",
+            noResultsFoundMessage: (query) => `आपके "${query}" की खोज किसी भी रिपॉजिटरी से मेल नहीं खाती।`,
+            anErrorOccurred: "एक त्रुटि हुई",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "मुझे खेद है, मुझे इस समय अपनी मुख्य बुद्धिमत्ता से जुड़ने में समस्या हो रही है। कृपया अपना इंटरनेट कनेक्शन जांचें या थोड़ी देर बाद पुनः प्रयास करें।",
+            messageCopied: "संदेश क्लिपबोर्ड पर कॉपी किया गया!",
+            messageDeleted: "संदेश हटा दिया गया।",
+            switchedToVersion: (versionName) => `${versionName} पर स्विच किया गया।`,
+            aiInitiatedSearch: (query) => `एआई द्वारा शुरू की गई खोज: "${query}"`,
+        },
+        te: {
+            pageTitle: "SEFGH - AI-శక్తివంతమైన GitHub రిపోజిటరీ శోధన",
+            navigationTitle: "నావిగేషన్",
+            newChat: "కొత్త చాట్",
+            chatHistory: "చాట్ చరిత్ర",
+            docs: "డాక్స్",
+            playground: "ప్లేగ్రౌండ్",
+            console: "కన్సోల్",
+            proxy: "ప్రాక్సీ",
+            language: "భాష",
+            settings: "సెట్టింగ్‌లు",
+            chatPlaceholder: "ఉదా: 'రియాక్ట్ కోసం తేలికపాటి చార్టింగ్ లైబ్రరీని కనుగొనండి'",
+            disclaimer: "SEFGH-Ai అభివృద్ధి చెందుతోంది. అవసరమైన సమాచారాన్ని నిర్ధారించండి",
+            chatHistoryTitle: "చాట్ చరిత్ర",
+            noChatHistory: "చాట్ చరిత్ర లేదు",
+            chatHistoryEmptyMessage: "మీ గత సంభాషణలు ఇక్కడ కనిపిస్తాయి.",
+            proxySettingsTitle: "ప్రాక్సీ సెట్టింగ్‌లు",
+            proxyDescription: "మీ ప్రాక్సీ సెట్టింగ్‌లను ఇక్కడ కాన్ఫిగర్ చేయండి.",
+            proxyAddressLabel: "ప్రాక్సీ చిరునామా",
+            proxyUsernameLabel: "వినియోగదారు పేరు (ఐచ్ఛికం)",
+            proxyPasswordLabel: "పాస్‌వర్డ్ (ఐచ్ఛికం)",
+            saveProxySettingsBtn: "ప్రాక్సీ సెట్టింగ్‌లను సేవ్ చేయండి",
+            languageSettingsTitle: "భాషా సెట్టింగ్‌లు",
+            languageDescription: "అప్లికేషన్ ఇంటర్‌ఫేస్ కోసం మీకు ఇష్టమైన భాషను ఎంచుకోండి:",
+            settingsTitle: "సెట్టింగ్‌లు",
+            settingsDescription: "అప్లికేషన్ సెట్టింగ్‌లు ఇక్కడ కాన్ఫిగర్ చేయబడతాయి.",
+            consoleTitle: "కన్సోల్",
+            consoleDescription: "డెవలపర్ కన్సోల్ అవుట్‌పుట్ ఇక్కడ కనిపిస్తుంది.",
+            docsTitle: "డాక్యుమెంటేషన్",
+            docsDescription: "SEFGH కోసం డాక్యుమెంటేషన్ ఇక్కడ ప్రదర్శించబడుతుంది.",
+            playgroundTitle: "ప్లేగ్రౌండ్",
+            playgroundDescription: "ఈ ప్లేగ్రౌండ్‌లో SEFGH ఫీచర్‌లతో ప్రయోగాలు చేయండి.",
+            repoSearchTitle: "రెపో శోధన",
+            searchPlaceholder: "GitHub రిపోజిటరీలను శోధించండి...",
+            repoSearchInitialTitle: "రిపోజిటరీ శోధన",
+            repoSearchInitialMessage: "మీ చాట్ నుండి ఫలితాలు ఇక్కడ కనిపిస్తాయి.",
+            noResultsFoundTitle: "ఫలితాలు కనుగొనబడలేదు",
+            noResultsFoundMessage: (query) => `మీరు శోధించిన "${query}"కు ఏ రిపోజిటరీలు సరిపోలలేదు.`,
+            anErrorOccurred: "ఒక లోపం సంభవించింది",
+            apiErrorMessage: (message) => `${message}`,
+            llmApiFailed: "క్షమించండి, నా ప్రధాన ఇంటెలిజెన్స్‌కు కనెక్ట్ చేయడంలో నాకు ప్రస్తుతం సమస్య ఉంది. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి లేదా కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",
+            messageCopied: "సందేశం క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది!",
+            messageDeleted: "సందేశం తొలగించబడింది.",
+            switchedToVersion: (versionName) => `${versionName}కు మార్చబడింది.`,
+            aiInitiatedSearch: (query) => `AI ద్వారా శోధన ప్రారంభించబడింది: "${query}"`,
+        }
+    };
 
     /**
      * Displays a notification message.
@@ -511,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {'info'|'success'|'error'} type The type of notification.
      * @param {number} duration The duration in milliseconds before the notification fades out.
      */
-    const showNotification = (message, type = 'info', duration = 7000) => { // Increased duration to 7 seconds
+    const showNotification = (message, type = 'info', duration = 7000) => { 
         const notificationItem = document.createElement('div');
         notificationItem.className = `notification-item ${type}`;
         notificationItem.innerHTML = `
@@ -521,12 +1077,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </button>
         `;
         notificationContainer.appendChild(notificationItem);
-        lucide.createIcons(); // Re-render lucide icons for the new notification
+        lucide.createIcons(); 
 
         setTimeout(() => {
             notificationItem.style.opacity = '0';
             notificationItem.style.transform = 'translateY(-20px)';
-            setTimeout(() => notificationItem.remove(), 500); // Remove after fade out
+            setTimeout(() => notificationItem.remove(), 500); 
         }, duration);
     };
 
@@ -536,132 +1092,201 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {string} The HTML formatted string.
      */
     const parseMarkdownToHtml = (markdownText) => {
-        // Configure marked.js to add Tailwind classes to generated HTML elements
         const renderer = new marked.Renderer();
 
-        // Customize heading rendering
         renderer.heading = (text, level) => {
             const tag = `h${level}`;
             let classes = '';
             if (level === 1) classes = 'text-xl font-bold mt-4 mb-2';
             else if (level === 2) classes = 'text-lg font-semibold mt-3 mb-1.5';
             else if (level === 3) classes = 'text-base font-medium mt-2.5 mb-1';
-            // Add more levels if needed
             return `<${tag} class="${classes}">${text}</${tag}>`;
         };
 
-        // Customize paragraph rendering
         renderer.paragraph = (text) => {
             return `<p class="mb-2 last:mb-0">${text}</p>`;
         };
 
-        // Customize list item rendering
         renderer.listitem = (text) => {
-            return `<li class="ml-4 list-disc">${text}</li>`; // Tailwind's list-disc adds the bullet
+            return `<li class="ml-4 list-disc">${text}</li>`; 
         };
         
-        // Customize code block rendering
         renderer.code = (code, language) => {
-            // Basic styling for code blocks, you might want a full syntax highlighter
             return `<pre class="bg-gray-800 text-gray-200 p-3 rounded-md overflow-x-auto my-2 text-sm font-mono"><code class="language-${language}">${code}</code></pre>`;
         };
 
-        // Customize inline code rendering
         renderer.codespan = (code) => {
             return `<code class="bg-gray-200 dark:bg-gray-700 rounded px-1 py-0.5 text-sm font-mono">${code}</code>`;
         };
 
-        // Customize link rendering
         renderer.link = (href, title, text) => {
             return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">${text}</a>`;
         };
 
-        // Set options for marked.js
         marked.setOptions({
             renderer: renderer,
-            gfm: true, // Use GitHub Flavored Markdown
-            breaks: true, // Convert newlines to <br>
-            sanitize: true // Sanitize the output to prevent XSS attacks
+            gfm: true, 
+            breaks: true, 
+            sanitize: true 
         });
 
         return marked.parse(markdownText);
     };
 
+    // --- Language Selection Logic (NEW) ---
+    const setLanguage = (langCode) => {
+        console.log(`setLanguage: Setting language to ${langCode}`);
+        state.selectedLanguage = langCode;
+        localStorage.setItem('selectedLanguage', langCode);
+
+        // Update all elements with data-i18n attribute
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            let translation = translations[langCode][key];
+
+            // Handle functions for dynamic messages (e.g., noResultsFoundMessage)
+            if (typeof translation === 'function') {
+                // This requires context, which is not available universally for all data-i18n elements.
+                // For now, we'll only apply it where we know the context (e.g., renderSearchEmpty).
+                // For static elements, it's just the string.
+                element.textContent = translations['en'][key]; // Fallback to English for static if function
+            } else {
+                element.textContent = translation;
+            }
+        });
+
+        // Update active state for language buttons
+        document.querySelectorAll('.lang-select-btn').forEach(button => {
+            if (button.dataset.lang === langCode) {
+                button.classList.add('bg-primary-100', 'dark:bg-primary-800', 'text-primary-800', 'dark:text-primary-100', 'font-medium');
+                button.classList.remove('hover:bg-gray-200', 'dark:hover:bg-gray-700/80');
+                button.querySelector('.lang-check-icon').innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>`;
+            } else {
+                button.classList.remove('bg-primary-100', 'dark:bg-primary-800', 'text-primary-800', 'dark:text-primary-100', 'font-medium');
+                button.classList.add('hover:bg-gray-200', 'dark:hover:bg-gray-700/80');
+                button.querySelector('.lang-check-icon').innerHTML = `<i data-lucide="circle" class="w-5 h-5 text-gray-400"></i>`;
+            }
+        });
+        
+        lucide.createIcons(); // Re-render Lucide icons for check/circle
+    };
+
 
     // --- View & UI Logic ---
     const setActiveView = (view) => {
-        console.log(`setActiveView: Switching to view: ${view}`);
+        console.log(`setActiveView: Switching to view: ${view}. Nav Open: ${state.isNavOpen}, Search Visible: ${state.isSearchVisible}`);
         state.activeView = view;
-        const isMobile = window.innerWidth < 768; // Define mobile breakpoint
+        const isMobile = window.innerWidth < 768;
+
+        // Reset visibility for all panels and handles
+        navPanel.classList.add('hidden');
+        navResizeHandle.classList.add('hidden');
+        searchPanel.classList.add('hidden');
+        searchResizeHandle.classList.add('hidden');
+
+        // Hide all main content panels
+        Object.values(contentPanels).forEach(panel => panel.classList.add('hidden'));
+
+        // Remove mobile overlay styles from search panel
+        searchPanel.classList.remove('absolute', 'inset-0', 'z-20');
+        closeSearchPanelBtn.classList.add('hidden'); // Hide close button by default for desktop
+
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active-nav');
+            item.classList.add('inactive-nav');
+        });
 
         if (isMobile) {
             console.log("setActiveView: Mobile view detected.");
-            // Mobile: Search panel overlays chat panel
+            state.isNavOpen = false; // Force nav closed on mobile
+            toggleNavBtn.classList.add('hidden'); // Hide nav toggle on mobile
+
             if (state.isSearchVisible) {
-                chatPanel.classList.add('hidden'); // Hide chat panel
-                searchPanel.classList.remove('hidden'); // Show search panel
-                // Ensure search panel is full screen and on top
-                searchPanel.classList.add('absolute', 'inset-0', 'z-20'); // z-20 to be above chat
-                searchPanel.style.width = '100%'; // Explicitly set width for transition
-                resizeHandle.classList.add('hidden'); // Always hide resize handle on mobile
-                toggleSearchBtn.innerHTML = `<i data-lucide="x" class="w-5 h-5"></i>`; // Change to close icon
+                searchPanel.classList.remove('hidden');
+                searchPanel.classList.add('absolute', 'inset-0', 'z-20');
+                searchPanel.style.width = '100%';
+                toggleSearchBtn.innerHTML = `<i data-lucide="x" class="w-5 h-5"></i>`;
                 toggleSearchBtn.title = "Close Search";
-                // Show the close button in the search panel header
                 closeSearchPanelBtn.classList.remove('hidden');
-                console.log("setActiveView: Search panel visible (mobile overlay).");
+
+                mainContentWrapper.classList.add('hidden'); // Hide main content on mobile if search is open
             } else {
-                chatPanel.classList.remove('hidden'); // Show chat panel
-                searchPanel.classList.add('hidden'); // Hide search panel
-                searchPanel.classList.remove('absolute', 'inset-0', 'z-20'); // Remove overlay styles
-                searchPanel.style.width = '0%'; // Collapse search panel
-                resizeHandle.classList.add('hidden'); // Always hide resize handle on mobile
-                toggleSearchBtn.innerHTML = `<i data-lucide="search" class="w-5 h-5"></i>`; // Change to search icon
+                mainContentWrapper.classList.remove('hidden');
+                const activePanel = contentPanels[state.activeView];
+                if (activePanel) {
+                    activePanel.classList.remove('hidden');
+                }
+                mainContentWrapper.style.width = '100%'; // Main content wrapper takes full width on mobile
+                toggleSearchBtn.innerHTML = `<i data-lucide="search" class="w-5 h-5"></i>`;
                 toggleSearchBtn.title = "Show Search";
-                // Hide the close button in the search panel header
-                closeSearchPanelBtn.classList.add('hidden');
-                console.log("setActiveView: Chat panel visible (mobile).");
             }
         } else { // Desktop/Tablet behavior
             console.log("setActiveView: Desktop/Tablet view detected.");
-            chatPanel.classList.remove('hidden'); // Ensure chat is visible
-            searchPanel.classList.remove('absolute', 'inset-0', 'z-20'); // Remove mobile overlay styles
-            
+            toggleNavBtn.classList.remove('hidden');
+            mainContentWrapper.classList.remove('hidden'); // Ensure wrapper is visible
+
+            const activePanel = contentPanels[state.activeView];
+            if (activePanel) {
+                activePanel.classList.remove('hidden');
+            }
+
+            const activeNavItem = document.querySelector(`.nav-item[data-view="${state.activeView}"]`);
+            if (activeNavItem) {
+                activeNavItem.classList.remove('inactive-nav');
+                activeNavItem.classList.add('active-nav');
+            }
+
+            // Apply nav panel width and visibility
+            if (state.isNavOpen) {
+                navPanel.classList.remove('hidden');
+                navResizeHandle.classList.remove('hidden');
+                navPanel.style.width = `${state.navWidth}px`;
+            } else {
+                navPanel.style.width = `0px`; // Collapse nav panel
+            }
+
+            // Apply search panel width and visibility
             if (state.isSearchVisible) {
                 searchPanel.classList.remove('hidden');
-                resizeHandle.classList.remove('hidden');
-                const gapWidth = 8;
-                chatPanel.style.width = `calc(40% - ${gapWidth / 2}px)`;
-                searchPanel.style.width = `calc(${60}% - ${gapWidth / 2}px)`;
-                toggleSearchBtn.innerHTML = `<i data-lucide="message-square" class="w-5 h-5"></i>`; // Change to message icon
+                searchResizeHandle.classList.remove('hidden');
+                searchPanel.style.width = `${state.searchWidth}px`;
+                toggleSearchBtn.innerHTML = `<i data-lucide="message-square" class="w-5 h-5"></i>`;
                 toggleSearchBtn.title = "Hide Search";
-                // Hide the close button in the search panel header (only relevant for mobile overlay)
-                closeSearchPanelBtn.classList.add('hidden');
-                console.log("setActiveView: Search panel visible (desktop split).");
             } else {
-                searchPanel.classList.add('hidden');
-                resizeHandle.classList.add('hidden');
-                chatPanel.style.width = '100%';
-                searchPanel.style.width = '0%';
-                toggleSearchBtn.innerHTML = `<i data-lucide="search" class="w-5 h-5"></i>`; // Change to search icon
+                searchPanel.style.width = `0px`; // Collapse search panel
+                toggleSearchBtn.innerHTML = `<i data-lucide="search" class="w-5 h-5"></i>`;
                 toggleSearchBtn.title = "Show Search";
-                // Hide the close button in the search panel header
-                closeSearchPanelBtn.classList.add('hidden');
-                console.log("setActiveView: Chat panel visible (desktop full).");
             }
+
+            // Main content wrapper automatically takes remaining space due to flex-1
+            // Its children (chatPanel, historyPanel, etc.) should be w-full
+            // No explicit width setting for mainContentWrapper needed here.
+            // All content panels within mainContentWrapper should be w-full by default in HTML.
         }
         lucide.createIcons();
     };
 
+
     const toggleSearchView = () => {
         console.log("toggleSearchView: Toggling search view visibility.");
         state.isSearchVisible = !state.isSearchVisible;
-        setActiveView(state.activeView); // Re-use setActiveView to apply changes
+        // If search is being opened, ensure chat is the active content view
+        if (state.isSearchVisible && state.activeView !== 'chat') {
+            state.activeView = 'chat';
+        }
+        setActiveView(state.activeView); 
+    };
+
+    const toggleNavView = () => {
+        console.log("toggleNavView: Toggling navigation view visibility.");
+        state.isNavOpen = !state.isNavOpen;
+        setActiveView(state.activeView);
     };
 
     // --- Chat History Logic ---
     const saveMessages = () => localStorage.setItem('chatMessages', JSON.stringify(state.messages));
     
-    // --- MODIFIED: `renderMessages` and `renderSingleMessage` for new icon placement ---
     const renderMessages = () => {
         console.log("renderMessages: Rendering chat messages.");
         messagesContainer.innerHTML = '';
@@ -715,27 +1340,24 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesContainer.innerHTML = `
                 <div class="text-center text-gray-500 dark:text-gray-400 mt-8">
                     <i data-lucide="message-square" class="w-12 h-12 mx-auto mb-4 text-primary-500 animate-bounce-in"></i>
-                    <h3 class="text-lg font-medium mb-2 animate-fade-in-up">Welcome to SEFGH!</h3>
-                    <p class="text-sm animate-fade-in-up" style="animation-delay: 0.2s;">How can I help you explore GitHub today?</p>
+                    <h3 data-i18n="welcomeTitle" class="text-lg font-medium mb-2 animate-fade-in-up">Welcome to SEFGH!</h3>
+                    <p data-i18n="welcomeMessage" class="text-sm animate-fade-in-up" style="animation-delay: 0.2s;">How can I help you explore GitHub today?</p>
                 </div>`;
-            clearHistoryBtn.classList.add('hidden');
+            clearChatHistoryBtn.classList.add('hidden');
         } else {
             messagesContainer.innerHTML = state.messages.map(msg => renderSingleMessage(msg)).join('');
-            clearHistoryBtn.classList.remove('hidden');
+            clearChatHistoryBtn.classList.remove('hidden');
         }
         if (state.isTyping) {
-            // Pass an empty string for content when rendering the typing indicator
             messagesContainer.innerHTML += renderSingleMessage({ role: 'assistant', rawContent: '', htmlContent: '' }, true);
         }
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         lucide.createIcons();
     };
     
-    // Modified addMessage to store both raw and HTML content
     const addMessage = (content, role) => { 
         console.log(`addMessage: Adding message - Role: ${role}, Content: "${content}"`);
-        // Use marked.parse for assistant messages
-        const htmlContent = role === 'assistant' ? marked.parse(content) : content; 
+        const htmlContent = role === 'assistant' ? parseMarkdownToHtml(content) : content; // Use parseMarkdownToHtml for assistant messages
         state.messages.push({ id: Date.now(), rawContent: content, htmlContent, role, timestamp: new Date() }); 
         saveMessages(); 
         renderMessages(); 
@@ -749,14 +1371,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleSendMessage = (e) => { 
         e.preventDefault(); 
         const message = chatTextarea.value.trim(); 
-        if (!message) return; // Prevent sending empty messages
+        if (!message) return;
 
         if (state.selectedVersionId !== 'v1') {
-            showNotification("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features.", 'info');
-            chatTextarea.value = ''; // Clear input
+            showNotification(translations[state.selectedLanguage].apiErrorMessage("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features."), 'info');
+            chatTextarea.value = ''; 
             chatTextarea.style.height = 'auto'; 
             updateChatInputState(); 
-            return; // Do not process or display the message
+            return; 
         }
 
         if (!state.isTyping) { 
@@ -773,7 +1395,6 @@ document.addEventListener('DOMContentLoaded', () => {
         sendBtn.disabled = !hasText || state.isTyping;
         chatTextarea.disabled = state.isTyping;
 
-        // Dynamically add/remove overflow-y-auto based on scrollHeight
         if (chatTextarea.scrollHeight > chatTextarea.clientHeight) {
             chatTextarea.classList.add('overflow-y-auto');
         } else {
@@ -789,14 +1410,12 @@ document.addEventListener('DOMContentLoaded', () => {
         state.searchHistory.unshift(trimmedQuery);
         if (state.searchHistory.length > 50) state.searchHistory.pop();
         localStorage.setItem('searchHistory', JSON.stringify(state.searchHistory));
-        renderHistoryPanel();
+        // renderHistoryPanel(); // No longer called directly from here, as history is a content panel
     };
     const renderHistoryPanel = () => {
         console.log("renderHistoryPanel: Rendering search history panel.");
-        // This panel is no longer directly accessible via a sidebar button.
-        // It will remain hidden unless logic is added to show it elsewhere.
         if (state.searchHistory.length === 0) {
-            historyContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-4 text-red-400"></i><h3 class="text-lg font-medium mb-2">No Search History</h3><p class="text-sm">Your past searches will appear here.</p></div>`;
+            historyContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-4 text-red-400"></i><h3 data-i18n="noChatHistory" class="text-lg font-medium mb-2">No Chat History</h3><p data-i18n="chatHistoryEmptyMessage" class="text-sm">Your past conversations will appear here.</p></div>`;
             clearSearchHistoryBtn.classList.add('hidden');
         } else {
             historyContainer.innerHTML = `<ul class="space-y-2">${state.searchHistory.map(term => `<li><button class="history-item-btn w-full text-left p-3 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700/80 transition-colors flex justify-between items-center shadow-sm" data-query="${term}"><span class="font-medium text-gray-800 dark:text-gray-200 pointer-events-none">${term}</span><i data-lucide="search" class="w-4 h-4 text-gray-400 pointer-events-none"></i></button></li>`).join('')}</ul>`;
@@ -843,49 +1462,95 @@ document.addEventListener('DOMContentLoaded', () => {
             renderSearchError(error.message); 
         } 
     };
-    const renderSearchInitial = () => { console.log("renderSearchInitial: Displaying initial search prompt."); searchResultsContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="folder-search" class="w-16 h-16 mx-auto mb-4 text-primary-400"></i><h3 class="text-lg font-medium mb-2">Repository Search</h3><p class="text-sm">Results from your chat will appear here.</p></div>`; lucide.createIcons(); };
+    const renderSearchInitial = () => { 
+        console.log("renderSearchInitial: Displaying initial search prompt."); 
+        searchResultsContainer.innerHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 mt-8">
+                <i data-lucide="folder-search" class="w-16 h-16 mx-auto mb-4 text-primary-400"></i>
+                <h3 data-i18n="repoSearchInitialTitle" class="text-lg font-medium mb-2">Repository Search</h3>
+                <p data-i18n="repoSearchInitialMessage" class="text-sm">Results from your chat will appear here.</p>
+            </div>`; 
+        lucide.createIcons(); 
+    };
     const renderSearchLoading = () => { console.log("renderSearchLoading: Displaying search loading skeletons."); let skeletons = Array(5).fill('').map(() => `<div class="bg-white dark:bg-gray-700 p-4 rounded-xl shadow-md animate-pulse-fast"><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4 mb-3"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1"></div><div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-5/6 mb-4"></div><div class="flex items-center space-x-4"><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div><div class="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div></div></div>`).join(''); searchResultsContainer.innerHTML = `<div class="space-y-4">${skeletons}</div>`; lucide.createIcons(); };
     const renderSearchResults = (items) => { console.log("renderSearchResults: Displaying search results."); const cardsHtml = items.map(item => `<div class="bg-white dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50 shadow-md hover:shadow-lg hover:border-primary-500 dark:hover:border-primary-400 transition-all duration-200"><div class="flex justify-between items-start"><a href="${item.html_url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-gray-800 dark:text-gray-200 hover:underline mb-1 pr-2">${item.full_name}</a><div class="flex-shrink-0 flex items-center space-x-3 text-gray-500 dark:text-gray-400"><span class="flex items-center text-sm"><i data-lucide="star" class="w-4 h-4 mr-1 text-yellow-500"></i>${formatNumber(item.stargazers_count)}</span><span class="flex items-center text-sm"><i data-lucide="git-fork" class="w-4 h-4 mr-1 text-purple-400"></i>${formatNumber(item.forks_count)}</span></div></div><p class="text-sm text-gray-600 dark:text-gray-300 my-2">${item.description || 'No description provided.'}</p><div class="flex items-center justify-between mt-3 text-xs text-gray-500 dark:text-gray-400"><div class="flex items-center space-x-4">${item.language ? `<span class="flex items-center"><i data-lucide="code" class="w-3 h-3 mr-1.5 text-cyan-400"></i>${item.language}</span>` : ''}${item.license ? `<span class="flex items-center"><i data-lucide="scale" class="w-3 h-3 mr-1.5 text-green-400"></i>${item.license.spdx_id}</span>` : ''}</div><span>Updated ${new Date(item.updated_at).toLocaleDateString()}</span></div><div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center space-x-2"><button class="copy-btn text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded-md flex items-center" data-copy="${item.html_url}"><i data-lucide="link" class="w-3 h-3 mr-1.5 text-indigo-400"></i>Copy URL</button><button class="copy-btn text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded-md flex items-center" data-copy="${item.clone_url}"><i data-lucide="terminal" class="w-3 h-3 mr-1.5 text-emerald-400"></i>Copy Clone</button></div></div>`).join(''); searchResultsContainer.innerHTML = `<div class="space-y-4">${cardsHtml}</div>`; lucide.createIcons(); };
-    const renderSearchEmpty = (query) => { console.log(`renderSearchEmpty: No results for query: "${query}"`); searchResultsContainer.innerHTML = `<div class="text-center text-gray-500 dark:text-gray-400 mt-8"><i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 text-red-400"></i><h3 class="text-lg font-medium mb-2">No Results Found</h3><p class="text-sm">Your search for "${query}" did not match any repositories.</p></div>`; lucide.createIcons(); };
-    const renderSearchError = (message) => { console.error(`renderSearchError: Displaying search error: "${message}"`); searchResultsContainer.innerHTML = `<div class="text-center text-red-500 dark:text-red-400 mt-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg"><i data-lucide="alert-triangle" class="w-16 h-16 mx-auto mb-4 text-red-600"></i><h3 class="text-lg font-medium mb-2">An Error Occurred</h3><p class="text-sm">${message}</p></div>`; lucide.createIcons(); };
+    const renderSearchEmpty = (query) => { 
+        console.log(`renderSearchEmpty: No results for query: "${query}"`); 
+        searchResultsContainer.innerHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 mt-8">
+                <i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 text-red-400"></i>
+                <h3 data-i18n="noResultsFoundTitle" class="text-lg font-medium mb-2">No Results Found</h3>
+                <p class="text-sm">${translations[state.selectedLanguage].noResultsFoundMessage(query)}</p>
+            </div>`; 
+        lucide.createIcons(); 
+    };
+    const renderSearchError = (message) => { 
+        console.error(`renderSearchError: Displaying search error: "${message}"`); 
+        searchResultsContainer.innerHTML = `
+            <div class="text-center text-red-500 dark:text-red-400 mt-8 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <i data-lucide="alert-triangle" class="w-16 h-16 mx-auto mb-4 text-red-600"></i>
+                <h3 data-i18n="anErrorOccurred" class="text-lg font-medium mb-2">An Error Occurred</h3>
+                <p class="text-sm">${translations[state.selectedLanguage].apiErrorMessage(message)}</p>
+            </div>`; 
+        lucide.createIcons(); 
+    };
     
-    // This function is now simplified as its logic is mostly handled in processUserMessage
     const handleSearchTrigger = (query) => { 
         console.log(`handleSearchTrigger: Called with query: "${query}"`);
-        // This function is primarily for external triggers.
-        // Direct handling of search panel visibility and search initiation is now in processUserMessage.
-        // Keeping it here for potential future direct calls or clarity.
     };
     
     // --- Resize Logic ---
-    const handleResizeMouseDown = (e) => { e.preventDefault(); state.isResizing = true; appContainer.style.cursor = 'col-resize'; document.addEventListener('mousemove', handleResizeMouseMove); document.addEventListener('mouseup', handleResizeMouseUp); };
+    const handleResizeMouseDown = (e) => { 
+        e.preventDefault(); 
+        const targetId = e.target.id;
+        if (targetId === 'nav-resize-handle') {
+            state.isResizing = 'nav';
+        } else if (targetId === 'search-resize-handle') {
+            state.isResizing = 'search';
+        }
+        appContainer.style.cursor = 'col-resize'; 
+        document.addEventListener('mousemove', handleResizeMouseMove); 
+        document.addEventListener('mouseup', handleResizeMouseUp); 
+    };
+
     const handleResizeMouseMove = (e) => {
         const isMobile = window.innerWidth < 768;
-        if (isMobile || !state.isResizing) return; // Disable resizing on mobile
+        if (isMobile || !state.isResizing) return;
 
-        const containerRect = panelContainer.getBoundingClientRect();
-        const gapWidth = 8; // Corresponds to Tailwind's gap-x-2
-        
-        // Calculate new chat panel width based on mouse position relative to container
-        let newChatWidthPx = e.clientX - containerRect.left;
-        
-        // Convert to percentage, adjusting for the gap
-        let newChatWidthPercent = ((newChatWidthPx - (gapWidth / 2)) / (containerRect.width - gapWidth)) * 100;
+        const panelContainerRect = panelContainer.getBoundingClientRect();
 
-        // Constrain widths to prevent panels from becoming too small
-        const constrainedChatWidth = Math.max(25, Math.min(75, newChatWidthPercent));
-        
-        // Apply calculated widths, accounting for the gap
-        chatPanel.style.width = `calc(${constrainedChatWidth}% - ${gapWidth / 2}px)`;
-        searchPanel.style.width = `calc(${100 - constrainedChatWidth}% - ${gapWidth / 2}px)`;
+        if (state.isResizing === 'nav') {
+            let newNavWidth = e.clientX - panelContainerRect.left;
+            newNavWidth = Math.max(150, Math.min(panelContainerRect.width * 0.4, newNavWidth)); // Constrain nav width
+            state.navWidth = newNavWidth;
+            navPanel.style.width = `${state.navWidth}px`;
+            localStorage.setItem('navWidth', state.navWidth);
+            // Re-render layout to adjust mainContentWrapper width
+            setActiveView(state.activeView);
+
+        } else if (state.isResizing === 'search') {
+            let newSearchWidthPx = panelContainerRect.right - e.clientX;
+            newSearchWidthPx = Math.max(200, Math.min(panelContainerRect.width * 0.7, newSearchWidthPx)); // Constrain search width
+            state.searchWidth = newSearchWidthPx;
+            searchPanel.style.width = `${state.searchWidth}px`;
+            localStorage.setItem('searchWidth', state.searchWidth);
+            // Re-render layout to adjust mainContentWrapper width
+            setActiveView(state.activeView);
+        }
     };
-    const handleResizeMouseUp = () => { state.isResizing = false; appContainer.style.cursor = 'default'; document.removeEventListener('mousemove', handleResizeMouseMove); document.removeEventListener('mouseup', handleResizeMouseUp); };
+
+    const handleResizeMouseUp = () => { 
+        state.isResizing = null; 
+        appContainer.style.cursor = 'default'; 
+        document.removeEventListener('mousemove', handleResizeMouseMove); 
+        document.removeEventListener('mouseup', handleResizeMouseUp); 
+    };
     
-    // --- Version Switcher Logic (Re-introduced and modified for header) ---
+    // --- Version Switcher Logic ---
     const renderVersionDropdown = () => {
-        const versionMenuEl = getEl('version-menu'); // Renamed to avoid conflict with local variable
-        const versionNameEl = getEl('version-name'); // Renamed
-        const versionChevronEl = getEl('version-chevron'); // Renamed
+        const versionMenuEl = getEl('version-menu'); 
+        const versionNameEl = getEl('version-name'); 
+        const versionChevronEl = getEl('version-chevron'); 
         const selectedVersion = state.versions.find(v => v.id === state.selectedVersionId);
         versionNameEl.textContent = selectedVersion.name;
         if (state.isVersionDropdownOpen) { versionMenuEl.classList.remove('hidden'); setTimeout(() => { versionMenuEl.style.transform = 'scale(1)'; versionMenuEl.style.opacity = '1'; }, 10); versionChevronEl.setAttribute('data-lucide', 'chevron-up'); } else { versionMenuEl.style.transform = 'scale(0.95)'; versionMenuEl.style.opacity = '0'; setTimeout(() => { versionMenuEl.classList.add('hidden'); }, 150); versionChevronEl.setAttribute('data-lucide', 'chevron-down'); }
@@ -902,36 +1567,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const API_URL = 'https://api.sefgh.org';
 
-        // Check if the selected version is v1.0, otherwise, prevent API call
         if (state.selectedVersionId !== 'v1') {
-            state.isTyping = false;
-            renderMessages(); // Re-render to remove typing indicator
-            updateChatInputState();
-            showNotification("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features.", 'info');
-            console.log("processUserMessage: API call skipped because selected version is not v1.0.");
-            return; // Exit the function
+            showNotification(translations[state.selectedLanguage].apiErrorMessage("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features."), 'info');
+            chatTextarea.value = ''; 
+            chatTextarea.style.height = 'auto'; 
+            updateChatInputState(); 
+            return; 
         }
 
         try {
-            // Get the last 4 messages (or fewer if not enough)
             const conversationHistory = state.messages.slice(-4); 
             console.log("processUserMessage: Conversation history for API call (last 4 messages):", conversationHistory);
             
-            // Format the conversation history into a single string
             let formattedHistory = "";
             conversationHistory.forEach(msg => {
-                // Use rawContent for sending to API to avoid HTML tags in prompt
                 formattedHistory += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.rawContent}\n`; 
             });
 
-            // Add the current user input to the formatted history
             formattedHistory += `User: ${userInput}`;
             console.log("processUserMessage: Formatted history sent to API:", formattedHistory);
 
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', },
-                body: JSON.stringify({ message: formattedHistory }), // Send the formatted history
+                body: JSON.stringify({ message: formattedHistory }), 
             });
 
             state.isTyping = false;
@@ -949,14 +1608,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             console.log("processUserMessage: Raw API response data:", data);
 
-            // The key change: The API returns the JSON *within* the 'message' field.
             if (data && data.message) { 
-                let assistantRawMessage = data.message; // Store the raw message
+                let assistantRawMessage = data.message; 
                 let extractedQuery = null;
 
-                // Attempt to extract JSON from the assistant's message
-                // This regex looks for a string starting with '{' and ending with '}'
-                // and specifically contains '"query": "..."' inside it.
                 const jsonRegex = /\{[\s\S]*?"query"\s*:\s*"[^"]*"[\s\S]*?\}/;
                 const jsonMatch = assistantRawMessage.match(jsonRegex);
                 
@@ -969,12 +1624,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (parsedContent.query) {
                             extractedQuery = parsedContent.query;
                             
-                            // Remove the JSON block from the raw message
                             assistantRawMessage = assistantRawMessage.replace(jsonString, '').trim();
 
-                            // If the parsed JSON also contains a 'message' field,
-                            // and the remaining part of the original message is empty or just whitespace,
-                            // then use the 'message' from the JSON as the primary display message.
                             if (parsedContent.message && assistantRawMessage === "") {
                                 assistantRawMessage = parsedContent.message;
                             }
@@ -985,25 +1636,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     } catch (parseError) {
                         console.warn("processUserMessage: Could not parse embedded JSON from assistant message, treating as plain text:", parseError);
-                        extractedQuery = null; // Reset in case of parse error
+                        extractedQuery = null; 
                     }
                 }
 
-                // Add the primary assistant message to chat (will be parsed to HTML by addMessage)
                 addMessage(assistantRawMessage, 'assistant');
                 console.log("processUserMessage: Added AI message to chat.");
 
-                // If a query was extracted, initiate the search process
                 if (extractedQuery) {
-                    addMessage(`AI initiated search for: "${extractedQuery}"`, 'assistant');
+                    addMessage(translations[state.selectedLanguage].aiInitiatedSearch(extractedQuery), 'assistant');
                     console.log(`processUserMessage: AI generated query: "${extractedQuery}". Opening search panel and initiating search.`);
                     
-                    // Ensure search panel is visible and activated
                     state.isSearchVisible = true; 
                     setActiveView(state.activeView); 
                     
-                    searchInput.value = extractedQuery; // Populate search input
-                    searchRepositories(extractedQuery); // Trigger search
+                    searchInput.value = extractedQuery; 
+                    searchRepositories(extractedQuery); 
                 }
             } else {
                 console.error("processUserMessage: Received an incomplete or invalid response from the AI: No data.message.");
@@ -1012,7 +1660,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("processUserMessage: LLM API Call failed:", error);
             state.isTyping = false;
-            const userFriendlyError = "My apologies, I'm having trouble connecting to my core intelligence right now. Please check your internet connection or try again in a moment.";
+            const userFriendlyError = translations[state.selectedLanguage].llmApiFailed;
             addMessage(userFriendlyError, 'assistant');
         } finally {
             if (state.isTyping) { state.isTyping = false; }
@@ -1027,6 +1675,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("setupEventListeners: Setting up event listeners.");
         // Header listeners
         toggleSearchBtn.addEventListener('click', toggleSearchView); 
+        toggleNavBtn.addEventListener('click', toggleNavView); 
         getEl('theme-toggle-btn').addEventListener('click', () => { 
             console.log("Theme toggle clicked.");
             state.theme = state.theme === 'light' ? 'dark' : 'light'; 
@@ -1038,7 +1687,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Chat listeners
         chatForm.addEventListener('submit', handleSendMessage);
-        clearHistoryBtn.addEventListener('click', clearChatHistory);
+        clearChatHistoryBtn.addEventListener('click', clearChatHistory); // Corrected ID
         chatTextarea.addEventListener('input', () => { 
             chatTextarea.style.height = 'auto'; 
             chatTextarea.style.height = `${chatTextarea.scrollHeight}px`; 
@@ -1056,7 +1705,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.addEventListener('click', (e) => {
             if (state.isTyping) {
                 console.log("messagesContainer: Ignoring click, AI is typing.");
-                return; // Don't allow actions while AI is responding
+                return; 
             }
             const button = e.target.closest('button[data-action]');
             if (!button) return;
@@ -1084,16 +1733,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (newContent && msgIndex !== -1 && state.messages[msgIndex].rawContent !== newContent) {
                         console.log(`messagesContainer: Saving edited message ${messageId} and re-submitting.`);
-                        // Prune conversation from this point
                         state.messages = state.messages.slice(0, msgIndex);
                         state.editingMessageId = null;
                         
-                        // Add the edited message back and re-submit
                         addMessage(newContent, 'user');
                         processUserMessage(newContent);
                     } else {
                         console.log(`messagesContainer: Edit canceled or content unchanged for message ${messageId}.`);
-                        // Content is the same or empty, just cancel
                         state.editingMessageId = null;
                         renderMessages();
                     }
@@ -1102,10 +1748,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'regenerate':
                     console.log(`messagesContainer: Regenerating response for message ID: ${messageId}.`);
                     const assistantMsgIndex = state.messages.findIndex(m => m.id === messageId);
-                    // Find the user prompt that came right before this assistant message
                     if (assistantMsgIndex > 0 && state.messages[assistantMsgIndex - 1].role === 'user') {
-                        const userPrompt = state.messages[assistantMsgIndex - 1].rawContent; // Use rawContent for regeneration
-                        // Prune conversation from the assistant message onwards
+                        const userPrompt = state.messages[assistantMsgIndex - 1].rawContent; 
                         state.messages = state.messages.slice(0, assistantMsgIndex);
                         saveMessages();
                         renderMessages();
@@ -1125,7 +1769,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         button.innerHTML = originalCopyHtml;
                         lucide.createIcons();
                     }, 2000);
-                    showNotification("Message copied to clipboard!", 'success', 3000); 
+                    showNotification(translations[state.selectedLanguage].messageCopied, 'success', 3000); 
                     break;
 
                 case 'delete-message':
@@ -1133,17 +1777,52 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.messages = state.messages.filter(msg => msg.id !== messageId);
                     saveMessages();
                     renderMessages();
-                    showNotification("Message deleted.", 'info', 3000);
+                    showNotification(translations[state.selectedLanguage].messageDeleted, 'info', 3000);
                     break;
             }
         });
 
+        // Nav Items Listener (Delegation)
+        navItemsContainer.addEventListener('click', (e) => {
+            const navItem = e.target.closest('.nav-item');
+            if (navItem) {
+                const view = navItem.dataset.view;
+                console.log(`Nav item clicked: ${view}`);
+                state.activeView = view;
+                // If switching to chat, ensure search is closed for a cleaner view
+                if (view === 'chat') {
+                    state.isSearchVisible = false;
+                }
+                setActiveView(state.activeView);
+
+                // Call specific render functions if needed for the new view
+                if (view === 'chat-history') {
+                    renderHistoryPanel(); // Ensure history is rendered when its view is active
+                }
+                // For 'new-chat', 'docs', 'playground', 'console', 'language', 'settings',
+                // their content sections are static placeholders or will be rendered by other logic.
+            }
+        });
+
+        // Language Panel Listener (Delegation)
+        languagePanel.addEventListener('click', (e) => {
+            const langButton = e.target.closest('.lang-select-btn');
+            if (langButton) {
+                const langCode = langButton.dataset.lang;
+                if (langCode && langCode !== state.selectedLanguage) {
+                    setLanguage(langCode);
+                }
+            }
+        });
+
+
         // Search & History Listeners
-        resizeHandle.addEventListener('mousedown', handleResizeMouseDown);
+        navResizeHandle.addEventListener('mousedown', handleResizeMouseDown); 
+        searchResizeHandle.addEventListener('mousedown', handleResizeMouseDown); 
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 console.log("Search input: Enter key pressed.");
-                e.preventDefault(); // Prevent default form submission if input is part of a form
+                e.preventDefault(); 
                 searchRepositories(searchInput.value);
             }
         });
@@ -1162,9 +1841,27 @@ document.addEventListener('DOMContentLoaded', () => {
             } 
         });
         clearSearchHistoryBtn.addEventListener('click', clearSearchHistory);
-        closeSearchPanelBtn.addEventListener('click', toggleSearchView); // Added listener for the new close button
+        closeSearchPanelBtn.addEventListener('click', toggleSearchView); 
 
-        // Version Switcher Listeners (Re-added for header)
+        // NEW: Clear search input button logic
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value.length > 0) {
+                clearSearchInputBtn.classList.remove('hidden');
+            } else {
+                clearSearchInputBtn.classList.add('hidden');
+            }
+            lucide.createIcons(); // Re-render Lucide icons if needed
+        });
+
+        clearSearchInputBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearchInputBtn.classList.add('hidden');
+            renderSearchInitial(); // Show initial search state when cleared
+            lucide.createIcons();
+        });
+
+
+        // Version Switcher Listeners
         const versionToggleBtnEl = getEl('version-toggle-btn');
         const versionMenuEl = getEl('version-menu');
         versionToggleBtnEl.addEventListener('click', (e) => { 
@@ -1190,22 +1887,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.selectedVersionId = versionId; 
                     localStorage.setItem('selectedVersionId', versionId);
                     const newVersion = state.versions.find(v => v.id === versionId);
-                    showNotification(`Switched to ${newVersion.name}.`, 'info'); 
+                    showNotification(translations[state.selectedLanguage].switchedToVersion(newVersion.name), 'info'); 
                 }
                 state.isVersionDropdownOpen = false; 
                 renderVersionDropdown();
             }
         });
 
-        // --- NEW: User Account Button Listener ---
         userAccountBtn.addEventListener('click', () => {
             console.log("User account button clicked.");
             if (!state.isLoggedIn) {
                 console.log("User not logged in. Redirecting to login panel.");
-                window.open('https://v1.sefgh.org/loginPanel', '_blank');
+                window.open('https://v1.sefgh.org/login', '_blank');
             } else {
                 console.log("User is logged in. (No action defined for logged-in state yet).");
-                // Future: Add logic here for logged-in user, e.g., show profile, logout options.
             }
         });
     };
@@ -1217,17 +1912,17 @@ document.addEventListener('DOMContentLoaded', () => {
         getEl('theme-toggle-btn').innerHTML = state.theme === 'light' ? '<i data-lucide="sun" class="w-5 h-5 text-yellow-500"></i>' : '<i data-lucide="moon" class="w-5 h-5 text-indigo-400"></i>';
         renderMessages();
         renderSearchInitial();
-        renderVersionDropdown(); // Re-added call to render dropdown
-        renderHistoryPanel(); // Keeping this for now, but it's not accessible.
-        setActiveView('chat'); // This will handle initial visibility and widths
+        renderHistoryPanel(); 
+        renderVersionDropdown(); 
+        setActiveView('chat'); // Initial view is chat only
         updateChatInputState();
         setupEventListeners();
         lucide.createIcons();
+        setLanguage(state.selectedLanguage); // Apply saved language on init
 
-        // Add a resize listener to adjust layout if window size changes between mobile/desktop
         window.addEventListener('resize', debounce(() => {
             console.log("Window resized. Re-evaluating active view layout.");
-            setActiveView(state.activeView); // Re-evaluate layout on resize
+            setActiveView(state.activeView); 
         }, 200));
         console.log("init: Application initialization complete.");
     };
