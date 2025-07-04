@@ -181,19 +181,49 @@
         <!-- Header Component -->
         <header class="fixed top-0 left-0 w-full z-50 py-4 px-4 md:px-8 bg-transparent">
             <div class="container mx-auto flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-white tracking-wider">SEFGH</h1>
-                <button
-                    onclick="handleStartSearching()"
-                    class="group relative inline-flex items-center justify-center px-5 py-2 overflow-hidden font-medium text-white transition-all duration-300 bg-[#1a1a1a] border border-[#27272a] rounded-lg hover:bg-[#0066ff]/20">
-                    <span class="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-[#0066ff] rounded-full group-hover:w-full group-hover:h-full group-hover:opacity-100 opacity-20"></span>
-                    <span class="relative flex items-center gap-2">
-                        Start Searching 
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                            <polyline points="12 5 19 12 12 19"></polyline>
-                        </svg>
-                    </span>
-                </button>
+                <h1 class="text-2xl font-bold text-white tracking-wider" data-i18n="sefghTitle">SEFGH</h1>
+                <div class="flex items-center space-x-4">
+                    <!-- Language Dropdown -->
+                    <div class="relative">
+                        <button id="language-dropdown-button" class="group relative inline-flex items-center justify-center px-4 py-2 overflow-hidden font-medium text-white transition-all duration-300 bg-[#1a1a1a] border border-[#27272a] rounded-lg hover:bg-[#0066ff]/20">
+                            <span class="relative flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                                </svg>
+                                <span id="current-language">EN</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </span>
+                        </button>
+                        <div id="language-dropdown-menu" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-[#1a1a1a] ring-1 ring-black ring-opacity-5 hidden">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="language-dropdown-button">
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="en">English (EN)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="es">Spanish (ES)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="fr">French (FR)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="de">German (DE)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="ja">Japanese (JA)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="zh">Chinese (ZH)</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-white hover:bg-[#0066ff]/20" role="menuitem" data-lang="hi">Hindi (HI)</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button
+                        onclick="handleStartSearching()"
+                        class="group relative inline-flex items-center justify-center px-5 py-2 overflow-hidden font-medium text-white transition-all duration-300 bg-[#1a1a1a] border border-[#27272a] rounded-lg hover:bg-[#0066ff]/20">
+                        <span class="absolute top-0 right-0 inline-block w-4 h-4 transition-all duration-500 ease-in-out bg-[#0066ff] rounded-full group-hover:w-full group-hover:h-full group-hover:opacity-100 opacity-20"></span>
+                        <span class="relative flex items-center gap-2" data-i18n="startSearching">
+                            Start Searching 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -201,14 +231,14 @@
             <!-- Hero Component -->
             <section class="min-h-screen flex items-center justify-center text-center relative px-4">
                 <div class="z-10 flex flex-col items-center">
-                    <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight">
+                    <h2 class="text-5xl md:text-7xl font-extrabold text-white mb-4 tracking-tight" data-i18n="heroTitlePart1">
                         Find GitHub projects.
                         <br />
-                        <span class="bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text">
+                        <span class="bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text" data-i18n="heroTitlePart2">
                             Intelligently.
                         </span>
                     </h2>
-                    <p class="max-w-2xl text-lg text-[#a1a1aa] mb-8">
+                    <p class="max-w-2xl text-lg text-[#a1a1aa] mb-8" data-i18n="heroDescription">
                         Go beyond keywords. Use natural language to discover repositories that truly match your vision.
                     </p>
                     <div class="w-full max-w-2xl relative group">
@@ -221,7 +251,7 @@
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                             <span id="typing-placeholder" class="flex-1"></span>
-                            <span class="hidden md:inline-flex items-center gap-1 text-xs text-[#a1a1aa] border border-[#27272a] rounded-md px-2 py-1">
+                            <span class="hidden md:inline-flex items-center gap-1 text-xs text-[#a1a1aa] border border-[#27272a] rounded-md px-2 py-1" data-i18n="enterKey">
                                 Enter
                             </span>
                         </button>
@@ -234,8 +264,8 @@
                 <div class="container mx-auto">
                     <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
                         <div class="text-center mb-12">
-                            <h2 class="text-4xl md:text-5xl font-extrabold text-white">Why SEFGH is Different</h2>
-                            <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mt-4">We built a search engine that thinks like a developer, not a database.</p>
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-white" data-i18n="whyDifferentTitle">Why SEFGH is Different</h2>
+                            <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mt-4" data-i18n="whyDifferentDescription">We built a search engine that thinks like a developer, not a database.</p>
                         </div>
                     </div>
                     <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
@@ -248,8 +278,8 @@
                                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                                     </svg>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-2">Semantic Search</h3>
-                                <p class="text-[#a1a1aa]">Understand the intent behind your query, not just the keywords. Find repositories by what they do.</p>
+                                <h3 class="text-xl font-bold text-white mb-2" data-i18n="feature1Title">Semantic Search</h3>
+                                <p class="text-[#a1a1aa]" data-i18n="feature1Description">Understand the intent behind your query, not just the keywords. Find repositories by what they do.</p>
                             </div>
                             <!-- FeatureCard 2 -->
                             <div class="bg-[#1a1a1a]/50 border border-[#27272a] p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-[#0066ff]/50 hover:-translate-y-1" style="transition-delay: 100ms;">
@@ -258,8 +288,8 @@
                                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                                     </svg>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-2">Discover Hidden Gems</h3>
-                                <p class="text-[#a1a1aa]">Our ranking algorithm surfaces relevant projects, not just the most popular ones. Uncover true innovation.</p>
+                                <h3 class="text-xl font-bold text-white mb-2" data-i18n="feature2Title">Discover Hidden Gems</h3>
+                                <p class="text-[#a1a1aa]" data-i18n="feature2Description">Our ranking algorithm surfaces relevant projects, not just the most popular ones. Uncover true innovation.</p>
                             </div>
                             <!-- FeatureCard 3 -->
                             <div class="bg-[#1a1a1a]/50 border border-[#27272a] p-6 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:border-[#0066ff]/50 hover:-translate-y-1" style="transition-delay: 200ms;">
@@ -269,8 +299,8 @@
                                         <polyline points="8 6 2 12 8 18"></polyline>
                                     </svg>
                                 </div>
-                                <h3 class="text-xl font-bold text-white mb-2">Code-Aware Analysis</h3>
-                                <p class="text-[#a1a1aa]">SEFGH analyzes repository structure and READMEs to provide a deeper, more accurate match score.</p>
+                                <h3 class="text-xl font-bold text-white mb-2" data-i18n="feature3Title">Code-Aware Analysis</h3>
+                                <p class="text-[#a1a1aa]" data-i18n="feature3Description">SEFGH analyzes repository structure and READMEs to provide a deeper, more accurate match score.</p>
                             </div>
                         </div>
                     </div>
@@ -282,7 +312,7 @@
                 <div class="container mx-auto">
                     <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
                         <div class="text-center mb-12">
-                            <h2 class="text-4xl md:text-5xl font-extrabold text-white">Simple, Powerful, Fast.</h2>
+                            <h2 class="text-4xl md:text-5xl font-extrabold text-white" data-i18n="howItWorksTitle">Simple, Powerful, Fast.</h2>
                         </div>
                     </div>
                     <div class="max-w-4xl mx-auto relative">
@@ -291,18 +321,18 @@
                             <div class="grid md:grid-cols-3 gap-8 text-center">
                                 <div class="relative">
                                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#0066ff]/10 rounded-full blur-2xl"></div>
-                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text mb-4">1. Ask</h3>
-                                    <p class="text-[#a1a1aa]">Describe the project you're looking for in plain English. The more detail, the better.</p>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] text-transparent bg-clip-text mb-4" data-i18n="step1Title">1. Ask</h3>
+                                    <p class="text-[#a1a1aa]" data-i18n="step1Description">Describe the project you're looking for in plain English. The more detail, the better.</p>
                                 </div>
                                 <div class="relative">
                                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#00ff88]/10 rounded-full blur-2xl"></div>
-                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#00ff88] to-[#0066ff] text-transparent bg-clip-text mb-4">2. Analyze</h3>
-                                    <p class="text-[#a1a1aa]">Our AI agents scour GitHub, analyzing code, READMEs, and metadata to find the best matches.</p>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#00ff88] to-[#0066ff] text-transparent bg-clip-text mb-4" data-i18n="step2Title">2. Analyze</h3>
+                                    <p class="text-[#a1a1aa]" data-i18n="step2Description">Our AI agents scour GitHub, analyzing code, READMEs and metadata to find the best matches.</p>
                                 </div>
                                  <div class="relative">
                                     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-[#8b5cf6]/10 rounded-full blur-2xl"></div>
-                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#8b5cf6] to-[#00ff88] text-transparent bg-clip-text mb-4">3. Discover</h3>
-                                    <p class="text-[#a1a1aa]">Get a curated list of relevant repositories, ranked by a clear similarity score.</p>
+                                    <h3 class="text-2xl font-bold bg-gradient-to-r from-[#8b5cf6] to-[#00ff88] text-transparent bg-clip-text mb-4" data-i18n="step3Title">3. Discover</h3>
+                                    <p class="text-[#a1a1aa]" data-i18n="step3Description">Get a curated list of relevant repositories, ranked by a clear similarity score.</p>
                                 </div>
                             </div>
                         </div>
@@ -314,13 +344,13 @@
             <section class="py-20 px-4">
                 <div class="container mx-auto text-center">
                     <div class="fade-in-section transition-opacity duration-1000 ease-in opacity-0 translate-y-10">
-                        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Ready to find your next project?</h2>
-                        <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mb-8">Stop scrolling, start building. Your perfect repository is just a search away.</p>
+                        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4" data-i18n="ctaTitle">Ready to find your next project?</h2>
+                        <p class="max-w-xl mx-auto text-lg text-[#a1a1aa] mb-8" data-i18n="ctaDescription">Stop scrolling, start building. Your perfect repository is just a search away.</p>
                         <button
                             onclick="handleStartSearching()"
                             class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] rounded-xl">
                             <span class="absolute -inset-0.5 bg-gradient-to-r from-[#0066ff] to-[#8b5cf6] rounded-xl blur-md opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></span>
-                            <span class="relative">Start Your Search Now</span>
+                            <span class="relative" data-i18n="ctaButton">Start Your Search Now</span>
                         </button>
                     </div>
                 </div>
@@ -330,11 +360,11 @@
         <!-- Footer Component -->
         <footer class="py-8 px-4 border-t border-[#27272a]">
             <div class="container mx-auto text-center text-[#71717a]">
-                <p>&copy; <span id="footer-year"></span> SEFGH. All rights reserved.</p>
+                <p data-i18n="copyright">&copy; <span id="footer-year"></span> SEFGH. All rights reserved.</p>
                 <div class="flex justify-center gap-4 mt-4">
-                    <a href="https://sefgh.org/about" class="hover:text-white transition-colors">About</a>
-                    <a href="#" class="hover:text-white transition-colors">Privacy</a>
-                    <a href="#" class="hover:text-white transition-colors">Terms</a>
+                    <a href="https://sefgh.org/about" class="hover:text-white transition-colors" data-i18n="aboutLink">About</a>
+                    <a href="#" class="hover:text-white transition-colors" data-i18n="privacyLink">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors" data-i18n="termsLink">Terms</a>
                 </div>
             </div>
         </footer>
@@ -346,6 +376,256 @@
         function handleStartSearching() {
             // Redirect to the search page
             window.location.href = "http://v1.sefgh.org/searchpage";
+        }
+
+        // --- INTERNATIONALIZATION (i18n) ---
+        const translations = {
+            en: {
+                sefghTitle: "SEFGH",
+                startSearching: "Start Searching",
+                heroTitlePart1: "Find GitHub projects.",
+                heroTitlePart2: "Intelligently.",
+                heroDescription: "Go beyond keywords. Use natural language to discover repositories that truly match your vision.",
+                enterKey: "Enter",
+                whyDifferentTitle: "Why SEFGH is Different",
+                whyDifferentDescription: "We built a search engine that thinks like a developer, not a database.",
+                feature1Title: "Semantic Search",
+                feature1Description: "Understand the intent behind your query, not just the keywords. Find repositories by what they do.",
+                feature2Title: "Discover Hidden Gems",
+                feature2Description: "Our ranking algorithm surfaces relevant projects, not just the most popular ones. Uncover true innovation.",
+                feature3Title: "Code-Aware Analysis",
+                feature3Description: "SEFGH analyzes repository structure and READMEs to provide a deeper, more accurate match score.",
+                howItWorksTitle: "Simple, Powerful, Fast.",
+                step1Title: "1. Ask",
+                step1Description: "Describe the project you're looking for in plain English. The more detail, the better.",
+                step2Title: "2. Analyze",
+                step2Description: "Our AI agents scour GitHub, analyzing code, READMEs, and metadata to find the best matches.",
+                step3Title: "3. Discover",
+                step3Description: "Get a curated list of relevant repositories, ranked by a clear similarity score.",
+                ctaTitle: "Ready to find your next project?",
+                ctaDescription: "Stop scrolling, start building. Your perfect repository is just a search away.",
+                ctaButton: "Start Your Search Now",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH. All rights reserved.",
+                aboutLink: "About",
+                privacyLink: "Privacy",
+                termsLink: "Terms"
+            },
+            es: {
+                sefghTitle: "SEFGH",
+                startSearching: "Empezar a buscar",
+                heroTitlePart1: "Encuentra proyectos de GitHub.",
+                heroTitlePart2: "Inteligentemente.",
+                heroDescription: "Ve más allá de las palabras clave. Utiliza el lenguaje natural para descubrir repositorios que realmente coincidan con tu visión.",
+                enterKey: "Enter",
+                whyDifferentTitle: "¿Por qué SEFGH es diferente?",
+                whyDifferentDescription: "Creamos un motor de búsqueda que piensa como un desarrollador, no como una base de datos.",
+                feature1Title: "Búsqueda Semántica",
+                feature1Description: "Comprende la intención detrás de tu consulta, no solo las palabras clave. Encuentra repositorios por lo que hacen.",
+                feature2Title: "Descubre Joyas Ocultas",
+                feature2Description: "Nuestro algoritmo de clasificación muestra proyectos relevantes, no solo los más populares. Descubre la verdadera innovación.",
+                feature3Title: "Análisis Consciente del Código",
+                feature3Description: "SEFGH analiza la estructura del repositorio y los READMEs para proporcionar una puntuación de coincidencia más profunda y precisa.",
+                howItWorksTitle: "Simple, Potente, Rápido.",
+                step1Title: "1. Pregunta",
+                step1Description: "Describe el proyecto que buscas en español simple. Cuantos más detalles, mejor.",
+                step2Title: "2. Analiza",
+                step2Description: "Nuestros agentes de IA rastrean GitHub, analizando código, READMEs y metadatos para encontrar las mejores coincidencias.",
+                step3Title: "3. Descubre",
+                step3Description: "Obtén una lista curada de repositorios relevantes, clasificados por una clara puntuación de similitud.",
+                ctaTitle: "¿Listo para encontrar tu próximo proyecto?",
+                ctaDescription: "Deja de desplazarte, empieza a construir. Tu repositorio perfecto está a solo una búsqueda de distancia.",
+                ctaButton: "Empieza tu búsqueda ahora",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH. Todos los derechos reservados.",
+                aboutLink: "Acerca de",
+                privacyLink: "Privacidad",
+                termsLink: "Términos"
+            },
+            fr: {
+                sefghTitle: "SEFGH",
+                startSearching: "Commencer la recherche",
+                heroTitlePart1: "Trouvez des projets GitHub.",
+                heroTitlePart2: "Intelligemment.",
+                heroDescription: "Allez au-delà des mots-clés. Utilisez le langage naturel pour découvrir des dépôts qui correspondent vraiment à votre vision.",
+                enterKey: "Entrer",
+                whyDifferentTitle: "Pourquoi SEFGH est différent",
+                whyDifferentDescription: "Nous avons construit un moteur de recherche qui pense comme un développeur, pas une base de données.",
+                feature1Title: "Recherche sémantique",
+                feature1Description: "Comprenez l'intention derrière votre requête, pas seulement les mots-clés. Trouvez des dépôts par ce qu'ils font.",
+                feature2Title: "Découvrez des joyaux cachés",
+                feature2Description: "Notre algorithme de classement fait apparaître les projets pertinents, pas seulement les plus populaires. Découvrez la véritable innovation.",
+                feature3Title: "Analyse consciente du code",
+                feature3Description: "SEFGH analyse la structure des dépôts et les READMEs pour fournir un score de correspondance plus profond et plus précis.",
+                howItWorksTitle: "Simple, Puissant, Rapide.",
+                step1Title: "1. Demandez",
+                step1Description: "Décrivez le projet que vous recherchez en français simple. Plus il y a de détails, mieux c'est.",
+                step2Title: "2. Analysez",
+                step2Description: "Nos agents IA parcourent GitHub, analysant le code, les READMEs et les métadonnées pour trouver les meilleures correspondances.",
+                step3Title: "3. Découvrez",
+                step3Description: "Obtenez une liste organisée de dépôts pertinents, classés par un score de similarité clair.",
+                ctaTitle: "Prêt à trouver votre prochain projet ?",
+                ctaDescription: "Arrêtez de faire défiler, commencez à construire. Votre dépôt parfait n'est qu'à une recherche.",
+                ctaButton: "Commencez votre recherche maintenant",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH. Tous droits réservés.",
+                aboutLink: "À propos",
+                privacyLink: "Confidentialité",
+                termsLink: "Conditions"
+            },
+            de: {
+                sefghTitle: "SEFGH",
+                startSearching: "Suche starten",
+                heroTitlePart1: "GitHub-Projekte finden.",
+                heroTitlePart2: "Intelligent.",
+                heroDescription: "Gehen Sie über Schlüsselwörter hinaus. Verwenden Sie natürliche Sprache, um Repositories zu entdecken, die wirklich Ihrer Vision entsprechen.",
+                enterKey: "Eingabe",
+                whyDifferentTitle: "Warum SEFGH anders ist",
+                whyDifferentDescription: "Wir haben eine Suchmaschine entwickelt, die wie ein Entwickler denkt, nicht wie eine Datenbank.",
+                feature1Title: "Semantische Suche",
+                feature1Description: "Verstehen Sie die Absicht hinter Ihrer Abfrage, nicht nur die Schlüsselwörter. Finden Sie Repositories nach ihrer Funktion.",
+                feature2Title: "Versteckte Juwelen entdecken",
+                feature2Description: "Unser Ranking-Algorithmus zeigt relevante Projekte an, nicht nur die beliebtesten. Entdecken Sie wahre Innovation.",
+                feature3Title: "Code-bewusste Analyse",
+                feature3Description: "SEFGH analysiert die Repository-Struktur und READMEs, um eine tiefere, genauere Übereinstimmungsbewertung zu liefern.",
+                howItWorksTitle: "Einfach, Leistungsstark, Schnell.",
+                step1Title: "1. Fragen",
+                step1Description: "Beschreiben Sie das Projekt, das Sie suchen, in einfachem Deutsch. Je detaillierter, desto besser.",
+                step2Title: "2. Analysieren",
+                step2Description: "Unsere KI-Agenten durchsuchen GitHub und analysieren Code, READMEs und Metadaten, um die besten Übereinstimmungen zu finden.",
+                step3Title: "3. Entdecken",
+                step3Description: "Erhalten Sie eine kuratierte Liste relevanter Repositories, sortiert nach einem klaren Ähnlichkeitswert.",
+                ctaTitle: "Bereit, Ihr nächstes Projekt zu finden?",
+                ctaDescription: "Hören Sie auf zu scrollen, fangen Sie an zu bauen. Ihr perfektes Repository ist nur eine Suche entfernt.",
+                ctaButton: "Starten Sie Ihre Suche jetzt",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH. Alle Rechte vorbehalten.",
+                aboutLink: "Über uns",
+                privacyLink: "Datenschutz",
+                termsLink: "Bedingungen"
+            },
+            ja: {
+                sefghTitle: "SEFGH",
+                startSearching: "検索を開始",
+                heroTitlePart1: "GitHubプロジェクトを検索。",
+                heroTitlePart2: "インテリジェントに。",
+                heroDescription: "キーワードを超えて。自然言語を使って、あなたのビジョンに真に合致するリポジトリを発見してください。",
+                enterKey: "入力",
+                whyDifferentTitle: "SEFGHが違う理由",
+                whyDifferentDescription: "私たちは開発者のように考え、データベースのように考えない検索エンジンを構築しました。",
+                feature1Title: "セマンティック検索",
+                feature1Description: "クエリの意図を理解し、キーワードだけではありません。機能に基づいてリポジトリを見つけます。",
+                feature2Title: "隠れた名作を発見",
+                feature2Description: "私たちのランキングアルゴリズムは、最も人気のあるものだけでなく、関連するプロジェクトを浮上させます。真の革新を発見してください。",
+                feature3Title: "コード認識分析",
+                feature3Description: "SEFGHはリポジトリの構造とREADMEを分析し、より深く正確な一致スコアを提供します。",
+                howItWorksTitle: "シンプル、パワフル、高速。",
+                step1Title: "1. 質問",
+                step1Description: "探しているプロジェクトを平易な日本語で説明してください。詳細であればあるほど良いです。",
+                step2Title: "2. 分析",
+                step2Description: "私たちのAIエージェントはGitHubを検索し、コード、README、メタデータを分析して最適な一致を見つけます。",
+                step3Title: "3. 発見",
+                step3Description: "関連するリポジトリの厳選されたリストを、明確な類似度スコアでランク付けして取得します。",
+                ctaTitle: "次のプロジェクトを見つける準備はできましたか？",
+                ctaDescription: "スクロールをやめて、構築を始めましょう。あなたの完璧なリポジトリは、検索するだけですぐに見つかります。",
+                ctaButton: "今すぐ検索を開始",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH. 全著作権所有。",
+                aboutLink: "について",
+                privacyLink: "プライバシー",
+                termsLink: "規約"
+            },
+            zh: {
+                sefghTitle: "SEFGH",
+                startSearching: "开始搜索",
+                heroTitlePart1: "查找GitHub项目。",
+                heroTitlePart2: "智能地。",
+                heroDescription: "超越关键词。使用自然语言发现真正符合您愿景的存储库。",
+                enterKey: "输入",
+                whyDifferentTitle: "SEFGH为何与众不同",
+                whyDifferentDescription: "我们构建了一个像开发人员一样思考的搜索引擎，而不是数据库。",
+                feature1Title: "语义搜索",
+                feature1Description: "理解您查询背后的意图，而不仅仅是关键词。根据功能查找存储库。",
+                feature2Title: "发现隐藏的宝藏",
+                feature2Description: "我们的排名算法会浮出相关项目，而不仅仅是最受欢迎的项目。发现真正的创新。",
+                feature3Title: "代码感知分析",
+                feature3Description: "SEFGH分析存储库结构和README，以提供更深入、更准确的匹配分数。",
+                howItWorksTitle: "简单、强大、快速。",
+                step1Title: "1. 提问",
+                step1Description: "用简单的中文描述您要查找的项目。细节越多越好。",
+                step2Title: "2. 分析",
+                step2Description: "我们的AI代理会搜索GitHub，分析代码、README和元数据以找到最佳匹配。",
+                step3Title: "3. 发现",
+                step3Description: "获取相关存储库的精选列表，并按清晰的相似度分数进行排名。",
+                ctaTitle: "准备好寻找您的下一个项目了吗？",
+                ctaDescription: "停止滚动，开始构建。您的完美存储库只需搜索即可找到。",
+                ctaButton: "立即开始搜索",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH。保留所有权利。",
+                aboutLink: "关于",
+                privacyLink: "隐私",
+                termsLink: "条款"
+            },
+            hi: {
+                sefghTitle: "SEFGH",
+                startSearching: "खोज शुरू करें",
+                heroTitlePart1: "GitHub प्रोजेक्ट ढूंढें।",
+                heroTitlePart2: "बुद्धिमानी से।",
+                heroDescription: "कीवर्ड से आगे बढ़ें। अपनी दृष्टि से सही मायने में मेल खाने वाले रिपॉजिटरी खोजने के लिए प्राकृतिक भाषा का उपयोग करें।",
+                enterKey: "एंटर",
+                whyDifferentTitle: "SEFGH क्यों अलग है",
+                whyDifferentDescription: "हमने एक ऐसा सर्च इंजन बनाया है जो डेवलपर की तरह सोचता है, डेटाबेस की तरह नहीं।",
+                feature1Title: "सिमेंटिक सर्च",
+                feature1Description: "अपने क्वेरी के पीछे के इरादे को समझें, न कि केवल कीवर्ड को। वे क्या करते हैं, इसके आधार पर रिपॉजिटरी ढूंढें।",
+                feature2Title: "छिपे हुए रत्नों की खोज करें",
+                feature2Description: "हमारा रैंकिंग एल्गोरिथम सबसे लोकप्रिय परियोजनाओं को ही नहीं, बल्कि प्रासंगिक परियोजनाओं को भी सामने लाता है। वास्तविक नवाचार का अनावरण करें।",
+                feature3Title: "कोड-जागरूक विश्लेषण",
+                feature3Description: "SEFGH रिपॉजिटरी संरचना और READMEs का विश्लेषण करता है ताकि एक गहरा, अधिक सटीक मिलान स्कोर प्रदान किया जा सके।",
+                howItWorksTitle: "सरल, शक्तिशाली, तेज़।",
+                step1Title: "1. पूछें",
+                step1Description: "आप जिस प्रोजेक्ट की तलाश कर रहे हैं उसे सरल हिंदी में बताएं। जितना अधिक विवरण, उतना बेहतर।",
+                step2Title: "2. विश्लेषण करें",
+                step2Description: "हमारे AI एजेंट GitHub को खंगालते हैं, कोड, READMEs और मेटाडेटा का विश्लेषण करके सर्वोत्तम मिलान ढूंढते हैं।",
+                step3Title: "3. खोजें",
+                step3Description: "प्रासंगिक रिपॉजिटरी की एक क्यूरेटेड सूची प्राप्त करें, जिसे स्पष्ट समानता स्कोर द्वारा रैंक किया गया है।",
+                ctaTitle: "क्या आप अपना अगला प्रोजेक्ट ढूंढने के लिए तैयार हैं?",
+                ctaDescription: "स्क्रॉल करना बंद करें, निर्माण शुरू करें। आपका आदर्श रिपॉजिटरी बस एक खोज दूर है।",
+                ctaButton: "अभी अपनी खोज शुरू करें",
+                copyright: "&copy; <span id=\"footer-year\"></span> SEFGH। सर्वाधिकार सुरक्षित।",
+                aboutLink: "के बारे में",
+                privacyLink: "गोपनीयता",
+                termsLink: "शर्तें"
+            }
+        };
+
+        function setLanguage(langCode) {
+            const currentLangDisplay = document.getElementById('current-language');
+            if (currentLangDisplay) {
+                currentLangDisplay.textContent = langCode.toUpperCase();
+            }
+
+            // Update all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[langCode] && translations[langCode][key]) {
+                    // Check if the element contains a span with footer-year, if so, preserve it
+                    if (key === 'copyright') {
+                        const yearSpan = element.querySelector('#footer-year');
+                        element.innerHTML = translations[langCode][key];
+                        if (yearSpan) {
+                            element.querySelector('#footer-year').textContent = yearSpan.textContent;
+                        }
+                    } else {
+                        element.textContent = translations[langCode][key];
+                    }
+                }
+            });
+
+            // Update placeholder texts
+            const placeholderEl = document.getElementById('typing-placeholder');
+            if (placeholderEl) {
+                // The typing animation handles its own text, so we just need to reset it
+                // and ensure the `placeholders` array is updated if it were dynamic.
+                // For this example, the placeholders array is static, so no direct change needed here.
+                // If placeholders were also translated, you'd update the `placeholders` array here.
+            }
+
+            // Store selected language in local storage
+            localStorage.setItem('selectedLanguage', langCode);
         }
 
         // --- DYNAMIC CONTENT ---
@@ -423,6 +703,39 @@
                     appearOnScroll.observe(fader);
                 });
             }
+
+            // --- Language Dropdown Toggle ---
+            const langDropdownButton = document.getElementById('language-dropdown-button');
+            const langDropdownMenu = document.getElementById('language-dropdown-menu');
+            const langLinks = langDropdownMenu ? langDropdownMenu.querySelectorAll('a[data-lang]') : [];
+
+            if (langDropdownButton && langDropdownMenu) {
+                langDropdownButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent click from immediately closing dropdown
+                    langDropdownMenu.classList.toggle('hidden');
+                });
+
+                // Close the dropdown if the user clicks outside of it
+                window.addEventListener('click', (event) => {
+                    if (!langDropdownButton.contains(event.target) && !langDropdownMenu.contains(event.target)) {
+                        langDropdownMenu.classList.add('hidden');
+                    }
+                });
+
+                // Add click listeners to language links
+                langLinks.forEach(link => {
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault(); // Prevent default link behavior
+                        const selectedLang = link.getAttribute('data-lang');
+                        setLanguage(selectedLang);
+                        langDropdownMenu.classList.add('hidden'); // Hide dropdown after selection
+                    });
+                });
+            }
+
+            // Load saved language or default to English
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguage(savedLanguage);
         });
     </script>
 </body>
