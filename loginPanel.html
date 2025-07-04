@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEFGH-AI - Login</title>
+    <link rel="icon" type="image/png" href="https://v1.sefgh.org/assets/favicon.png"> <!-- Favicon added -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111111;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #A855F7, #D946EF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        /* Base padding for form and promo containers, adjusted for smaller screens */
+        .form-container, .promo-container {
+            padding: 1.5rem; /* Slightly reduced base padding for mobile */
+        }
+        @media (min-width: 640px) { /* Small screens (sm) */
+            .form-container, .promo-container {
+                padding: 2rem;
+            }
+        }
+        @media (min-width: 1024px) { /* Large screens (lg) */
+            .form-container {
+                padding: 4rem 6rem;
+            }
+            .promo-container {
+                padding: 4rem 6rem;
+            }
+        }
+        /* Ensure the canvas fills its container */
+        #scene-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        /* Animation styles for individual words */
+        .animated-word {
+            display: inline-block; /* Allows individual word animation */
+            opacity: 0;
+            transform: translateY(20px); /* Start slightly below */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Smooth transition */
+        }
+        .animated-word.fade-in-up {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* New style for promotional background image */
+        .promo-background-image {
+            background-image: url('https://v1.sefgh.org/assets/loginEarth.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.6); /* Slightly dim the image for text readability */
+        }
+        /* Stylish dropdown specific styles */
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: auto; /* Adjust width as needed */
+        }
+        .custom-select {
+            background-color: #1E1E1E; /* Dark background */
+            border: 1px solid #374151; /* Gray-700 border */
+            color: #D1D5DB; /* Gray-300 text */
+            font-size: 0.875rem; /* text-sm */
+            border-radius: 0.5rem; /* Subtle rounded corners for the button */
+            padding-left: 0.75rem; /* pl-3 */
+            padding-right: 2.5rem; /* pr-10 to make space for arrow */
+            padding-top: 0.5rem; /* py-2 */
+            padding-bottom: 0.5rem; /* py-2 */
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            cursor: pointer;
+            width: 100%; /* Fill parent width */
+            transition: border-color 0.2s, box-shadow 0.2s; /* Smooth transitions for focus */
+        }
+        .custom-select:focus {
+            outline: none;
+            border-color: #8B5CF6; /* Purple-500 focus ring */
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5); /* Custom focus ring */
+        }
+        .custom-select-arrow {
+            position: absolute;
+            right: 0.5rem; /* px-2 */
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #9CA3AF; /* Gray-400 */
+        }
+
+        /* Styling for dropdown options (limited direct styling for native select options) */
+        .custom-select option {
+            background-color: #1E1E1E; /* Dark background for options */
+            color: #D1D5DB; /* Text color for options */
+            padding: 0.5rem 0.75rem; /* Padding for options */
+        }
+
+        /* This part is tricky for native selects. To truly style the dropdown box with rounded corners and custom hover effects,
+           you would typically need to build a custom dropdown component using divs and JavaScript.
+           However, for visual consistency with the image, we'll add a subtle shadow and border to the select itself,
+           which might give a hint of the "box" styling, though the actual dropdown list appearance is OS-dependent.
+        */
+        .custom-select:hover {
+            border-color: #6B21A8; /* Darker purple on hover */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+    <!-- Main container with rounded corners and border -->
+    <main class="w-full max-w-7xl bg-[#161616] rounded-2xl grid grid-cols-1 md:grid-cols-2 shadow-2xl shadow-black/30 border border-gray-800 overflow-hidden">
+        
+        <!-- Left Side: Login Form -->
+        <div class="form-container flex flex-col justify-center text-gray-300 order-last md:order-first">
+            <div class="w-full max-w-md mx-auto">
+                <!-- Header: Logo and Language Selector -->
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center gap-2">
+                        <!-- SEFGH-AI Logo Image -->
+                        <img src="https://v1.sefgh.org/assets/favicon.png" alt="SEFGH-AI Logo" class="w-8 h-8 rounded-full">
+                        <span class="text-2xl font-bold text-white">SEFGH-AI</span>
+                    </div>
+                    <!-- Language Selector -->
+                    <div class="custom-select-wrapper">
+                        <select class="custom-select">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                        </select>
+                        <div class="custom-select-arrow">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Welcome Text -->
+                <h1 class="text-3xl font-bold text-white mb-1">Welcome!</h1>
+                <p class="text-gray-400 mb-6">Log in to SEFGH-AI to continue to SEFGH-AI.</p>
+
+                <!-- Social Logins -->
+                <div class="space-y-3 mb-6">
+                    <button class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
+                        <!-- Google Logo Image -->
+                        <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google Logo" class="w-5 h-5">
+                        <span class="text-white font-medium">Log in with Google</span>
+                    </button>
+                    <button class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
+                        <!-- GitHub Logo Image with white background -->
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Logo" class="w-5 h-5 p-0.5 bg-white rounded-full">
+                        <span class="text-white font-medium">Log in with GitHub</span>
+                    </button>
+                </div>
+
+                <!-- Separator -->
+                <div class="flex items-center my-6">
+                    <hr class="w-full border-gray-700">
+                    <span class="px-4 text-gray-500 text-sm">OR</span>
+                    <hr class="w-full border-gray-700">
+                </div>
+
+                <!-- Email/Password Form -->
+                <form id="loginForm" class="space-y-5">
+                    <div>
+                        <label for="email" class="text-sm font-medium text-gray-400">Email</label>
+                        <input type="email" id="email" class="mt-1 w-full bg-[#1E1E1E] border border-gray-700 text-white rounded-lg p-3 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="Your email address">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center">
+                            <label for="password" class="text-sm font-medium text-gray-400">Password</label>
+                            <a href="#" class="text-sm text-purple-400 hover:underline">Forgot password?</a>
+                        </div>
+                        <div class="relative mt-1">
+                            <input type="password" id="password" class="w-full bg-[#1E1E1E] border border-gray-700 text-white rounded-lg p-3 pr-10 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="Your password">
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-300">
+                                <!-- Eye Open SVG -->
+                                <svg id="eye-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                <!-- Eye Closed SVG -->
+                                <svg id="eye-closed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .946-3.012 3.42-5.32 6.57-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.582 17.582A7.01 7.01 0 0112 18c-3.182 0-5.94-1.94-7.394-4.582A9.98 9.98 0 014.416 9.416M12 12l2.38 2.38m-4.76-4.76L12 12"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-[#2a2a2a] text-white font-semibold py-3 rounded-lg hover:bg-[#3a3a3a] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500">
+                        Log in
+                    </button>
+                </form>
+
+                <!-- Sign Up Link -->
+                <p class="text-center text-sm text-gray-400 mt-8">
+                    Don't have an account? <a href="#" class="font-medium text-purple-400 hover:underline">Sign up</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Side: Promo Content & 3D Graphic -->
+        <div class="promo-container relative flex flex-col items-center justify-center text-center text-white bg-[#1a1a1a] min-h-[400px] md:min-h-full order-first md:order-last md:pt-24 md:pb-8 promo-background-image">
+            <div class="relative z-10">
+                   <h2 class="text-3xl md:text-4xl font-bold leading-tight">
+                    <span id="promo-animated-text"></span>
+                </h2>
+            </div>
+            <!-- 3D Background Elements -->
+            <div id="scene-container" class="absolute inset-0 z-0"></div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // --- Password Toggle ---
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const eyeOpen = document.getElementById('eye-open');
+        const eyeClosed = document.getElementById('eye-closed');
+
+        if (togglePassword && password && eyeOpen && eyeClosed) {
+            togglePassword.addEventListener('click', function (e) {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                eyeOpen.classList.toggle('hidden');
+                eyeClosed.classList.toggle('hidden');
+            });
+        }
+
+        // --- Three.js Scene ---
+        const container = document.getElementById('scene-container');
+        
+        // This check ensures the 3D animation code only runs if the container element exists.
+        if (container) {
+            let scene, camera, renderer, cube, arrowGroup;
+
+            function init() {
+                // Scene
+                scene = new THREE.Scene();
+
+                // Camera
+                camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+                camera.position.z = 5;
+
+                // Renderer
+                renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                container.appendChild(renderer.domElement);
+
+                // Lighting
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(ambientLight);
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                directionalLight.position.set(5, 5, 5);
+                scene.add(directionalLight);
+
+                // Cube
+                const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+                const material = new THREE.MeshStandardMaterial({
+                    color: 0x222222,
+                    roughness: 0.5,
+                    metalness: 0.1,
+                    wireframe: true,
+                    wireframeLinewidth: 2,
+                });
+                cube = new THREE.Mesh(geometry, material);
+                scene.add(cube);
+
+                // Orbiting Arrow
+                arrowGroup = new THREE.Group();
+                const ringGeometry = new THREE.TorusGeometry(2.5, 0.02, 16, 100);
+                const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.3 });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = Math.PI / 2;
+                
+                const arrowHeadGeometry = new THREE.ConeGeometry(0.2, 0.4, 32);
+                const arrowHeadMaterial = new THREE.MeshStandardMaterial({ color: 0xA855F7 });
+                const arrowHead = new THREE.Mesh(arrowHeadGeometry, arrowHeadMaterial);
+                arrowHead.position.y = 2.5; // Position on the ring
+                arrowHead.rotation.z = Math.PI; // Point outwards
+                
+                arrowGroup.add(ring);
+                arrowGroup.add(arrowHead);
+                scene.add(arrowGroup);
+                
+                // Handle window resize
+                window.addEventListener('resize', onWindowResize, false);
+            }
+
+            function onWindowResize() {
+                if (!renderer || !camera || !container) return; // Added container check
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+
+                // Animations
+                if (cube) {
+                    cube.rotation.x += 0.002;
+                    cube.rotation.y += 0.002;
+                }
+                if (arrowGroup) {
+                    arrowGroup.rotation.z -= 0.01;
+                }
+
+                if (renderer && scene && camera) {
+                    renderer.render(scene, camera);
+                }
+            }
+
+            // Initialize and animate the 3D scene on window load
+            window.onload = function() {
+                init();
+                animate();
+                startPromoTextAnimation(); // Start the text animation
+            };
+        }
+
+        // --- Promotional Text Animation ---
+        const promoTexts = [
+            "Search smarter. Discover better code.",
+            "Find hidden gems, not just hype.",
+            "No keywords. Just real results.",
+            "Describe it once. Get matched fast.",
+            "Natural language in. Repos out.",
+            "50 million projects. One smart search.",
+            "Smarter search. Sharper results.",
+            "Less noise. More signal. All GitHub.",
+            "Built for devs. Tuned for discovery.",
+            "One search engine. Endless code finds."
+        ];
+        let currentTextIndex = 0;
+        const promoTextElement = document.getElementById('promo-animated-text');
+
+        function animateWords(text) {
+            promoTextElement.innerHTML = ''; // Clear previous text
+            const words = text.split(/\s+/); // Split by one or more whitespace characters
+            let delay = 0;
+
+            words.forEach((word, index) => {
+                if (word === '') return; // Skip empty strings that might result from multiple spaces
+
+                const wordSpan = document.createElement('span');
+                wordSpan.textContent = word; // Only the word itself
+                wordSpan.classList.add('animated-word');
+
+                // Apply gradient to the last part of the phrase
+                const gradientSegments = [
+                    "better code.", "just hype.", "real results.", "matched fast.", "Repos out.",
+                    "smart search.", "Sharper results.", "All GitHub.", "for discovery.", "code finds."
+                ];
+                const fullPhrase = promoTexts[currentTextIndex]; // Get the full phrase for context
+
+                let applyGradient = false;
+                for (const segment of gradientSegments) {
+                    if (fullPhrase.endsWith(segment)) {
+                        const segmentWords = segment.split(/\s+/);
+                        if (segmentWords.includes(word) || (segmentWords.length === 1 && word === segmentWords[0])) {
+                             applyGradient = true;
+                             break;
+                        }
+                    }
+                }
+                if (applyGradient) {
+                    wordSpan.classList.add('gradient-text');
+                }
+                
+                promoTextElement.appendChild(wordSpan);
+
+                // Add a non-breaking space after each word, except the last one
+                if (index < words.length - 1) {
+                    promoTextElement.appendChild(document.createTextNode('\u00A0')); // Unicode for non-breaking space
+                }
+
+                setTimeout(() => {
+                    wordSpan.classList.add('fade-in-up');
+                }, delay);
+                delay += 100; // Stagger words by 100ms
+            });
+        }
+
+        function updatePromoText() {
+            if (!promoTextElement) return;
+
+            // Start new animation
+            animateWords(promoTexts[currentTextIndex]);
+            currentTextIndex = (currentTextIndex + 1) % promoTexts.length;
+        }
+
+        function startPromoTextAnimation() {
+            if (promoTextElement) {
+                // Initial display
+                updatePromoText(); // Call directly to show first text immediately
+
+                // Start cycling every 4 seconds (adjust as needed for animation duration)
+                setInterval(updatePromoText, 4000); 
+            }
+        }
+    </script>
+</body>
+</html>
