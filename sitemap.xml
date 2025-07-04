@@ -1,43 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Generated automatically with page titles for better readability -->
   <url>
-  <url>
-  <url>
-  <url>
-  <url>
-  <url>
-  <url>
-  <url>
-  <url>
+    <!-- Gemini API Setup -->
     <loc>https://v1.sefgh.org/apiKeySetup.html</loc>
     <lastmod>2025-07-01T15:06:34+05:30</lastmod>
   </url>
   <url>
+    <!-- Searchpage -->
     <loc>https://v1.sefgh.org/searchpage.html</loc>
     <lastmod>2025-07-05T04:15:16+05:30</lastmod>
   </url>
   <url>
+    <!-- Create Account -->
     <loc>https://v1.sefgh.org/signup.html</loc>
     <lastmod>2025-07-05T03:22:21+05:30</lastmod>
   </url>
   <url>
+    <!-- Login -->
     <loc>https://v1.sefgh.org/login.html</loc>
     <lastmod>2025-07-05T03:42:18+05:30</lastmod>
   </url>
   <url>
+    <!-- SEFGH – Search Engine for GitHub -->
     <loc>https://v1.sefgh.org/about.html</loc>
     <lastmod>2025-07-04T02:05:09+05:30</lastmod>
   </url>
   <url>
+    <!-- 404 - Page Not Found | SEFGH - AI -->
     <loc>https://v1.sefgh.org/404.html</loc>
     <lastmod>2025-07-04T11:19:33+05:30</lastmod>
   </url>
   <url>
+    <!-- SEFGH - AI-Powered GitHub Repository Search -->
     <loc>https://v1.sefgh.org/index.html</loc>
     <lastmod>2025-07-05T00:36:38+05:30</lastmod>
   </url>
   <url>
-  <url>
+    <!-- Pricing -->
     <loc>https://v1.sefgh.org/pricing.html</loc>
     <lastmod>2025-07-05T04:24:53+05:30</lastmod>
   </url>
