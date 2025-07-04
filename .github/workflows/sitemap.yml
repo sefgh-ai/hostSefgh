@@ -2,7 +2,7 @@ name: Generate Sitemap with Action
 
 on:
   push:
-    branches: [main]  # Change this if your default branch is different
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,10 +15,10 @@ jobs:
     - name: Checkout the repository
       uses: actions/checkout@v3
 
-    - name: Generate sitemap
-      uses: cicirello/generate-sitemap@v1
+    - name: Generate sitemap.xml
+      uses: cicirello/generate-sitemap@v1.10.0  # Explicit latest version
       with:
-        base-url: 'https://v1.sefgh.org/'
+        base-url: 'https://v1.sefgh.org'        # ✅ no trailing slash
 
     - name: Commit sitemap  
       run: |
