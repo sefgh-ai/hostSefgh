@@ -76,7 +76,8 @@
             display: inline-block;
             width: auto; /* Adjust width as needed */
         }
-        .custom-select {
+        /* Styles for the custom dropdown button */
+        .custom-select-button {
             background-color: #1E1E1E; /* Dark background */
             border: 1px solid #374151; /* Gray-700 border */
             color: #D1D5DB; /* Gray-300 text */
@@ -86,41 +87,98 @@
             padding-right: 2.5rem; /* pr-10 to make space for arrow */
             padding-top: 0.5rem; /* py-2 */
             padding-bottom: 0.5rem; /* py-2 */
-            appearance: none; /* Remove default arrow */
-            -webkit-appearance: none;
-            -moz-appearance: none;
             cursor: pointer;
             width: 100%; /* Fill parent width */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             transition: border-color 0.2s, box-shadow 0.2s; /* Smooth transitions for focus */
         }
-        .custom-select:focus {
+        .custom-select-button:focus {
             outline: none;
             border-color: #8B5CF6; /* Purple-500 focus ring */
             box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5); /* Custom focus ring */
         }
-        .custom-select-arrow {
-            position: absolute;
-            right: 0.5rem; /* px-2 */
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-            color: #9CA3AF; /* Gray-400 */
-        }
-
-        /* Styling for dropdown options (limited direct styling for native select options) */
-        .custom-select option {
-            background-color: #1E1E1E; /* Dark background for options */
-            color: #D1D5DB; /* Text color for options */
-            padding: 0.5rem 0.75rem; /* Padding for options */
-        }
-
-        /* This part is tricky for native selects. To truly style the dropdown box with rounded corners and custom hover effects,
-           you would typically need to build a custom dropdown component using divs and JavaScript.
-           However, for visual consistency with the image, we'll add a subtle shadow and border to the select itself,
-           which might give a hint of the "box" styling, though the actual dropdown list appearance is OS-dependent.
-        */
-        .custom-select:hover {
+        .custom-select-button:hover {
             border-color: #6B21A8; /* Darker purple on hover */
+        }
+
+        /* Styles for the dropdown options list */
+        .custom-select-options {
+            position: absolute;
+            top: 100%; /* Position below the button */
+            left: 0;
+            right: 0;
+            background-color: #1E1E1E; /* Dark background for options */
+            border: 1px solid #374151; /* Gray-700 border */
+            border-radius: 0.5rem;
+            margin-top: 0.25rem; /* Small space below button */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 50; /* Ensure it's above other content */
+            list-style: none; /* Remove default list styling */
+            padding: 0.25rem 0; /* Vertical padding for options */
+            max-height: 200px; /* Limit height and enable scrolling */
+            overflow-y: auto;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            /* Hide scrollbar for IE, Edge and Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .custom-select-options.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Styles for individual dropdown options */
+        .custom-select-option {
+            padding: 0.75rem 1rem; /* py-3 px-4 */
+            color: #D1D5DB; /* Gray-300 text */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .custom-select-option:hover {
+            background-color: #2D2D2D; /* Darker hover background */
+        }
+        .custom-select-option.selected {
+            background-color: #6B21A8; /* Purple-800 for selected item */
+            color: white;
+            font-weight: 600; /* Semi-bold for selected */
+        }
+
+        /* Message box styles */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none; /* Allow clicks to pass through when hidden */
+        }
+        .message-box.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .message-box.error {
+            background-color: #dc2626; /* Red-600 */
+        }
+        .message-box.success {
+            background-color: #16a34a; /* Green-600 */
         }
     </style>
 </head>
@@ -142,52 +200,58 @@
                     </a>
                     <!-- Language Selector -->
                     <div class="custom-select-wrapper">
-                        <select class="custom-select">
-                            <option>English</option>
-                            <option>Spanish</option>
-                            <option>French</option>
-                        </select>
-                        <div class="custom-select-arrow">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
+                        <button class="custom-select-button" id="language-select-button">
+                            <span id="selected-language-text">English (EN)</span>
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <ul class="custom-select-options" id="language-options">
+                            <li class="custom-select-option" data-lang="en">English (EN)</li>
+                            <li class="custom-select-option" data-lang="es">Spanish (ES)</li>
+                            <li class="custom-select-option" data-lang="fr">French (FR)</li>
+                            <li class="custom-select-option" data-lang="de">German (DE)</li>
+                            <li class="custom-select-option" data-lang="ja">Japanese (JA)</li>
+                            <li class="custom-select-option" data-lang="zh">Chinese (ZH)</li>
+                            <li class="custom-select-option" data-lang="hi">Hindi (HI)</li>
+                            <li class="custom-select-option" data-lang="te">Telugu (TE)</li>
+                        </ul>
                     </div>
                 </div>
 
                 <!-- Welcome Text -->
-                <h1 class="text-3xl font-bold text-white mb-1">Welcome!</h1>
-                <p class="text-gray-400 mb-6">Log in to SEFGH-AI to continue to SEFGH-AI.</p>
+                <h1 class="text-3xl font-bold text-white mb-1" id="welcome-text" data-i18n="welcomeText">Welcome!</h1>
+                <p class="text-gray-400 mb-6" id="welcome-subtext" data-i18n="welcomeSubtext">Log in to SEFGH-AI to continue to SEFGH-AI.</p>
 
                 <!-- Social Logins -->
                 <div class="space-y-3 mb-6">
-                    <button class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
+                    <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
                         <!-- Google Logo Image -->
                         <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google Logo" class="w-5 h-5">
-                        <span class="text-white font-medium">Log in with Google</span>
+                        <span class="text-white font-medium" data-i18n="loginWithGoogle">Log in with Google</span>
                     </button>
-                    <button class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
+                    <button id="github-login-btn" class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
                         <!-- GitHub Logo Image with white background -->
                         <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Logo" class="w-5 h-5 p-0.5 bg-white rounded-full">
-                        <span class="text-white font-medium">Log in with GitHub</span>
+                        <span class="text-white font-medium" data-i18n="loginWithGitHub">Log in with GitHub</span>
                     </button>
                 </div>
 
                 <!-- Separator -->
                 <div class="flex items-center my-6">
                     <hr class="w-full border-gray-700">
-                    <span class="px-4 text-gray-500 text-sm">OR</span>
+                    <span class="px-4 text-gray-500 text-sm" data-i18n="orSeparator">OR</span>
                     <hr class="w-full border-gray-700">
                 </div>
 
                 <!-- Email/Password Form -->
                 <form id="loginForm" class="space-y-5">
                     <div>
-                        <label for="email" class="text-sm font-medium text-gray-400">Email</label>
+                        <label for="email" class="text-sm font-medium text-gray-400" data-i18n="emailLabel">Email</label>
                         <input type="email" id="email" class="mt-1 w-full bg-[#1E1E1E] border border-gray-700 text-white rounded-lg p-3 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="Your email address">
                     </div>
                     <div>
                         <div class="flex justify-between items-center">
-                            <label for="password" class="text-sm font-medium text-gray-400">Password</label>
-                            <a href="#" class="text-sm text-purple-400 hover:underline">Forgot password?</a>
+                            <label for="password" class="text-sm font-medium text-gray-400" data-i18n="passwordLabel">Password</label>
+                            <a href="#" class="text-sm text-purple-400 hover:underline" data-i18n="forgotPassword">Forgot password?</a>
                         </div>
                         <div class="relative mt-1">
                             <input type="password" id="password" class="w-full bg-[#1E1E1E] border border-gray-700 text-white rounded-lg p-3 pr-10 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="Your password">
@@ -199,15 +263,19 @@
                             </button>
                         </div>
                     </div>
-                    <button type="submit" class="w-full bg-[#2a2a2a] text-white font-semibold py-3 rounded-lg hover:bg-[#3a3a3a] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500">
+                    <button type="submit" class="w-full bg-[#2a2a2a] text-white font-semibold py-3 rounded-lg hover:bg-[#3a3a3a] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-purple-500" data-i18n="loginButton">
                         Log in
                     </button>
                 </form>
 
                 <!-- Sign Up Link -->
-                <p class="text-center text-sm text-gray-400 mt-8">
-                    Don't have an account? <a href="https://v1.sefgh.org/signup" class="font-medium text-purple-400 hover:underline">Sign up</a>
+                <p class="text-center text-sm text-gray-400 mt-8" data-i18n="noAccountText">
+                    Don't have an account? <a href="https://v1.sefgh.org/signup" class="font-medium text-purple-400 hover:underline" data-i18n="signUpLink">Sign up</a>
                 </p>
+                <div id="user-info" class="text-center text-sm text-gray-400 mt-4 hidden">
+                    Logged in as: <span id="user-id" class="font-medium text-purple-400"></span>
+                    <button id="logout-btn" class="ml-2 text-red-400 hover:underline" data-i18n="logoutButton">Log out</button>
+                </div>
             </div>
         </div>
 
@@ -224,8 +292,418 @@
 
     </main>
 
+    <!-- Message Box for notifications -->
+    <div id="message-box" class="message-box"></div>
+
     <script type="module">
         import * as THREE from 'three';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            signInWithEmailAndPassword,
+            signOut,
+            GoogleAuthProvider,
+            GithubAuthProvider,
+            signInWithPopup
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDqQbPoF5XFB_Ii-n1UWiMt0rAcbTBZIzk",
+            authDomain: "sefgh-authentication.firebaseapp.com",
+            projectId: "sefgh-authentication",
+            storageBucket: "sefgh-authentication.firebasestorage.app",
+            messagingSenderId: "66121663860",
+            appId: "1:66121663860:web:343d5c56531cebc3a81821",
+            measurementId: "G-V7RTYHH228"
+        };
+
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app); // Initialize Firestore
+
+        let userId = null; // Variable to store the current user ID
+
+        // --- Internationalization (i18n) Logic ---
+        const translations = {
+            en: {
+                welcomeText: "Welcome!",
+                welcomeSubtext: "Log in to SEFGH-AI to continue to SEFGH-AI.",
+                loginWithGoogle: "Log in with Google",
+                loginWithGitHub: "Log in with GitHub",
+                orSeparator: "OR",
+                emailLabel: "Email",
+                passwordLabel: "Password",
+                forgotPassword: "Forgot password?",
+                loginButton: "Log in",
+                noAccountText: "Don't have an account?",
+                signUpLink: "Sign up",
+                logoutButton: "Log out",
+                welcomeBack: "Welcome back, ",
+                loggedInAs: "You are logged in as ",
+                invalidCredentials: "Invalid email or password. Please try again.",
+                unauthorizedDomain: "This domain is not authorized. Please add \"{origin}\" to your Firebase Authorized Domains in the Firebase Console (Authentication -> Settings).",
+                loggedInSuccess: "Logged in successfully! Redirecting...",
+                logoutSuccess: "Logged out successfully.",
+                logoutFailed: "Logout failed: ",
+                googleLoginFailed: "Google login failed: ",
+                githubLoginFailed: "GitHub login failed: "
+            },
+            es: {
+                welcomeText: "¡Bienvenido!",
+                welcomeSubtext: "Inicie sesión en SEFGH-AI para continuar con SEFGH-AI.",
+                loginWithGoogle: "Iniciar sesión con Google",
+                loginWithGitHub: "Iniciar sesión con GitHub",
+                orSeparator: "O",
+                emailLabel: "Correo electrónico",
+                passwordLabel: "Contraseña",
+                forgotPassword: "¿Olvidaste tu contraseña?",
+                loginButton: "Iniciar sesión",
+                noAccountText: "¿No tienes una cuenta?",
+                signUpLink: "Registrarse",
+                logoutButton: "Cerrar sesión",
+                welcomeBack: "¡Bienvenido de nuevo, ",
+                loggedInAs: "Has iniciado sesión como ",
+                invalidCredentials: "Correo electrónico o contraseña no válidos. Por favor, inténtelo de nuevo.",
+                unauthorizedDomain: "Este dominio no está autorizado. Agregue \"{origin}\" a sus Dominios Autorizados de Firebase en la Consola de Firebase (Autenticación -> Configuración).",
+                loggedInSuccess: "¡Sesión iniciada con éxito! Redirigiendo...",
+                logoutSuccess: "Sesión cerrada con éxito.",
+                logoutFailed: "Error al cerrar sesión: ",
+                googleLoginFailed: "Error al iniciar sesión con Google: ",
+                githubLoginFailed: "Error al iniciar sesión con GitHub: "
+            },
+            fr: {
+                welcomeText: "Bienvenue !",
+                welcomeSubtext: "Connectez-vous à SEFGH-AI pour continuer vers SEFGH-AI.",
+                loginWithGoogle: "Se connecter avec Google",
+                loginWithGitHub: "Se connecter avec GitHub",
+                orSeparator: "OU",
+                emailLabel: "E-mail",
+                passwordLabel: "Mot de passe",
+                forgotPassword: "Mot de passe oublié ?",
+                loginButton: "Se connecter",
+                noAccountText: "Vous n'avez pas de compte ?",
+                signUpLink: "S'inscrire",
+                logoutButton: "Se déconnecter",
+                welcomeBack: "Bienvenue de nouveau, ",
+                loggedInAs: "Vous êtes connecté en tant que ",
+                invalidCredentials: "Email ou mot de passe invalide. Veuillez réessayer.",
+                unauthorizedDomain: "Ce domaine n'est pas autorisé. Veuillez ajouter \"{origin}\" à vos Domaines autorisés Firebase dans la console Firebase (Authentification -> Paramètres).",
+                loggedInSuccess: "Connexion réussie ! Redirection...",
+                logoutSuccess: "Déconnexion réussie.",
+                logoutFailed: "Échec de la déconnexion : ",
+                googleLoginFailed: "Échec de la connexion Google : ",
+                githubLoginFailed: "Échec de la connexion GitHub : "
+            },
+            de: {
+                welcomeText: "Willkommen!",
+                welcomeSubtext: "Melden Sie sich bei SEFGH-AI an, um mit SEFGH-AI fortzufahren.",
+                loginWithGoogle: "Mit Google anmelden",
+                loginWithGitHub: "Mit GitHub anmelden",
+                orSeparator: "ODER",
+                emailLabel: "E-Mail",
+                passwordLabel: "Passwort",
+                forgotPassword: "Passwort vergessen?",
+                loginButton: "Anmelden",
+                noAccountText: "Sie haben noch kein Konto?",
+                signUpLink: "Registrieren",
+                logoutButton: "Abmelden",
+                welcomeBack: "Willkommen zurück, ",
+                loggedInAs: "Sie sind angemeldet als ",
+                invalidCredentials: "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.",
+                unauthorizedDomain: "Diese Domain ist nicht autorisiert. Bitte fügen Sie „{origin}“ zu Ihren autorisierten Firebase-Domains in der Firebase-Konsole (Authentifizierung -> Einstellungen) hinzu.",
+                loggedInSuccess: "Erfolgreich angemeldet! Weiterleitung...",
+                logoutSuccess: "Erfolgreich abgemeldet.",
+                logoutFailed: "Abmeldung fehlgeschlagen: ",
+                googleLoginFailed: "Google-Anmeldung fehlgeschlagen: ",
+                githubLoginFailed: "GitHub-Anmeldung fehlgeschlagen: "
+            },
+            ja: {
+                welcomeText: "ようこそ！",
+                welcomeSubtext: "SEFGH-AIにログインしてSEFGH-AIを続行してください。",
+                loginWithGoogle: "Googleでログイン",
+                loginWithGitHub: "GitHubでログイン",
+                orSeparator: "または",
+                emailLabel: "メールアドレス",
+                passwordLabel: "パスワード",
+                forgotPassword: "パスワードをお忘れですか？",
+                loginButton: "ログイン",
+                noAccountText: "アカウントをお持ちではありませんか？",
+                signUpLink: "サインアップ",
+                logoutButton: "ログアウト",
+                welcomeBack: "おかえりなさい、",
+                loggedInAs: "としてログインしています",
+                invalidCredentials: "無効なメールアドレスまたはパスワードです。もう一度お試しください。",
+                unauthorizedDomain: "このドメインは承認されていません。Firebaseコンソール（認証 -> 設定）で「{origin}」をFirebase承認済みドメインに追加してください。",
+                loggedInSuccess: "ログインに成功しました！リダイレクト中...",
+                logoutSuccess: "ログアウトに成功しました。",
+                logoutFailed: "ログアウトに失敗しました：",
+                googleLoginFailed: "Googleログインに失敗しました：",
+                githubLoginFailed: "GitHubログインに失敗しました： "
+            },
+            zh: {
+                welcomeText: "欢迎！",
+                welcomeSubtext: "登录 SEFGH-AI 以继续。",
+                loginWithGoogle: "使用 Google 登录",
+                loginWithGitHub: "使用 GitHub 登录",
+                orSeparator: "或",
+                emailLabel: "电子邮件",
+                passwordLabel: "密码",
+                forgotPassword: "忘记密码？",
+                loginButton: "登录",
+                noAccountText: "没有帐户？",
+                signUpLink: "注册",
+                logoutButton: "登出",
+                welcomeBack: "欢迎回来，",
+                loggedInAs: "您已登录为 ",
+                invalidCredentials: "无效的电子邮件或密码。请重试。",
+                unauthorizedDomain: "此域未授权。请将“{origin}”添加到 Firebase 控制台（身份验证 -> 设置）中的 Firebase 授权域。",
+                loggedInSuccess: "登录成功！正在重定向...",
+                logoutSuccess: "登出成功。",
+                logoutFailed: "登出失败：",
+                googleLoginFailed: "Google 登录失败：",
+                githubLoginFailed: "GitHub 登录失败： "
+            },
+            hi: {
+                welcomeText: "स्वागत है!",
+                welcomeSubtext: "SEFGH-AI पर जारी रखने के लिए SEFGH-AI में लॉग इन करें।",
+                loginWithGoogle: "Google से लॉग इन करें",
+                loginWithGitHub: "GitHub से लॉग इन करें",
+                orSeparator: "या",
+                emailLabel: "ईमेल",
+                passwordLabel: "पासवर्ड",
+                forgotPassword: "पासवर्ड भूल गए?",
+                loginButton: "लॉग इन करें",
+                noAccountText: "खाता नहीं है?",
+                signUpLink: "साइन अप करें",
+                logoutButton: "लॉग आउट",
+                welcomeBack: "वापस स्वागत है, ",
+                loggedInAs: "आप के रूप में लॉग इन हैं ",
+                invalidCredentials: "अमान्य ईमेल या पासवर्ड। कृपया पुनः प्रयास करें।",
+                unauthorizedDomain: "यह डोमेन अधिकृत नहीं है। कृपया Firebase कंसोल (प्रमाणीकरण -> सेटिंग्स) में अपने Firebase अधिकृत डोमेन में \"{origin}\" जोड़ें।",
+                loggedInSuccess: "सफलतापूर्वक लॉग इन किया गया! रीडायरेक्ट कर रहा है...",
+                logoutSuccess: "सफलतापूर्वक लॉग आउट किया गया।",
+                logoutFailed: "लॉग आउट विफल: ",
+                googleLoginFailed: "Google लॉग इन विफल: ",
+                githubLoginFailed: "GitHub लॉग इन विफल: "
+            },
+            te: {
+                welcomeText: "స్వాగతం!",
+                welcomeSubtext: "SEFGH-AIకి కొనసాగడానికి SEFGH-AIకి లాగిన్ అవ్వండి.",
+                loginWithGoogle: "Googleతో లాగిన్ అవ్వండి",
+                loginWithGitHub: "GitHubతో లాగిన్ అవ్వండి",
+                orSeparator: "లేదా",
+                emailLabel: "ఇమెయిల్",
+                passwordLabel: "పాస్వర్డ్",
+                forgotPassword: "పాస్వర్డ్ మర్చిపోయారా?",
+                loginButton: "లాగిన్ అవ్వండి",
+                noAccountText: "ఖాతా లేదా?",
+                signUpLink: "సైన్ అప్ చేయండి",
+                logoutButton: "లాగ్ అవుట్",
+                welcomeBack: "తిరిగి స్వాగతం, ",
+                loggedInAs: "మీరు లాగిన్ అయ్యారు ",
+                invalidCredentials: "చెల్లని ఇమెయిల్ లేదా పాస్‌వర్డ్. దయచేసి మళ్లీ ప్రయత్నించండి.",
+                unauthorizedDomain: "ఈ డొమైన్ అధీకృతం కాదు. దయచేసి మీ Firebase అధీకృత డొమైన్‌లలో \"{origin}\"ని Firebase కన్సోల్ (ప్రామాణీకరణ -> సెట్టింగ్‌లు)లో జోడించండి.",
+                loggedInSuccess: "విజయవంతంగా లాగిన్ అయ్యారు! దారి మళ్లిస్తోంది...",
+                logoutSuccess: "విజయవంతంగా లాగ్ అవుట్ అయ్యారు.",
+                logoutFailed: "లాగ్ అవుట్ విఫలమైంది: ",
+                googleLoginFailed: "Google లాగిన్ విఫలమైంది: ",
+                githubLoginFailed: "GitHub లాగిన్ విఫలమైంది: "
+            }
+        };
+
+        const languageMap = {
+            'en': 'English (EN)',
+            'es': 'Spanish (ES)',
+            'fr': 'French (FR)',
+            'de': 'German (DE)',
+            'ja': 'Japanese (JA)',
+            'zh': 'Chinese (ZH)',
+            'hi': 'Hindi (HI)',
+            'te': 'Telugu (TE)'
+        };
+
+        function setLanguage(langCode) {
+            // Update text content of elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[langCode] && translations[langCode][key]) {
+                    let text = translations[langCode][key];
+                    // Replace placeholders if any (e.g., for unauthorized domain message)
+                    if (key === 'unauthorizedDomain') {
+                        text = text.replace('{origin}', window.location.origin);
+                    }
+                    element.textContent = text;
+                }
+            });
+
+            // Update the selected language text in the custom dropdown button
+            const selectedLangTextElement = document.getElementById('selected-language-text');
+            if (selectedLangTextElement) {
+                selectedLangTextElement.textContent = languageMap[langCode];
+            }
+
+            // Highlight the selected option in the dropdown list
+            document.querySelectorAll('.custom-select-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.getAttribute('data-lang') === langCode) {
+                    option.classList.add('selected');
+                }
+            });
+
+            // Save the selected language to localStorage
+            localStorage.setItem('selectedLanguage', langCode);
+        }
+
+        // Function to display messages (success/error)
+        function showMessage(message, type = 'info') {
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = message;
+            msgBox.className = 'message-box show'; // Reset classes and show
+            if (type === 'error') {
+                msgBox.classList.add('error');
+            } else if (type === 'success') {
+                msgBox.classList.add('success');
+            } else {
+                msgBox.classList.add('info');
+            }
+            setTimeout(() => {
+                msgBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // --- Firebase Auth State Listener ---
+        onAuthStateChanged(auth, async (user) => {
+            const loginForm = document.getElementById('loginForm');
+            const socialLogins = document.querySelector('.space-y-3.mb-6');
+            const separator = document.querySelector('.flex.items-center.my-6');
+            const signUpLink = document.querySelector('.text-center.text-sm.text-gray-400.mt-8');
+            const userInfoDiv = document.getElementById('user-info');
+            const userIdSpan = document.getElementById('user-id');
+            const welcomeText = document.getElementById('welcome-text');
+            const welcomeSubtext = document.getElementById('welcome-subtext');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (user) {
+                // User is signed in
+                userId = user.uid;
+                console.log("User logged in:", userId);
+                // Use i18n for welcome message
+                if (welcomeText) welcomeText.textContent = `${translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeBack}${user.email || user.displayName || 'User'}!`;
+                if (welcomeSubtext) welcomeSubtext.textContent = `${translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInAs}${user.email || user.displayName || 'an anonymous user'}.`;
+                
+                showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
+
+                // Hide login form and social buttons
+                if (loginForm) loginForm.classList.add('hidden');
+                if (socialLogins) socialLogins.classList.add('hidden');
+                if (separator) separator.classList.add('hidden');
+                if (signUpLink) signUpLink.classList.add('hidden');
+
+                // Show user info
+                if (userInfoDiv) userInfoDiv.classList.remove('hidden');
+                if (userIdSpan) userIdSpan.textContent = userId;
+                
+                // Add logout functionality
+                if (logoutBtn) {
+                    logoutBtn.onclick = async () => {
+                        try {
+                            await signOut(auth);
+                            showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].logoutSuccess, 'success');
+                        } catch (error) {
+                            console.error("Logout error:", error);
+                            showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].logoutFailed}${error.message}`, 'error');
+                        }
+                    };
+                }
+                // Redirect to searchpage if successfully logged in
+                window.location.href = 'https://v1.sefgh.org/searchpage';
+
+            } else {
+                // User is signed out
+                userId = null;
+                console.log("User logged out.");
+
+                // Show login form and social buttons
+                if (loginForm) loginForm.classList.remove('hidden'); // Ensure it's visible initially
+                if (socialLogins) socialLogins.classList.remove('hidden');
+                if (separator) separator.classList.remove('hidden');
+                if (signUpLink) signUpLink.classList.remove('hidden');
+
+                // Hide user info
+                if (userInfoDiv) userInfoDiv.classList.add('hidden');
+                if (userIdSpan) userIdSpan.textContent = '';
+                // Reset welcome text to default language
+                if (welcomeText) welcomeText.textContent = translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeText;
+                if (welcomeSubtext) welcomeSubtext.textContent = translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeSubtext;
+            }
+        });
+
+        // --- Email/Password Login ---
+        const loginForm = document.getElementById('loginForm');
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    // Redirection handled by onAuthStateChanged listener
+                } catch (error) {
+                    console.error("Login error:", error);
+                    let errorMessage = error.message;
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                        errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].invalidCredentials;
+                    } else if (error.code === 'auth/unauthorized-domain') {
+                        errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].unauthorizedDomain.replace('{origin}', window.location.origin);
+                    }
+                    showMessage(`Login failed: ${errorMessage}`, 'error');
+                }
+            });
+        }
+
+        // --- Social Logins ---
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        const githubLoginBtn = document.getElementById('github-login-btn');
+
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    // Redirection handled by onAuthStateChanged listener
+                } catch (error) {
+                    console.error("Google login error:", error);
+                    let errorMessage = error.message;
+                    if (error.code === 'auth/unauthorized-domain') {
+                        errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].unauthorizedDomain.replace('{origin}', window.location.origin);
+                    }
+                    showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].googleLoginFailed}${errorMessage}`, 'error');
+                }
+            });
+        }
+
+        if (githubLoginBtn) {
+            githubLoginBtn.addEventListener('click', async () => {
+                const provider = new GithubAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    // Redirection handled by onAuthStateChanged listener
+                } catch (error) {
+                    console.error("GitHub login error:", error);
+                    let errorMessage = error.message;
+                     if (error.code === 'auth/unauthorized-domain') {
+                        errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].unauthorizedDomain.replace('{origin}', window.location.origin);
+                    }
+                    showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].githubLoginFailed}${errorMessage}`, 'error');
+                }
+            });
+        }
+
 
         // --- Password Toggle ---
         const togglePassword = document.getElementById('togglePassword');
@@ -328,11 +806,11 @@
             }
 
             // Initialize and animate the 3D scene on window load
-            window.onload = function() {
+            document.addEventListener('DOMContentLoaded', function() {
                 init();
                 animate();
                 startPromoTextAnimation(); // Start the text animation
-            };
+            });
         }
 
         // --- Promotional Text Animation ---
@@ -415,6 +893,40 @@
                 setInterval(updatePromoText, 4000); 
             }
         }
+
+        // --- Custom Language Dropdown Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const languageSelectButton = document.getElementById('language-select-button');
+            const languageOptions = document.getElementById('language-options');
+            const customSelectOptions = document.querySelectorAll('.custom-select-option');
+
+            // Toggle dropdown visibility
+            if (languageSelectButton && languageOptions) {
+                languageSelectButton.addEventListener('click', () => {
+                    languageOptions.classList.toggle('show');
+                });
+            }
+
+            // Handle option selection
+            customSelectOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const selectedLang = option.getAttribute('data-lang');
+                    setLanguage(selectedLang);
+                    languageOptions.classList.remove('show'); // Hide dropdown after selection
+                });
+            });
+
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', (event) => {
+                if (languageSelectButton && languageOptions && !languageSelectButton.contains(event.target) && !languageOptions.contains(event.target)) {
+                    languageOptions.classList.remove('show');
+                }
+            });
+
+            // Initialize language on page load
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            setLanguage(savedLanguage);
+        });
     </script>
 </body>
 </html>
