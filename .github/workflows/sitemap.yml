@@ -16,96 +16,156 @@ jobs:
     
     - name: Generate/Update sitemap.xml intelligently
       run: |
+        # Function to extract page title from HTML file
+        extract_title() {
+          local file="$1"
+          local title=""
+          
+          # Try to extract title from <title> tag
+          if [ -f "$file" ]; then
+            title=$(grep -i '<title>' "$file" | head -1 | sed 's/<[^>]*>//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n\r')
+          fi
+          
+          # If no title found, try to extract from <h1> tag
+          if [ -z "$title" ] && [ -f "$file" ]; then
+            title=$(grep -i '<h1' "$file" | head -1 | sed 's/<[^>]*>//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | tr -d '\n\r')
+          fi
+          
+          # If still no title, use filename as fallback
+          if [ -z "$title" ]; then
+            title=$(basename "$file" .html | sed 's/[-_]/ /g' | sed 's/\b\w/\U&/g')
+          fi
+          
+          # Clean up title and ensure it's not empty
+          title=$(echo "$title" | sed 's/[<>&"]//g' | tr -d '\n\r')
+          if [ -z "$title" ]; then
+            title="Page"
+          fi
+          
+          echo "$title"
+        }
+        
+        # Function to create a properly formatted sitemap from scratch
+        create_full_sitemap() {
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
+          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
+          echo '  <!-- Generated automatically with page titles for better readability -->' >> sitemap.xml
+          for file in $(find . -name "*.html" -not -path "./.github/*"); do
+            clean_path=$(echo $file | sed 's|^\./||')
+            mod_date=$(git log -1 --format="%cI" -- "$file" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
+            page_title=$(extract_title "$file")
+            echo "  <url>" >> sitemap.xml
+            echo "    <!-- $page_title -->" >> sitemap.xml
+            echo "    <loc>https://v1.sefgh.org/$clean_path</loc>" >> sitemap.xml
+            echo "    <lastmod>$mod_date</lastmod>" >> sitemap.xml
+            echo "  </url>" >> sitemap.xml
+          done
+          echo '</urlset>' >> sitemap.xml
+        }
+        
+        # Function to validate XML structure
+        validate_xml() {
+          if ! xmllint --noout sitemap.xml 2>/dev/null; then
+            echo "Invalid XML detected, regenerating..."
+            return 1
+          fi
+          return 0
+        }
+        
         # Create backup of existing sitemap if it exists
         if [ -f "sitemap.xml" ]; then
           cp sitemap.xml sitemap.xml.bak
-        fi
-        
-        # Initialize sitemap if it doesn't exist
-        if [ ! -f "sitemap.xml" ]; then
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
-          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
-          echo '</urlset>' >> sitemap.xml
         fi
         
         # Get list of changed HTML files in the last commit
         changed_files=$(git diff --name-only HEAD~1 HEAD -- "*.html" | grep -v "^\.github/" || true)
         deleted_files=$(git diff --name-status HEAD~1 HEAD -- "*.html" | grep "^D" | cut -f2 || true)
         
+        # If sitemap doesn't exist or is invalid, create from scratch
+        if [ ! -f "sitemap.xml" ] || ! validate_xml; then
+          echo "Creating sitemap from scratch..."
+          create_full_sitemap
         # If this is the first run or no previous commit, process all files
-        if [ -z "$changed_files" ] && [ -z "$deleted_files" ]; then
+        elif [ -z "$changed_files" ] && [ -z "$deleted_files" ]; then
           echo "First run or no changes detected, processing all HTML files..."
-          changed_files=$(find . -name "*.html" -not -path "./.github/*" | sed 's|^\./||')
-        fi
-        
-        # Remove deleted files from sitemap
-        if [ -n "$deleted_files" ]; then
-          echo "Removing deleted files from sitemap..."
-          for deleted_file in $deleted_files; do
-            if [ -f "sitemap.xml" ]; then
-              # Remove the URL entry for deleted file
-              sed -i "/https:\/\/v1\.sefgh\.org\/$deleted_file/,+2d" sitemap.xml
+          create_full_sitemap
+        else
+          # Process incremental changes
+          echo "Processing incremental changes..."
+          
+          # Remove deleted files from sitemap
+          if [ -n "$deleted_files" ]; then
+            echo "Removing deleted files from sitemap..."
+            for deleted_file in $deleted_files; do
+              # Create a temporary file without the deleted entry
+              temp_file=$(mktemp)
+              awk -v file="$deleted_file" '
+                BEGIN { skip = 0 }
+                /<url>/ { 
+                  url_block = ""
+                  while ((getline line) > 0) {
+                    url_block = url_block line "\n"
+                    if (line ~ /<\/url>/) break
+                  }
+                  if (url_block !~ ("https://v1.sefgh.org/" file)) {
+                    print "  <url>"
+                    printf "%s", url_block
+                  }
+                  next
+                }
+                { print }
+              ' sitemap.xml > "$temp_file"
+              mv "$temp_file" sitemap.xml
               echo "Removed: $deleted_file"
-            fi
-          done
-        fi
-        
-        # Process changed/new files
-        if [ -n "$changed_files" ]; then
-          echo "Processing changed/new files..."
-          
-          # Create temporary file for processing
-          temp_file=$(mktemp)
-          
-          # Read existing sitemap content
-          if [ -f "sitemap.xml" ]; then
-            cp sitemap.xml "$temp_file"
+            done
           fi
           
-          for file in $changed_files; do
-            # Skip if file doesn't exist (might be deleted)
-            if [ ! -f "$file" ]; then
-              continue
-            fi
+          # Process changed/new files
+          if [ -n "$changed_files" ]; then
+            echo "Processing changed/new files..."
             
-            clean_path="$file"
-            mod_date=$(git log -1 --format="%cI" -- "$file" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
-            
-            # Remove existing entry for this file if it exists
-            if [ -f "sitemap.xml" ]; then
-              sed -i "/https:\/\/v1\.sefgh\.org\/$clean_path/,+2d" sitemap.xml
-            fi
-            
-            # Add/update entry just before closing </urlset> tag
-            sed -i "s|</urlset>|  <url>\n    <loc>https://v1.sefgh.org/$clean_path</loc>\n    <lastmod>$mod_date</lastmod>\n  </url>\n</urlset>|" sitemap.xml
-            
-            echo "Updated: $clean_path (lastmod: $mod_date)"
-          done
-        else
-          echo "No HTML files changed."
+            for file in $changed_files; do
+              # Skip if file doesn't exist (might be deleted)
+              if [ ! -f "$file" ]; then
+                continue
+              fi
+              
+              clean_path="$file"
+              mod_date=$(git log -1 --format="%cI" -- "$file" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ")
+              
+              # Remove existing entry for this file if it exists
+              temp_file=$(mktemp)
+              awk -v file="$clean_path" '
+                BEGIN { skip = 0 }
+                /<url>/ { 
+                  url_block = ""
+                  while ((getline line) > 0) {
+                    url_block = url_block line "\n"
+                    if (line ~ /<\/url>/) break
+                  }
+                  if (url_block !~ ("https://v1.sefgh.org/" file)) {
+                    print "  <url>"
+                    printf "%s", url_block
+                  }
+                  next
+                }
+                { print }
+              ' sitemap.xml > "$temp_file"
+              mv "$temp_file" sitemap.xml
+              
+              # Add new entry just before closing </urlset> tag
+              page_title=$(extract_title "$file")
+              sed -i "s|</urlset>|  <url>\n    <!-- $page_title -->\n    <loc>https://v1.sefgh.org/$clean_path</loc>\n    <lastmod>$mod_date</lastmod>\n  </url>\n</urlset>|" sitemap.xml
+              
+              echo "Updated: $clean_path (lastmod: $mod_date)"
+            done
+          fi
         fi
         
-        # Clean up any potential formatting issues
-        if [ -f "sitemap.xml" ]; then
-          # Ensure proper XML structure
-          sed -i 's/^[[:space:]]*$//' sitemap.xml  # Remove empty lines
-          sed -i '/^$/d' sitemap.xml  # Remove completely empty lines
-        fi
-        
-        # Validate that we have a proper sitemap structure
-        if ! grep -q "<?xml version" sitemap.xml; then
-          echo "Regenerating sitemap from scratch..."
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > sitemap.xml
-          echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> sitemap.xml
-          for file in $(find . -name "*.html" -not -path "./.github/*"); do
-            clean_path=$(echo $file | sed 's|^\./||')
-            mod_date=$(git log -1 --format="%cI" -- "$file" || date -u +"%Y-%m-%dT%H:%M:%SZ")
-            echo "  <url>" >> sitemap.xml
-            echo "    <loc>https://v1.sefgh.org/$clean_path</loc>" >> sitemap.xml
-            echo "    <lastmod>$mod_date</lastmod>" >> sitemap.xml
-            echo "  </url>" >> sitemap.xml
-          done
-          echo '</urlset>' >> sitemap.xml
+        # Final validation and cleanup
+        if ! validate_xml; then
+          echo "XML validation failed, regenerating from scratch..."
+          create_full_sitemap
         fi
         
         echo "Sitemap generation completed!"
