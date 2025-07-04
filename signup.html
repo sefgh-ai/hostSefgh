@@ -150,6 +150,33 @@
             animation-delay: 0.3s; /* Stagger the animation */
             text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Add some text shadow for readability */
         }
+
+        /* Message box styles */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none; /* Allow clicks to pass through when hidden */
+        }
+        .message-box.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .message-box.error {
+            background-color: #dc2626; /* Red-600 */
+        }
+        .message-box.success {
+            background-color: #16a34a; /* Green-600 */
+        }
     </style>
 </head>
 <body class="selection:bg-purple-500 selection:text-white">
@@ -157,29 +184,29 @@
         <!-- Left Section (Image Background with Animated Text) -->
         <div class="w-full md:w-1/2 p-4 flex items-center justify-center image-bg min-h-[250px] md:min-h-[auto]">
             <div class="text-white text-center p-4">
-                <h1 class="text-3xl md:text-4xl font-bold animated-text-1">Join Our Community!</h1>
-                <p class="mt-2 text-lg animated-text-2">Discover a world of possibilities.</p>
+                <h1 class="text-3xl md:text-4xl font-bold animated-text-1" id="signup-welcome-text">Join Our Community!</h1>
+                <p class="mt-2 text-lg animated-text-2" id="signup-subtext">Discover a world of possibilities.</p>
             </div>
         </div>
 
         <!-- Right Section (Sign-up Form) -->
         <div class="w-full md:w-1/2 p-8 md:p-12 text-white">
             <h2 class="text-3xl font-semibold mb-2">Create an account</h2>
-            <p class="text-gray-400 mb-6 text-sm">
+            <p class="text-gray-400 mb-6 text-sm" id="login-redirect-text">
                 Already have an account? <a href="https://v1.sefgh.org/login" class="text-purple-400 hover:underline" title="Click to log in if you already have an account">Log in</a>
             </p>
 
-            <form class="space-y-4">
+            <form id="signupForm" class="space-y-4">
                 <div class="flex flex-col sm:flex-row gap-4">
                     <div class="w-full sm:w-1/2">
-                        <label for="first-name" class="sr-only">Username</label>
-                        <input type="text" id="first-name" placeholder="Username"
+                        <label for="username" class="sr-only">Username</label>
+                        <input type="text" id="username" placeholder="Username"
                                class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
                                title="Enter your desired username">
                     </div>
                     <div class="w-full sm:w-1/2">
-                        <label for="last-name" class="sr-only">User Handle</label>
-                        <input type="text" id="last-name" placeholder="@user handle"
+                        <label for="user-handle" class="sr-only">User Handle</label>
+                        <input type="text" id="user-handle" placeholder="@user handle"
                                class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm"
                                title="Enter your unique user handle (e.g., @yourhandle)">
                     </div>
@@ -198,7 +225,7 @@
                            class="w-full px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder-gray-400 text-white text-sm pr-10"
                            title="Enter your password (minimum 8 characters)">
                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer"
-                          onclick="togglePasswordVisibility()" title="Toggle password visibility">
+                          id="password-toggle" title="Toggle password visibility">
                         <i class="fas fa-eye" id="password-toggle-icon"></i>
                     </span>
                 </div>
@@ -211,28 +238,32 @@
                     </label>
                 </div>
 
-                <button type="submit"
+                <button type="submit" id="create-account-btn"
                         class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition duration-300 ease-in-out shadow-lg"
                         title="Click to create your account">
                     Create account
                 </button>
             </form>
 
-            <div class="text-center text-gray-400 text-sm my-6">
+            <div class="text-center text-gray-400 text-sm my-6" id="social-separator">
                 Or register with
             </div>
 
             <div class="flex flex-col sm:flex-row gap-4">
-                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
+                <button id="google-signup-btn" class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
                         title="Sign up with your Google account">
                     <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo" class="w-5 h-5 mr-3">
                     Google
                 </button>
-                <button class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
+                <button id="github-signup-btn" class="flex-1 flex items-center justify-center px-4 py-3 rounded-xl bg-[#282828] border border-[#3a3a3a] text-white hover:bg-[#3a3a3a] transition duration-300 ease-in-out shadow-md"
                         title="Sign up with your GitHub account">
                     <i class="fab fa-github w-5 h-5 mr-3 text-white"></i> <!-- GitHub icon from Font Awesome -->
                     GitHub
                 </button>
+            </div>
+            <div id="user-info" class="text-center text-sm text-gray-400 mt-4 hidden">
+                Logged in as: <span id="user-id" class="font-medium text-purple-400"></span>
+                <button id="logout-btn" class="ml-2 text-red-400 hover:underline">Log out</button>
             </div>
         </div>
     </div>
@@ -268,61 +299,298 @@
         </div>
     </div>
 
-    <script>
-        // Function to toggle password visibility
-        function togglePasswordVisibility() {
+    <!-- Message Box for notifications -->
+    <div id="message-box" class="message-box"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            signInWithCustomToken, 
+            onAuthStateChanged,
+            createUserWithEmailAndPassword,
+            GoogleAuthProvider,
+            GithubAuthProvider,
+            signInWithPopup,
+            signOut,
+            updateProfile // Added for updating username/handle
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Initialization ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app); // Initialize Firestore
+
+        let userId = null; // Variable to store the current user ID
+
+        // Function to display messages (success/error)
+        function showMessage(message, type = 'info') {
+            const msgBox = document.getElementById('message-box');
+            msgBox.textContent = message;
+            msgBox.className = 'message-box show'; // Reset classes and show
+            if (type === 'error') {
+                msgBox.classList.add('error');
+            } else if (type === 'success') {
+                msgBox.classList.add('success');
+            } else {
+                msgBox.classList.add('info');
+            }
+            setTimeout(() => {
+                msgBox.classList.remove('show');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // --- Firebase Auth State Listener ---
+        onAuthStateChanged(auth, async (user) => {
+            const signupForm = document.getElementById('signupForm');
+            const socialButtonsContainer = document.querySelector('.flex.flex-col.sm\\:flex-row.gap-4'); // Container for social buttons
+            const socialSeparator = document.getElementById('social-separator');
+            const loginRedirectText = document.getElementById('login-redirect-text');
+            const userInfoDiv = document.getElementById('user-info');
+            const userIdSpan = document.getElementById('user-id');
+            const welcomeText = document.getElementById('signup-welcome-text');
+            const subtext = document.getElementById('signup-subtext');
+            const logoutBtn = document.getElementById('logout-btn');
+
+
+            if (user) {
+                // User is signed in
+                userId = user.uid;
+                console.log("User logged in:", userId);
+                showMessage(`Welcome, ${user.displayName || user.email || 'User'}!`, 'success');
+
+                // Hide signup form and social buttons
+                if (signupForm) signupForm.classList.add('hidden');
+                if (socialButtonsContainer) socialButtonsContainer.classList.add('hidden');
+                if (socialSeparator) socialSeparator.classList.add('hidden');
+                if (loginRedirectText) loginRedirectText.classList.add('hidden');
+
+                // Show user info
+                if (userInfoDiv) userInfoDiv.classList.remove('hidden');
+                if (userIdSpan) userIdSpan.textContent = userId;
+                if (welcomeText) welcomeText.textContent = `Welcome back, ${user.displayName || user.email || 'User'}!`;
+                if (subtext) subtext.textContent = `You are logged in as ${user.displayName || user.email || 'an anonymous user'}.`;
+
+                // Add logout functionality
+                if (logoutBtn) {
+                    logoutBtn.onclick = async () => {
+                        try {
+                            await signOut(auth);
+                            showMessage("Logged out successfully.", 'success');
+                        } catch (error) {
+                            console.error("Logout error:", error);
+                            showMessage(`Logout failed: ${error.message}`, 'error');
+                        }
+                    };
+                }
+
+            } else {
+                // User is signed out
+                userId = null;
+                console.log("User logged out.");
+
+                // Show signup form and social buttons
+                if (signupForm) signupForm.classList.remove('hidden');
+                if (socialButtonsContainer) socialButtonsContainer.classList.remove('hidden');
+                if (socialSeparator) socialSeparator.classList.remove('hidden');
+                if (loginRedirectText) loginRedirectText.classList.remove('hidden');
+
+                // Hide user info
+                if (userInfoDiv) userInfoDiv.classList.add('hidden');
+                if (userIdSpan) userIdSpan.textContent = '';
+                if (welcomeText) welcomeText.textContent = 'Join Our Community!';
+                if (subtext) subtext.textContent = 'Discover a world of possibilities.';
+            }
+        });
+
+        // Initial anonymous sign-in if no custom token is provided
+        (async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                    console.log("Signed in with custom token.");
+                } catch (error) {
+                    console.error("Error signing in with custom token:", error);
+                    showMessage(`Failed to sign in automatically: ${error.message}`, 'error');
+                    // Fallback to anonymous sign-in if custom token fails
+                    try {
+                        await signInAnonymously(auth);
+                        console.log("Signed in anonymously as fallback.");
+                    } catch (anonError) {
+                        console.error("Error signing in anonymously:", anonError);
+                        showMessage(`Failed to sign in anonymously: ${anonError.message}`, 'error');
+                    }
+                }
+            } else {
+                try {
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously.");
+                } catch (error) {
+                    console.error("Error signing in anonymously:", error);
+                    showMessage(`Failed to sign in anonymously: ${error.message}`, 'error');
+                }
+            }
+        })();
+
+
+        // --- Email/Password Signup ---
+        const signupForm = document.getElementById('signupForm');
+        if (signupForm) {
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const username = document.getElementById('username').value;
+                const userHandle = document.getElementById('user-handle').value;
+                const termsAccepted = document.getElementById('terms').checked;
+
+                if (!termsAccepted) {
+                    showMessage("Please accept the terms & conditions.", 'error');
+                    return;
+                }
+
+                if (!email || !password || !username || !userHandle) {
+                    showMessage("Please fill in all fields.", 'error');
+                    return;
+                }
+
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
+
+                    // Update user profile with username and handle
+                    await updateProfile(user, {
+                        displayName: username,
+                        // You might store userHandle in a custom claim or Firestore if needed
+                        // For now, we'll just use displayName for the main username
+                    });
+
+                    showMessage("Account created and logged in successfully! Redirecting...", 'success');
+                    console.log("User signed up:", user.uid, user.email, user.displayName);
+                    window.location.href = 'https://v1.sefgh.org/searchpage'; // Redirect after successful signup
+
+                } catch (error) {
+                    console.error("Signup error:", error);
+                    if (error.code === 'auth/email-already-in-use') {
+                        showMessage("This email is already registered. Please log in instead.", 'error');
+                        setTimeout(() => {
+                            window.location.href = 'https://v1.sefgh.org/login'; // Redirect to login page
+                        }, 2000); // Redirect after 2 seconds
+                    } else if (error.code === 'auth/unauthorized-domain') {
+                        showMessage(`Signup failed: This domain is not authorized. Please add "${window.location.origin}" to your Firebase Authorized Domains in the Firebase Console (Authentication -> Settings).`, 'error');
+                    } else {
+                        showMessage(`Signup failed: ${error.message}`, 'error');
+                    }
+                }
+            });
+        }
+
+        // --- Social Sign-up (Google & GitHub) ---
+        const googleSignupBtn = document.getElementById('google-signup-btn');
+        const githubSignupBtn = document.getElementById('github-signup-btn');
+
+        if (googleSignupBtn) {
+            googleSignupBtn.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    showMessage("Signed up with Google successfully! Redirecting...", 'success');
+                    window.location.href = 'https://v1.sefgh.org/searchpage'; // Redirect after successful social signup
+                } catch (error) {
+                    console.error("Google signup error:", error);
+                    if (error.code === 'auth/unauthorized-domain') {
+                        showMessage(`Google signup failed: This domain is not authorized. Please add "${window.location.origin}" to your Firebase Authorized Domains in the Firebase Console (Authentication -> Settings).`, 'error');
+                    } else {
+                        showMessage(`Google signup failed: ${error.message}`, 'error');
+                    }
+                }
+            });
+        }
+
+        if (githubSignupBtn) {
+            githubSignupBtn.addEventListener('click', async () => {
+                const provider = new GithubAuthProvider();
+                try {
+                    await signInWithPopup(auth, provider);
+                    showMessage("Signed up with GitHub successfully! Redirecting...", 'success');
+                    window.location.href = 'https://v1.sefgh.org/searchpage'; // Redirect after successful social signup
+                } catch (error) {
+                    console.error("GitHub signup error:", error);
+                     if (error.code === 'auth/unauthorized-domain') {
+                        showMessage(`GitHub signup failed: This domain is not authorized. Please add "${window.location.origin}" to your Firebase Authorized Domains in the Firebase Console (Authentication -> Settings).`, 'error');
+                    } else {
+                        showMessage(`GitHub signup failed: ${error.message}`, 'error');
+                    }
+                }
+            });
+        }
+
+        // --- Password Toggle ---
+        // Moved inside DOMContentLoaded to ensure elements are available
+        document.addEventListener('DOMContentLoaded', () => {
             const passwordField = document.getElementById('password');
             const passwordToggleIcon = document.getElementById('password-toggle-icon');
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                passwordToggleIcon.classList.remove('fa-eye');
-                passwordToggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                passwordToggleIcon.classList.remove('fa-eye-slash');
-                passwordToggleIcon.classList.add('fa-eye');
+            const passwordToggleBtn = document.getElementById('password-toggle'); // The span element
+
+            if (passwordToggleBtn && passwordField && passwordToggleIcon) {
+                passwordToggleBtn.addEventListener('click', function() {
+                    if (passwordField.type === 'password') {
+                        passwordField.type = 'text';
+                        passwordToggleIcon.classList.remove('fa-eye');
+                        passwordToggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordField.type = 'password';
+                        passwordToggleIcon.classList.remove('fa-eye-slash');
+                        passwordToggleIcon.classList.add('fa-eye');
+                    }
+                });
             }
-        }
 
-        // Get elements for modal functionality
-        const termsLink = document.getElementById('terms-link');
-        const termsModal = document.getElementById('terms-modal');
-        const declineButton = document.getElementById('decline-terms');
-        const acceptButton = document.getElementById('accept-terms');
-        const termsCheckbox = document.getElementById('terms');
+            // --- Terms and Conditions Modal Logic ---
+            const termsLink = document.getElementById('terms-link');
+            const termsModal = document.getElementById('terms-modal');
+            const declineButton = document.getElementById('decline-terms');
+            const acceptButton = document.getElementById('accept-terms');
+            const termsCheckbox = document.getElementById('terms');
 
-        // Function to show the modal
-        function showModal() {
-            termsModal.classList.add('show');
-        }
+            function showModal() {
+                termsModal.classList.add('show');
+            }
 
-        // Function to hide the modal
-        function hideModal() {
-            termsModal.classList.remove('show');
-        }
+            function hideModal() {
+                termsModal.classList.remove('show');
+            }
 
-        // Event listener for the "terms & conditions" link
-        termsLink.addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default link behavior
-            showModal();
-        });
+            if (termsLink) {
+                termsLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    showModal();
+                });
+            }
 
-        // Event listener for the "Decline" button
-        declineButton.addEventListener('click', function() {
-            termsCheckbox.checked = false; // Uncheck the checkbox if declined
-            hideModal();
-        });
+            if (declineButton) {
+                declineButton.addEventListener('click', function() {
+                    termsCheckbox.checked = false;
+                    hideModal();
+                });
+            }
 
-        // Event listener for the "Accept" button
-        acceptButton.addEventListener('click', function() {
-            termsCheckbox.checked = true; // Check the checkbox if accepted
-            hideModal();
-        });
+            if (acceptButton) {
+                acceptButton.addEventListener('click', function() {
+                    termsCheckbox.checked = true;
+                    hideModal();
+                });
+            }
 
-        // Close modal if clicking outside the content (optional, but good UX)
-        termsModal.addEventListener('click', function(event) {
-            if (event.target === termsModal) {
-                hideModal();
+            if (termsModal) {
+                termsModal.addEventListener('click', function(event) {
+                    if (event.target === termsModal) {
+                        hideModal();
+                    }
+                });
             }
         });
     </script>
