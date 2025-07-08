@@ -187,10 +187,6 @@
               'rainbow-shine': {
                 '0%': { 'background-position': '0% 50%' },
                 '100%': { 'background-position': '200% 50%' },
-              },
-              'fade-in-up': {
-                '0%': { opacity: '0', transform: 'translateY(10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
               }
             }
           }
@@ -1246,7 +1242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             noResultsFoundMessage: (query) => `మీరు శోధించిన "${query}"కు ఏ రిపోజిటరీలు సరిపోలలేదు.`,
             anErrorOccurred: "ఒక లోపం సంభవించింది",
             apiErrorMessage: (message) => `${message}`,
-            llmApiFailed: "క్షమించండి, నా ప్రధాన ఇంటెలిజెన్స్‌కు కనెక్ట్ చేయడంలో నాకు ప్రస్తుతం సమస్య ఉంది. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి లేదా కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.",
+            llmApiFailed: "క్షమించండి, నా ప్రధాన ఇంటెలిజెన్స్‌కు కనెక్ట్ చేయడంలో నాకు ప్రస్తుతం సమస్య ఉంది. దయచేసి మీ ఇంటర్నెట్ కనెక్షన్‌ని తనిఖీ చేయండి లేదా కొద్దిసేపటి తర్వాత మళ్లీ ప్రయత్నించండి।",
             messageCopied: "సందేశం క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది!",
             messageDeleted: "సందేశం తొలగించబడింది.",
             switchedToVersion: (versionName) => `${versionName}కు మార్చబడింది.`,
@@ -1285,6 +1281,12 @@ document.addEventListener('DOMContentLoaded', () => {
      * @returns {string} The HTML formatted string.
      */
     const parseMarkdownToHtml = (markdownText) => {
+        if (typeof markdownText !== 'string') {
+            console.error("parseMarkdownToHtml: Received non-string input:", markdownText, "Type:", typeof markdownText);
+            // Attempt to convert to string as a fallback, but log the error
+            markdownText = String(markdownText);
+        }
+
         const renderer = new marked.Renderer();
 
         renderer.heading = (text, level) => {
@@ -1499,6 +1501,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("renderMessages: Rendering chat messages.");
         messagesContainer.innerHTML = '';
         const renderSingleMessage = (msg, isTyping = false) => {
+            console.log(`renderSingleMessage: Rendering message ID: ${msg.id}, Role: ${msg.role}, rawContent: "${msg.rawContent}", htmlContent: "${msg.htmlContent}"`);
             const isUser = msg.role === 'user';
             const formattedTime = new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
@@ -1570,8 +1573,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const addMessage = (content, role) => { 
-        console.log(`addMessage: Adding message - Role: ${role}, Content: "${content}"`);
-        const htmlContent = role === 'assistant' ? parseMarkdownToHtml(content) : content; // Use parseMarkdownToHtml for assistant messages
+        console.log(`addMessage: Adding message - Role: ${role}, Content (before HTML parse): "${content}", Type: ${typeof content}`);
+        // For assistant messages, we're now displaying raw JSON, so no Markdown parsing needed.
+        // For user messages, content is already plain text.
+        const htmlContent = content; 
+        console.log(`addMessage: Adding message - Role: ${role}, HTML Content (after HTML parse): "${htmlContent}", Type: ${typeof htmlContent}`);
         state.messages.push({ id: Date.now(), rawContent: content, htmlContent, role, timestamp: new Date() }); 
         saveMessages(); 
         renderMessages(); 
@@ -1587,13 +1593,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = chatTextarea.value.trim(); 
         if (!message) return;
 
-        if (state.selectedVersionId !== 'v1') {
-            showNotification(translations[state.selectedLanguage].apiErrorMessage("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features."), 'info');
-            chatTextarea.value = ''; 
-            chatTextarea.style.height = 'auto'; 
-            updateChatInputState(); 
-            return; 
-        }
+        // Removed the version check here as the user explicitly wants to use their API
+        // if (state.selectedVersionId !== 'v1') {
+        //     showNotification(translations[state.selectedLanguage].apiErrorMessage("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features."), 'info');
+        //     chatTextarea.value = ''; 
+        //     chatTextarea.style.height = 'auto'; 
+        //     updateChatInputState(); 
+        //     return; 
+        // }
 
         if (!state.isTyping) { 
             console.log(`handleSendMessage: User input received: "${message}"`);
@@ -1645,17 +1652,37 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Repository Search Logic ---
-    const searchRepositories = async (query) => { 
+    const searchRepositories = async (query) => {
         console.log(`searchRepositories: Initiating search for: "${query}"`);
-        if (!query || query.length < 2) { 
-            console.log("searchRepositories: Query too short, rendering initial search state.");
-            renderSearchInitial(); 
-            return; 
-        } 
-        saveSearchHistory(query); 
-        renderSearchLoading(); 
-        try { 
-            const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&per_page=20`); 
+
+        // Trim the query and check if it's empty or too short after trimming
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery || trimmedQuery.length < 2) {
+            console.log("searchRepositories: Query is empty or too short after trimming, rendering initial search state.");
+            renderSearchInitial();
+            return;
+        }
+
+        // Further validate if the query contains actual "searchable" characters
+        // A simple regex check for at least one word character (alphanumeric or underscore)
+        if (!/\w/.test(trimmedQuery)) {
+            console.log("searchRepositories: Query contains no searchable characters, rendering initial search state.");
+            renderSearchInitial();
+            return;
+        }
+
+        saveSearchHistory(trimmedQuery); // Use trimmedQuery for history
+        renderSearchLoading();
+        try {
+            // Log the full URL for debugging
+            const apiUrl = `https://api.github.com/search/repositories?q=${encodeURIComponent(trimmedQuery)}&sort=stars&per_page=20`;
+            console.log("searchRepositories: Fetching URL:", apiUrl);
+
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json' // Explicitly request v3 API
+                }
+            });
             if (!response.ok) {
                 const errorData = await response.json();
                 const errorMessage = errorData.message || `API Error: ${response.status}`;
@@ -1666,7 +1693,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("searchRepositories: GitHub API response received:", data);
             if (data.items.length === 0) {
                 console.log("searchRepositories: No results found.");
-                renderSearchEmpty(query); 
+                renderSearchEmpty(trimmedQuery); // Use trimmedQuery for empty message
             } else {
                 console.log(`searchRepositories: Found ${data.items.length} results.`);
                 renderSearchResults(data.items); 
@@ -1779,104 +1806,49 @@ document.addEventListener('DOMContentLoaded', () => {
         renderMessages();
         updateChatInputState(); 
 
-        const API_URL = 'https://api.sefgh.org';
-
-        if (state.selectedVersionId !== 'v1') {
-            showNotification(translations[state.selectedLanguage].apiErrorMessage("The AI API is only enabled for SEFGH v1.0. Please switch to v1.0 to use AI features."), 'info');
-            chatTextarea.value = ''; 
-            chatTextarea.style.height = 'auto'; 
-            updateChatInputState(); 
-            return; 
-        }
+        const API_URL = 'https://api.sefgh.org'; // Your custom LLM API endpoint
 
         try {
-            const conversationHistory = state.messages.slice(-4); 
-            console.log("processUserMessage: Conversation history for API call (last 4 messages):", conversationHistory);
-            
-            let formattedHistory = "";
-            conversationHistory.forEach(msg => {
-                formattedHistory += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.rawContent}\n`; 
-            });
+            // Prepare payload for your custom API
+            const payload = { message: userInput };
 
-            formattedHistory += `User: ${userInput}`;
-            console.log("processUserMessage: Formatted history sent to API:", formattedHistory);
+            console.log("processUserMessage: Sending payload to custom LLM API:", payload);
 
             const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', },
-                body: JSON.stringify({ message: formattedHistory }), 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
 
-            state.isTyping = false;
+            state.isTyping = false; // Turn off typing indicator once response is received
+
             if (!response.ok) {
-                let errorText = `An API error occurred: ${response.status} ${response.statusText}`;
+                let errorText = `Custom LLM API Error: ${response.status} ${response.statusText}`;
                 try {
                     const errorData = await response.json();
-                    errorText = errorData.detail || errorData.message || errorText;
+                    errorText = errorData.detail || errorData.message || JSON.stringify(errorData);
                 } catch (jsonError) {
-                    console.error("processUserMessage: Error parsing API error response:", jsonError);
+                    console.error("processUserMessage: Error parsing custom LLM API error response:", jsonError);
                 }
-                console.error("processUserMessage: API response not OK:", errorText);
+                console.error("processUserMessage: Custom LLM API response not OK:", errorText);
                 throw new Error(errorText);
             }
-            const data = await response.json();
-            console.log("processUserMessage: Raw API response data:", data);
 
-            if (data && data.message) { 
-                let assistantRawMessage = data.message; 
-                let extractedQuery = null;
+            const result = await response.json();
+            console.log("processUserMessage: Raw Custom LLM API response received:", result);
 
-                const jsonRegex = /\{[\s\S]*?"query"\s*:\s*"[^"]*"[\s\S]*?\}/;
-                const jsonMatch = assistantRawMessage.match(jsonRegex);
-                
-                if (jsonMatch) {
-                    console.log("processUserMessage: Found potential JSON in assistant message.");
-                    try {
-                        const jsonString = jsonMatch[0];
-                        const parsedContent = JSON.parse(jsonString);
-                        
-                        if (parsedContent.query) {
-                            extractedQuery = parsedContent.query;
-                            
-                            assistantRawMessage = assistantRawMessage.replace(jsonString, '').trim();
+            // Display the raw JSON response directly in the chat
+            let assistantMessage = JSON.stringify(result, null, 2); // Pretty print the entire result object
+            addMessage(assistantMessage, 'assistant');
+            console.log("processUserMessage: Added raw AI response to chat.");
 
-                            if (parsedContent.message && assistantRawMessage === "") {
-                                assistantRawMessage = parsedContent.message;
-                            }
-                        }
-                        console.log("processUserMessage: Successfully extracted and parsed JSON from assistant message.");
-                        console.log("processUserMessage: Raw assistant message after JSON extraction:", assistantRawMessage);
-                        console.log("processUserMessage: Extracted query:", extractedQuery);
-
-                    } catch (parseError) {
-                        console.warn("processUserMessage: Could not parse embedded JSON from assistant message, treating as plain text:", parseError);
-                        extractedQuery = null; 
-                    }
-                }
-
-                addMessage(assistantRawMessage, 'assistant');
-                console.log("processUserMessage: Added AI message to chat.");
-
-                if (extractedQuery) {
-                    addMessage(translations[state.selectedLanguage].aiInitiatedSearch(extractedQuery), 'assistant');
-                    console.log(`processUserMessage: AI generated query: "${extractedQuery}". Opening search panel and initiating search.`);
-                    
-                    state.isSearchVisible = true; 
-                    setActiveView(state.activeView); 
-                    
-                    searchInput.value = extractedQuery; 
-                    searchRepositories(extractedQuery); 
-                }
-            } else {
-                console.error("processUserMessage: Received an incomplete or invalid response from the AI: No data.message.");
-                throw new Error("Received an incomplete or invalid response from the AI.");
-            }
         } catch (error) {
             console.error("processUserMessage: LLM API Call failed:", error);
-            state.isTyping = false;
+            state.isTyping = false; // Ensure typing indicator is off on error
             const userFriendlyError = translations[state.selectedLanguage].llmApiFailed;
             addMessage(userFriendlyError, 'assistant');
         } finally {
+            // Ensure typing indicator is off regardless of success or failure
             if (state.isTyping) { state.isTyping = false; }
             renderMessages();
             updateChatInputState();
