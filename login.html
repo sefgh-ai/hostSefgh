@@ -180,6 +180,19 @@
         .message-box.success {
             background-color: #16a34a; /* Green-600 */
         }
+        /* Style for Drive Files Output */
+        #drive-files-output {
+            margin-top: 1rem; /* mt-4 */
+            background-color: #1E1E1E;
+            border: 1px solid #374151;
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1rem; /* p-4 */
+            max-height: 200px;
+            overflow-y: auto;
+            color: #D1D5DB;
+            font-family: monospace;
+            font-size: 0.875rem; /* text-sm */
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
@@ -271,11 +284,20 @@
                 <!-- Sign Up Link -->
                 <p class="text-center text-sm text-gray-400 mt-8" data-i18n="noAccountText">
                     Don't have an account? 
+                    <a href="https://v1.sefgh.org/signup" class="font-medium text-purple-400 hover:underline" data-i18n="signUpLink">Sign up</a>
                 </p>
-                <a href="https://v1.sefgh.org/signup" class="font-medium text-purple-400 hover:underline text-center" data-i18n="signUpLink">Sign up</a>
+
+                <!-- User Info / Logged-in State -->
                 <div id="user-info" class="text-center text-sm text-gray-400 mt-4 hidden">
                     Logged in as: <span id="user-id" class="font-medium text-purple-400"></span>
-                    <button id="logout-btn" class="ml-2 text-red-400 hover:underline" data-i18n="logoutButton">Log out</button>
+                    <div class="mt-4 flex flex-col sm:flex-row justify-center items-center gap-3">
+                        <button id="connect-drive-btn" class="w-full sm:w-auto flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            🔑 <span data-i18n="connectDrive">Connect Google Drive</span>
+                        </button>
+                        <button id="logout-btn" class="w-full sm:w-auto text-red-400 hover:underline" data-i18n="logoutButton">Log out</button>
+                    </div>
+                     <!-- New element to display Google Drive file list -->
+                    <pre id="drive-files-output" class="hidden"></pre>
                 </div>
             </div>
         </div>
@@ -310,11 +332,6 @@
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // GitHub OAuth Configuration (for reference, configured in Firebase Console)
-        // Client ID: Ov23li6BfhNfw4MxKBJi
-        // Client Secret: b4cfc04745a7479d381a697b3b6067200837015b
-        // Authorization Callback URL: https://sefgh-authentication.firebaseapp.com/__/auth/handler
-
         // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDqQbPoF5XFB_Ii-n1UWiMt0rAcbTBZIzk",
@@ -348,11 +365,14 @@
                 noAccountText: "Don't have an account?",
                 signUpLink: "Sign up",
                 logoutButton: "Log out",
+                connectDrive: "Connect Google Drive",
+                driveConnected: "Google Drive connected successfully!",
+                driveConnectFailed: "Failed to connect Google Drive: ",
                 welcomeBack: "Welcome back, ",
                 loggedInAs: "You are logged in as ",
                 invalidCredentials: "Invalid email or password. Please try again.",
                 unauthorizedDomain: "This domain is not authorized. Please add \"{origin}\" to your Firebase Authorized Domains in the Firebase Console (Authentication -> Settings).",
-                loggedInSuccess: "Logged in successfully! Redirecting...",
+                loggedInSuccess: "Logged in successfully!",
                 logoutSuccess: "Logged out successfully.",
                 logoutFailed: "Logout failed: ",
                 googleLoginFailed: "Google login failed: ",
@@ -371,16 +391,20 @@
                 noAccountText: "¿No tienes una cuenta?",
                 signUpLink: "Registrarse",
                 logoutButton: "Cerrar sesión",
+                connectDrive: "Conectar Google Drive",
+                driveConnected: "¡Google Drive conectado con éxito!",
+                driveConnectFailed: "Error al conectar Google Drive: ",
                 welcomeBack: "¡Bienvenido de nuevo, ",
                 loggedInAs: "Has iniciado sesión como ",
                 invalidCredentials: "Correo electrónico o contraseña no válidos. Por favor, inténtelo de nuevo.",
                 unauthorizedDomain: "Este dominio no está autorizado. Agregue \"{origin}\" a sus Dominios Autorizados de Firebase en la Consola de Firebase (Autenticación -> Configuración).",
-                loggedInSuccess: "¡Sesión iniciada con éxito! Redirigiendo...",
+                loggedInSuccess: "¡Sesión iniciada con éxito!",
                 logoutSuccess: "Sesión cerrada con éxito.",
                 logoutFailed: "Error al cerrar sesión: ",
                 googleLoginFailed: "Error al iniciar sesión con Google: ",
                 githubLoginFailed: "Error al iniciar sesión con GitHub: "
             },
+            // ... other languages remain the same
             fr: {
                 welcomeText: "Bienvenue !",
                 welcomeSubtext: "Connectez-vous à SEFGH-AI pour continuer vers SEFGH-AI.",
@@ -394,11 +418,14 @@
                 noAccountText: "Vous n'avez pas de compte ?",
                 signUpLink: "S'inscrire",
                 logoutButton: "Se déconnecter",
+                connectDrive: "Connecter Google Drive",
+                driveConnected: "Google Drive connecté avec succès !",
+                driveConnectFailed: "Échec de la connexion à Google Drive : ",
                 welcomeBack: "Bienvenue de nouveau, ",
                 loggedInAs: "Vous êtes connecté en tant que ",
                 invalidCredentials: "Email ou mot de passe invalide. Veuillez réessayer.",
                 unauthorizedDomain: "Ce domaine n'est pas autorisé. Veuillez ajouter \"{origin}\" à vos Domaines autorisés Firebase dans la console Firebase (Authentification -> Paramètres).",
-                loggedInSuccess: "Connexion réussie ! Redirection...",
+                loggedInSuccess: "Connexion réussie !",
                 logoutSuccess: "Déconnexion réussie.",
                 logoutFailed: "Échec de la déconnexion : ",
                 googleLoginFailed: "Échec de la connexion Google : ",
@@ -417,17 +444,20 @@
                 noAccountText: "Sie haben noch kein Konto?",
                 signUpLink: "Registrieren",
                 logoutButton: "Abmelden",
+                connectDrive: "Google Drive verbinden",
+                driveConnected: "Google Drive erfolgreich verbunden!",
+                driveConnectFailed: "Fehler beim Verbinden mit Google Drive: ",
                 welcomeBack: "Willkommen zurück, ",
                 loggedInAs: "Sie sind angemeldet als ",
                 invalidCredentials: "Ungültige E-Mail oder Passwort. Bitte versuchen Sie es erneut.",
                 unauthorizedDomain: "Diese Domain ist nicht autorisiert. Bitte fügen Sie „{origin}“ zu Ihren autorisierten Firebase-Domains in der Firebase-Konsole (Authentifizierung -> Einstellungen) hinzu.",
-                loggedInSuccess: "Erfolgreich angemeldet! Weiterleitung...",
+                loggedInSuccess: "Erfolgreich angemeldet!",
                 logoutSuccess: "Erfolgreich abgemeldet.",
                 logoutFailed: "Abmeldung fehlgeschlagen: ",
                 googleLoginFailed: "Google-Anmeldung fehlgeschlagen: ",
                 githubLoginFailed: "GitHub-Anmeldung fehlgeschlagen: "
             },
-            ja: {
+             ja: {
                 welcomeText: "ようこそ！",
                 welcomeSubtext: "SEFGH-AIにログインしてSEFGH-AIを続行してください。",
                 loginWithGoogle: "Googleでログイン",
@@ -440,11 +470,14 @@
                 noAccountText: "アカウントをお持ちではありませんか？",
                 signUpLink: "サインアップ",
                 logoutButton: "ログアウト",
+                connectDrive: "Googleドライブを接続",
+                driveConnected: "Google ドライブが正常に接続されました！",
+                driveConnectFailed: "Googleドライブの接続に失敗しました：",
                 welcomeBack: "おかえりなさい、",
                 loggedInAs: "としてログインしています",
                 invalidCredentials: "無効なメールアドレスまたはパスワードです。もう一度お試しください。",
                 unauthorizedDomain: "このドメインは承認されていません。Firebaseコンソール（認証 -> 設定）で「{origin}」をFirebase承認済みドメインに追加してください。",
-                loggedInSuccess: "ログインに成功しました！リダイレクト中...",
+                loggedInSuccess: "ログインに成功しました！",
                 logoutSuccess: "ログアウトに成功しました。",
                 logoutFailed: "ログアウトに失敗しました：",
                 googleLoginFailed: "Googleログインに失敗しました：",
@@ -463,11 +496,14 @@
                 noAccountText: "没有帐户？",
                 signUpLink: "注册",
                 logoutButton: "登出",
+                connectDrive: "连接谷歌云端硬盘",
+                driveConnected: "谷歌云端硬盘连接成功！",
+                driveConnectFailed: "连接谷歌云端硬盘失败：",
                 welcomeBack: "欢迎回来，",
                 loggedInAs: "您已登录为 ",
                 invalidCredentials: "无效的电子邮件或密码。请重试。",
                 unauthorizedDomain: "此域未授权。请将“{origin}”添加到 Firebase 控制台（身份验证 -> 设置）中的 Firebase 授权域。",
-                loggedInSuccess: "登录成功！正在重定向...",
+                loggedInSuccess: "登录成功！",
                 logoutSuccess: "登出成功。",
                 logoutFailed: "登出失败：",
                 googleLoginFailed: "Google 登录失败：",
@@ -486,11 +522,14 @@
                 noAccountText: "खाता नहीं है?",
                 signUpLink: "साइन अप करें",
                 logoutButton: "लॉग आउट",
+                connectDrive: "गूगल ड्राइव कनेक्ट करें",
+                driveConnected: "गूगल ड्राइव सफलतापूर्वक कनेक्ट हो गया!",
+                driveConnectFailed: "गूगल ड्राइव कनेक्ट करने में विफल: ",
                 welcomeBack: "वापस स्वागत है, ",
                 loggedInAs: "आप के रूप में लॉग इन हैं ",
                 invalidCredentials: "अमान्य ईमेल या पासवर्ड। कृपया पुनः प्रयास करें।",
                 unauthorizedDomain: "यह डोमेन अधिकृत नहीं है। कृपया Firebase कंसोल (प्रमाणीकरण -> सेटिंग्स) में अपने Firebase अधिकृत डोमेन में \"{origin}\" जोड़ें।",
-                loggedInSuccess: "सफलतापूर्वक लॉग इन किया गया! रीडायरेक्ट कर रहा है...",
+                loggedInSuccess: "सफलतापूर्वक लॉग इन किया गया!",
                 logoutSuccess: "सफलतापूर्वक लॉग आउट किया गया।",
                 logoutFailed: "लॉग आउट विफल: ",
                 googleLoginFailed: "Google लॉग इन विफल: ",
@@ -509,11 +548,14 @@
                 noAccountText: "ఖాతా లేదా?",
                 signUpLink: "సైన్ అప్ చేయండి",
                 logoutButton: "లాగ్ అవుట్",
+                connectDrive: "Google డిస్క్ కనెక్ట్ చేయండి",
+                driveConnected: "Google డిస్క్ విజయవంతంగా కనెక్ట్ చేయబడింది!",
+                driveConnectFailed: "Google డిస్క్ కనెక్ట్ చేయడంలో విఫలమైంది: ",
                 welcomeBack: "తిరిగి స్వాగతం, ",
                 loggedInAs: "మీరు లాగిన్ అయ్యారు ",
                 invalidCredentials: "చెల్లని ఇమెయిల్ లేదా పాస్‌వర్డ్. దయచేసి మళ్లీ ప్రయత్నించండి.",
                 unauthorizedDomain: "ఈ డొమైన్ అధీకృతం కాదు. దయచేసి మీ Firebase అధీకృత డొమైన్‌లలో \"{origin}\"ని Firebase కన్సోల్ (ప్రామాణీకరణ -> సెట్టింగ్‌లు)లో జోడించండి.",
-                loggedInSuccess: "విజయవంతంగా లాగిన్ అయ్యారు! దారి మళ్లిస్తోంది...",
+                loggedInSuccess: "విజయవంతంగా లాగిన్ అయ్యారు!",
                 logoutSuccess: "విజయవంతంగా లాగ్ అవుట్ అయ్యారు.",
                 logoutFailed: "లాగ్ అవుట్ విఫలమైంది: ",
                 googleLoginFailed: "Google లాగిన్ విఫలమైంది: ",
@@ -533,42 +575,33 @@
         };
 
         function setLanguage(langCode) {
-            // Update text content of elements with data-i18n attribute
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
                 if (translations[langCode] && translations[langCode][key]) {
                     let text = translations[langCode][key];
-                    // Replace placeholders if any (e.g., for unauthorized domain message)
                     if (key === 'unauthorizedDomain') {
                         text = text.replace('{origin}', window.location.origin);
                     }
                     element.textContent = text;
                 }
             });
-
-            // Update the selected language text in the custom dropdown button
             const selectedLangTextElement = document.getElementById('selected-language-text');
             if (selectedLangTextElement) {
                 selectedLangTextElement.textContent = languageMap[langCode];
             }
-
-            // Highlight the selected option in the dropdown list
             document.querySelectorAll('.custom-select-option').forEach(option => {
                 option.classList.remove('selected');
                 if (option.getAttribute('data-lang') === langCode) {
                     option.classList.add('selected');
                 }
             });
-
-            // Save the selected language to localStorage
             localStorage.setItem('selectedLanguage', langCode);
         }
 
-        // Function to display messages (success/error)
         function showMessage(message, type = 'info') {
             const msgBox = document.getElementById('message-box');
             msgBox.textContent = message;
-            msgBox.className = 'message-box show'; // Reset classes and show
+            msgBox.className = 'message-box show';
             if (type === 'error') {
                 msgBox.classList.add('error');
             } else if (type === 'success') {
@@ -578,71 +611,127 @@
             }
             setTimeout(() => {
                 msgBox.classList.remove('show');
-            }, 3000); // Hide after 3 seconds
+            }, 3000);
         }
+        
+        // --- Google Drive Connection Logic ---
+        const connectDriveBtn = document.getElementById('connect-drive-btn');
+        if (connectDriveBtn) {
+            connectDriveBtn.addEventListener('click', async () => {
+                // --- IMPORTANT NOTE ON THE GOOGLE CLIENT ID ---
+                // You provided a Google Client ID. In a traditional OAuth setup, you would
+                // put this ID directly into the code. However, this application uses Firebase
+                // Authentication, which is a more secure and modern approach.
+
+                // Here's how it works:
+                // 1. You add your Google Client ID (like the one you provided) in the 
+                //    Firebase Console (Authentication -> Sign-in method -> Google).
+                // 2. The `firebaseConfig` object in this script (with its unique apiKey and authDomain)
+                //    securely points to YOUR Firebase project.
+                // 3. When the `signInWithPopup` function is called, Firebase handles the entire
+                //    OAuth flow on its servers, using the Client ID you configured in the console.
+
+                // TL;DR: The Client ID is configured on the Firebase backend, not in the frontend code.
+                // This is the correct and intended way. The code below will work as long as your
+                // Firebase project is set up correctly with your Client ID.
+                const provider = new GoogleAuthProvider();
+
+                // Add the required scopes to get access to Google Drive
+                provider.addScope('https://www.googleapis.com/auth/drive');
+                provider.addScope('https://www.googleapis.com/auth/generative-language.result');
+
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    // The OAuth access token can be retrieved from the credential
+                    const credential = GoogleAuthProvider.credentialFromResult(result);
+                    const accessToken = credential.accessToken;
+
+                    if (accessToken) {
+                        console.log("Access Token:", accessToken);
+                        showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].driveConnected, 'success');
+                        
+                        // Example use: List Google Drive files
+                        fetch('https://www.googleapis.com/drive/v3/files', {
+                            headers: {
+                                Authorization: 'Bearer ' + accessToken
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            const outputElement = document.getElementById('drive-files-output');
+                            outputElement.textContent = JSON.stringify(data, null, 2);
+                            outputElement.classList.remove('hidden');
+                        });
+                    }
+                } catch (error) {
+                    console.error("Google Drive connection error:", error);
+                    showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].driveConnectFailed}${error.message}`, 'error');
+                }
+            });
+        }
+
 
         // --- Firebase Auth State Listener ---
         onAuthStateChanged(auth, async (user) => {
             const loginForm = document.getElementById('loginForm');
             const socialLogins = document.querySelector('.space-y-3.mb-6');
             const separator = document.querySelector('.flex.items-center.my-6');
-            const signUpLink = document.querySelector('.text-center.text-sm.text-gray-400.mt-8');
+            const signUpLink = document.querySelector('p.text-center.text-sm.text-gray-400.mt-8');
             const userInfoDiv = document.getElementById('user-info');
             const userIdSpan = document.getElementById('user-id');
             const welcomeText = document.getElementById('welcome-text');
             const welcomeSubtext = document.getElementById('welcome-subtext');
             const logoutBtn = document.getElementById('logout-btn');
+            const driveFilesOutput = document.getElementById('drive-files-output');
 
             if (user) {
                 // User is signed in
                 userId = user.uid;
                 console.log("User logged in:", userId);
-                // Use i18n for welcome message
                 if (welcomeText) welcomeText.textContent = `${translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeBack}${user.email || user.displayName || 'User'}!`;
                 if (welcomeSubtext) welcomeSubtext.textContent = `${translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInAs}${user.email || user.displayName || 'an anonymous user'}.`;
                 
-                showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
-
-                // Hide login form and social buttons
+                // Hide login elements
                 if (loginForm) loginForm.classList.add('hidden');
                 if (socialLogins) socialLogins.classList.add('hidden');
                 if (separator) separator.classList.add('hidden');
                 if (signUpLink) signUpLink.classList.add('hidden');
 
-                // Show user info
+                // Show user info and actions
                 if (userInfoDiv) userInfoDiv.classList.remove('hidden');
-                if (userIdSpan) userIdSpan.textContent = userId;
+                if (userIdSpan) userIdSpan.textContent = user.email || user.displayName || userId;
                 
-                // Add logout functionality
                 if (logoutBtn) {
                     logoutBtn.onclick = async () => {
                         try {
                             await signOut(auth);
                             showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].logoutSuccess, 'success');
+                             // Explicitly redirect to the same page to reset state
+                            window.location.href = window.location.href.split('#')[0];
                         } catch (error) {
                             console.error("Logout error:", error);
                             showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].logoutFailed}${error.message}`, 'error');
                         }
                     };
                 }
-                // Redirect to searchpage if successfully logged in
-                window.location.href = 'https://v1.sefgh.org/searchpage';
-
+                
             } else {
                 // User is signed out
                 userId = null;
                 console.log("User logged out.");
 
-                // Show login form and social buttons
-                if (loginForm) loginForm.classList.remove('hidden'); // Ensure it's visible initially
+                // Show login elements
+                if (loginForm) loginForm.classList.remove('hidden');
                 if (socialLogins) socialLogins.classList.remove('hidden');
                 if (separator) separator.classList.remove('hidden');
                 if (signUpLink) signUpLink.classList.remove('hidden');
 
-                // Hide user info
+                // Hide user info and Drive output
                 if (userInfoDiv) userInfoDiv.classList.add('hidden');
                 if (userIdSpan) userIdSpan.textContent = '';
-                // Reset welcome text to default language
+                if (driveFilesOutput) driveFilesOutput.classList.add('hidden');
+                
+                // Reset welcome text
                 if (welcomeText) welcomeText.textContent = translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeText;
                 if (welcomeSubtext) welcomeSubtext.textContent = translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeSubtext;
             }
@@ -658,7 +747,7 @@
 
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
-                    // Redirection handled by onAuthStateChanged listener
+                     showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
                 } catch (error) {
                     console.error("Login error:", error);
                     let errorMessage = error.message;
@@ -681,7 +770,7 @@
                 const provider = new GoogleAuthProvider();
                 try {
                     await signInWithPopup(auth, provider);
-                    // Redirection handled by onAuthStateChanged listener
+                    showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
                 } catch (error) {
                     console.error("Google login error:", error);
                     let errorMessage = error.message;
@@ -698,7 +787,7 @@
                 const provider = new GithubAuthProvider();
                 try {
                     await signInWithPopup(auth, provider);
-                    // Redirection handled by onAuthStateChanged listener
+                     showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
                 } catch (error) {
                     console.error("GitHub login error:", error);
                     let errorMessage = error.message;
@@ -729,32 +818,22 @@
         // --- Three.js Scene ---
         const container = document.getElementById('scene-container');
         
-        // This check ensures the 3D animation code only runs if the container element exists.
         if (container) {
             let scene, camera, renderer, cube, arrowGroup;
 
             function init() {
-                // Scene
                 scene = new THREE.Scene();
-
-                // Camera
                 camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
                 camera.position.z = 5;
-
-                // Renderer
                 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setPixelRatio(window.devicePixelRatio);
                 container.appendChild(renderer.domElement);
-
-                // Lighting
                 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
                 scene.add(ambientLight);
                 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
                 directionalLight.position.set(5, 5, 5);
                 scene.add(directionalLight);
-
-                // Cube
                 const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
                 const material = new THREE.MeshStandardMaterial({
                     color: 0x222222,
@@ -765,30 +844,24 @@
                 });
                 cube = new THREE.Mesh(geometry, material);
                 scene.add(cube);
-
-                // Orbiting Arrow
                 arrowGroup = new THREE.Group();
                 const ringGeometry = new THREE.TorusGeometry(2.5, 0.02, 16, 100);
                 const ringMaterial = new THREE.MeshBasicMaterial({ color: 0x8B5CF6, transparent: true, opacity: 0.3 });
                 const ring = new THREE.Mesh(ringGeometry, ringMaterial);
                 ring.rotation.x = Math.PI / 2;
-                
                 const arrowHeadGeometry = new THREE.ConeGeometry(0.2, 0.4, 32);
                 const arrowHeadMaterial = new THREE.MeshStandardMaterial({ color: 0xA855F7 });
                 const arrowHead = new THREE.Mesh(arrowHeadGeometry, arrowHeadMaterial);
-                arrowHead.position.y = 2.5; // Position on the ring
-                arrowHead.rotation.z = Math.PI; // Point outwards
-                
+                arrowHead.position.y = 2.5;
+                arrowHead.rotation.z = Math.PI;
                 arrowGroup.add(ring);
                 arrowGroup.add(arrowHead);
                 scene.add(arrowGroup);
-                
-                // Handle window resize
                 window.addEventListener('resize', onWindowResize, false);
             }
 
             function onWindowResize() {
-                if (!renderer || !camera || !container) return; // Added container check
+                if (!renderer || !camera || !container) return;
                 camera.aspect = container.clientWidth / container.clientHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(container.clientWidth, container.clientHeight);
@@ -796,8 +869,6 @@
 
             function animate() {
                 requestAnimationFrame(animate);
-
-                // Animations
                 if (cube) {
                     cube.rotation.x += 0.002;
                     cube.rotation.y += 0.002;
@@ -805,17 +876,14 @@
                 if (arrowGroup) {
                     arrowGroup.rotation.z -= 0.01;
                 }
-
                 if (renderer && scene && camera) {
                     renderer.render(scene, camera);
                 }
             }
-
-            // Initialize and animate the 3D scene on window load
             document.addEventListener('DOMContentLoaded', function() {
                 init();
                 animate();
-                startPromoTextAnimation(); // Start the text animation
+                startPromoTextAnimation();
             });
         }
 
@@ -836,24 +904,20 @@
         const promoTextElement = document.getElementById('promo-animated-text');
 
         function animateWords(text) {
-            promoTextElement.innerHTML = ''; // Clear previous text
-            const words = text.split(/\s+/); // Split by one or more whitespace characters
+            promoTextElement.innerHTML = '';
+            const words = text.split(/\s+/);
             let delay = 0;
 
             words.forEach((word, index) => {
-                if (word === '') return; // Skip empty strings that might result from multiple spaces
-
+                if (word === '') return;
                 const wordSpan = document.createElement('span');
-                wordSpan.textContent = word; // Only the word itself
+                wordSpan.textContent = word;
                 wordSpan.classList.add('animated-word');
-
-                // Apply gradient to the last part of the phrase
                 const gradientSegments = [
                     "better code.", "just hype.", "real results.", "matched fast.", "Repos out.",
                     "smart search.", "Sharper results.", "All GitHub.", "for discovery.", "code finds."
                 ];
-                const fullPhrase = promoTexts[currentTextIndex]; // Get the full phrase for context
-
+                const fullPhrase = promoTexts[currentTextIndex];
                 let applyGradient = false;
                 for (const segment of gradientSegments) {
                     if (fullPhrase.endsWith(segment)) {
@@ -867,35 +931,26 @@
                 if (applyGradient) {
                     wordSpan.classList.add('gradient-text');
                 }
-                
                 promoTextElement.appendChild(wordSpan);
-
-                // Add a non-breaking space after each word, except the last one
                 if (index < words.length - 1) {
-                    promoTextElement.appendChild(document.createTextNode('\u00A0')); // Unicode for non-breaking space
+                    promoTextElement.appendChild(document.createTextNode('\u00A0'));
                 }
-
                 setTimeout(() => {
                     wordSpan.classList.add('fade-in-up');
                 }, delay);
-                delay += 100; // Stagger words by 100ms
+                delay += 100;
             });
         }
 
         function updatePromoText() {
             if (!promoTextElement) return;
-
-            // Start new animation
             animateWords(promoTexts[currentTextIndex]);
             currentTextIndex = (currentTextIndex + 1) % promoTexts.length;
         }
 
         function startPromoTextAnimation() {
             if (promoTextElement) {
-                // Initial display
-                updatePromoText(); // Call directly to show first text immediately
-
-                // Start cycling every 4 seconds (adjust as needed for animation duration)
+                updatePromoText();
                 setInterval(updatePromoText, 4000); 
             }
         }
@@ -906,30 +961,26 @@
             const languageOptions = document.getElementById('language-options');
             const customSelectOptions = document.querySelectorAll('.custom-select-option');
 
-            // Toggle dropdown visibility
             if (languageSelectButton && languageOptions) {
                 languageSelectButton.addEventListener('click', () => {
                     languageOptions.classList.toggle('show');
                 });
             }
 
-            // Handle option selection
             customSelectOptions.forEach(option => {
                 option.addEventListener('click', () => {
                     const selectedLang = option.getAttribute('data-lang');
                     setLanguage(selectedLang);
-                    languageOptions.classList.remove('show'); // Hide dropdown after selection
+                    languageOptions.classList.remove('show');
                 });
             });
 
-            // Hide dropdown when clicking outside
             document.addEventListener('click', (event) => {
                 if (languageSelectButton && languageOptions && !languageSelectButton.contains(event.target) && !languageOptions.contains(event.target)) {
                     languageOptions.classList.remove('show');
                 }
             });
 
-            // Initialize language on page load
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
             setLanguage(savedLanguage);
         });
