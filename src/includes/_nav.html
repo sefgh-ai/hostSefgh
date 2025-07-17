@@ -1,0 +1,54 @@
+<nav id="nav-panel" class="h-full flex flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 hidden" style="width: 240px;">
+    <div id="mobile-nav-header" class="md:hidden flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <a href="https://sefgh.org" rel="noopener noreferrer" class="text-base sm:text-lg font-extrabold font-sans hover-rainbow-shine bg-gradient-to-r from-gray-900 to-gray-900 dark:from-gray-200 dark:to-gray-200 flex-shrink-0">SEFGH-AI</a>
+        <div class="flex items-center space-x-2">
+            <button id="mobile-nav-github-btn" title="GitHub Repository" class="p-2 rounded-lg text-purple-600 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0" >
+                <i data-lucide="github" class="w-5 h-5"></i>
+            </button>
+            <button id="mobile-nav-theme-toggle-btn" title="Toggle theme" class="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex-shrink-0">
+                <i data-lucide="moon" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+    <div class="p-4 flex-shrink-0">
+        <h2 data-i18n="navigationTitle" class="text-lg font-semibold text-gray-800 dark:text-gray-200">Navigation</h2>
+    </div>
+    <div id="nav-items-container" class="flex-1 overflow-y-auto p-4 space-y-1 min-h-0">
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="chat" data-i18n="newChat">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+            <span>New Chat</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="chat-history" data-i18n="chatHistory">
+            <i data-lucide="history" class="w-5 h-5"></i>
+            <span>Chat History</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="docs" data-i18n="docs">
+            <i data-lucide="book" class="w-5 h-5"></i>
+            <span>Docs</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="playground" data-i18n="playground">
+            <i data-lucide="flask-conical" class="w-5 h-5"></i>
+            <span>Playground</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="console" data-i18n="console">
+            <i data-lucide="terminal" class="w-5 h-5"></i>
+            <span>Console</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="proxy" data-i18n="proxy">
+            <i data-lucide="shield" class="w-5 h-5"></i>
+            <span>Proxy</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="language" data-i18n="language">
+            <i data-lucide="globe" class="w-5 h-5"></i>
+            <span>Language</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="settings" data-i18n="settings">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+            <span>Settings</span>
+        </button>
+        <button class="nav-item w-full text-left p-2 rounded-lg flex items-center space-x-3 transition-colors" data-view="all-pages" data-i18n="allPages">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span>All Pages</span>
+        </button>
+    </div>
+</nav>
