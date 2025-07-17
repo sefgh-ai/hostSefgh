@@ -2,9 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Generated automatically with page titles for better readability -->
   <url>
-    <!-- Searchpage -->
-    <loc>https://v1.sefgh.org/src/includes/searchpage.html</loc>
-    <lastmod>2025-07-17T11:59:31+05:30</lastmod>
+    <!--  Nav -->
+    <loc>https://v1.sefgh.org/src/includes/_nav.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
+  </url>
+  <url>
+    <!--  Header -->
+    <loc>https://v1.sefgh.org/src/includes/_header.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
+  </url>
+  <url>
+    <!--  Scripts -->
+    <loc>https://v1.sefgh.org/src/includes/_scripts.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
+  </url>
+  <url>
+    <!--  Search Panel -->
+    <loc>https://v1.sefgh.org/src/includes/_search_panel.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
+  </url>
+  <url>
+    <!--  Main Content Panels -->
+    <loc>https://v1.sefgh.org/src/includes/_main_content_panels.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
+  </url>
+  <url>
+    <!--  Head -->
+    <loc>https://v1.sefgh.org/src/includes/_head.html</loc>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
   </url>
   <url>
     <!-- Pricing -->
@@ -24,7 +49,7 @@
   <url>
     <!-- Searchpage -->
     <loc>https://v1.sefgh.org/searchpage.html</loc>
-    <lastmod>2025-07-09T03:00:02+05:30</lastmod>
+    <lastmod>2025-07-17T23:57:16+05:30</lastmod>
   </url>
   <url>
     <!-- About -->
