@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Generated automatically with page titles for better readability -->
   <url>
+    <!-- Searchpage -->
+    <loc>https://v1.sefgh.org/src/includes/searchpage.html</loc>
+    <lastmod>2025-07-17T11:59:31+05:30</lastmod>
+  </url>
+  <url>
     <!-- Pricing -->
     <loc>https://v1.sefgh.org/pricing.html</loc>
     <lastmod>2025-07-05T04:38:02+05:30</lastmod>
