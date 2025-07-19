@@ -1,19 +1,72 @@
 <!DOCTYPE html>
 <html lang="en" class="light">
 
-{% include '_includes/_head.html' %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sefgh - AI Search</title>
+    <link rel="stylesheet" href="assets/index-BFzyzoie.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .result-item:hover .result-url {
+            color: #3b82f6;
+        }
+    </style>
+</head>
 
 <body>
     <div id="app-container" class="h-screen flex flex-col flex-1">
         
-        {% include '_includes/_header.html' %}
+        <div id="header-placeholder"></div>
 
-        {% include '_includes/_main_content_panels.html' %}
+        <main class="flex flex-1 overflow-hidden">
+
+            <div id="search-panel-placeholder" class="w-full md:w-1/3 lg:w-1/4"></div>
+
+            <div id="search-results-panel" class="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-900">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Search Results</h2>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <span id="results-count">0</span> results
+                    </div>
+                </div>
+                <div id="results-container" class="space-y-4">
+                    </div>
+            </div>
+        </main>
         
     </div>
 
     <div id="notification-container"></div>
 
-    {% include '_includes/_scripts.html' %}
+    <script type="module" src="assets/index-D15aWuWx.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Function to fetch HTML from a file and insert it into a placeholder
+            const loadComponent = (url, placeholderId) => {
+                fetch(url)
+                    .then(response => {
+                        if (!response.ok) throw new Error(`Failed to load ${url}: ${response.statusText}`);
+                        return response.text();
+                    })
+                    .then(data => {
+                        const placeholder = document.getElementById(placeholderId);
+                        if (placeholder) {
+                            placeholder.innerHTML = data;
+                        } else {
+                            console.error(`Placeholder with ID '${placeholderId}' not found.`);
+                        }
+                    })
+                    .catch(error => console.error(error));
+            };
+
+            // Load the components into their placeholders
+            // Note: The path must be correct relative to where searchpage.html is located
+            loadComponent('src/includes/_header.html', 'header-placeholder');
+            loadComponent('src/includes/_search_panel.html', 'search-panel-placeholder');
+        });
+    </script>
 </body>
 </html>
