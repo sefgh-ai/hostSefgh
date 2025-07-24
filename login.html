@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="icon" type="image/png" href="https://v1.sefgh.org/assets/favicon.png"> <!-- Favicon added -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="https://v1.sefgh.org/assets/favicon.png"> <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -196,22 +195,17 @@
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
-    <!-- Main container with rounded corners and border -->
     <main class="w-full max-w-7xl bg-[#161616] rounded-2xl grid grid-cols-1 md:grid-cols-2 shadow-2xl shadow-black/30 border border-gray-800 overflow-hidden">
         
-        <!-- Left Side: Login Form -->
         <div class="form-container flex flex-col justify-center text-gray-300 order-last md:order-first">
             <div class="w-full max-w-md mx-auto">
-                <!-- Header: Logo and Language Selector -->
                 <div class="flex justify-between items-center mb-8">
                     <a href="https://sefgh.org" class="flex items-center gap-2 no-underline">
                       <div class="flex items-center gap-2">
-                        <!-- SEFGH-AI Logo Image -->
                         <img src="https://v1.sefgh.org/assets/favicon.png" alt="SEFGH-AI Logo" class="w-8 h-8 rounded-full">
                         <span class="text-2xl font-bold text-white">SEFGH-AI</span>
                       </div>
                     </a>
-                    <!-- Language Selector -->
                     <div class="custom-select-wrapper">
                         <button class="custom-select-button" id="language-select-button">
                             <span id="selected-language-text">English (EN)</span>
@@ -230,32 +224,26 @@
                     </div>
                 </div>
 
-                <!-- Welcome Text -->
                 <h1 class="text-3xl font-bold text-white mb-1" id="welcome-text" data-i18n="welcomeText">Welcome!</h1>
                 <p class="text-gray-400 mb-6" id="welcome-subtext" data-i18n="welcomeSubtext">Log in to SEFGH-AI to continue to SEFGH-AI.</p>
 
-                <!-- Social Logins -->
                 <div class="space-y-3 mb-6">
                     <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                        <!-- Google Logo Image -->
                         <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google Logo" class="w-5 h-5">
                         <span class="text-white font-medium" data-i18n="loginWithGoogle">Log in with Google</span>
                     </button>
                     <button id="github-login-btn" class="w-full flex items-center justify-center gap-3 py-3 px-4 bg-[#1E1E1E] border border-gray-700 rounded-lg hover:bg-gray-800 transition-colors">
-                        <!-- GitHub Logo Image with white background -->
                         <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Logo" class="w-5 h-5 p-0.5 bg-white rounded-full">
                         <span class="text-white font-medium" data-i18n="loginWithGitHub">Log in with GitHub</span>
                     </button>
                 </div>
 
-                <!-- Separator -->
                 <div class="flex items-center my-6">
                     <hr class="w-full border-gray-700">
                     <span class="px-4 text-gray-500 text-sm" data-i18n="orSeparator">OR</span>
                     <hr class="w-full border-gray-700">
                 </div>
 
-                <!-- Email/Password Form -->
                 <form id="loginForm" class="space-y-5">
                     <div>
                         <label for="email" class="text-sm font-medium text-gray-400" data-i18n="emailLabel">Email</label>
@@ -269,9 +257,7 @@
                         <div class="relative mt-1">
                             <input type="password" id="password" class="w-full bg-[#1E1E1E] border border-gray-700 text-white rounded-lg p-3 pr-10 focus:ring-purple-500 focus:border-purple-500 transition" placeholder="Your password">
                             <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-300">
-                                <!-- Eye Open SVG -->
                                 <svg id="eye-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                <!-- Eye Closed SVG -->
                                 <svg id="eye-closed" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 .946-3.012 3.42-5.32 6.57-6.175M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.582 17.582A7.01 7.01 0 0112 18c-3.182 0-5.94-1.94-7.394-4.582A9.98 9.98 0 014.416 9.416M12 12l2.38 2.38m-4.76-4.76L12 12"></path></svg>
                             </button>
                         </div>
@@ -281,13 +267,11 @@
                     </button>
                 </form>
 
-                <!-- Sign Up Link -->
                 <p class="text-center text-sm text-gray-400 mt-8" data-i18n="noAccountText">
                     Don't have an account? 
                     <a href="https://v1.sefgh.org/signup" class="font-medium text-purple-400 hover:underline" data-i18n="signUpLink">Sign up</a>
                 </p>
 
-                <!-- User Info / Logged-in State -->
                 <div id="user-info" class="text-center text-sm text-gray-400 mt-4 hidden">
                     Logged in as: <span id="user-id" class="font-medium text-purple-400"></span>
                     <div class="mt-4 flex flex-col sm:flex-row justify-center items-center gap-3">
@@ -296,26 +280,22 @@
                         </button>
                         <button id="logout-btn" class="w-full sm:w-auto text-red-400 hover:underline" data-i18n="logoutButton">Log out</button>
                     </div>
-                     <!-- New element to display Google Drive file list -->
-                    <pre id="drive-files-output" class="hidden"></pre>
+                     <pre id="drive-files-output" class="hidden"></pre>
                 </div>
             </div>
         </div>
 
-        <!-- Right Side: Promo Content & 3D Graphic -->
         <div class="promo-container relative flex flex-col items-center justify-center text-center text-white bg-[#1a1a1a] min-h-[400px] md:min-h-full order-first md:order-last md:pt-24 md:pb-8 promo-background-image">
             <div class="relative z-10">
                    <h2 class="text-3xl md:text-4xl font-bold leading-tight">
                     <span id="promo-animated-text"></span>
                 </h2>
             </div>
-            <!-- 3D Background Elements -->
             <div id="scene-container" class="absolute inset-0 z-0"></div>
         </div>
 
     </main>
 
-    <!-- Message Box for notifications -->
     <div id="message-box" class="message-box"></div>
 
     <script type="module">
@@ -614,40 +594,25 @@
             }, 3000);
         }
         
-        // --- Google Drive Connection Logic ---
+        // --- Google Drive Connection Logic (for dedicated button after login) ---
         const connectDriveBtn = document.getElementById('connect-drive-btn');
         if (connectDriveBtn) {
             connectDriveBtn.addEventListener('click', async () => {
-                // --- IMPORTANT NOTE ON THE GOOGLE CLIENT ID ---
-                // You provided a Google Client ID. In a traditional OAuth setup, you would
-                // put this ID directly into the code. However, this application uses Firebase
-                // Authentication, which is a more secure and modern approach.
-
-                // Here's how it works:
-                // 1. You add your Google Client ID (like the one you provided) in the 
-                //    Firebase Console (Authentication -> Sign-in method -> Google).
-                // 2. The `firebaseConfig` object in this script (with its unique apiKey and authDomain)
-                //    securely points to YOUR Firebase project.
-                // 3. When the `signInWithPopup` function is called, Firebase handles the entire
-                //    OAuth flow on its servers, using the Client ID you configured in the console.
-
-                // TL;DR: The Client ID is configured on the Firebase backend, not in the frontend code.
-                // This is the correct and intended way. The code below will work as long as your
-                // Firebase project is set up correctly with your Client ID.
                 const provider = new GoogleAuthProvider();
 
-                // Add the required scopes to get access to Google Drive
+                // Add broader scopes for the dedicated "Connect Drive" button
                 provider.addScope('https://www.googleapis.com/auth/drive');
                 provider.addScope('https://www.googleapis.com/auth/generative-language.result');
 
                 try {
                     const result = await signInWithPopup(auth, provider);
-                    // The OAuth access token can be retrieved from the credential
                     const credential = GoogleAuthProvider.credentialFromResult(result);
                     const accessToken = credential.accessToken;
 
                     if (accessToken) {
-                        console.log("Access Token:", accessToken);
+                        console.log("Access Token for Drive API:", accessToken);
+                        // Store this more powerful token separately if needed, or overwrite
+                        localStorage.setItem('googleDriveToken', accessToken);
                         showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].driveConnected, 'success');
                         
                         // Example use: List Google Drive files
@@ -766,19 +731,38 @@
         const githubLoginBtn = document.getElementById('github-login-btn');
 
         if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', async () => {
+            googleLoginBtn.addEventListener('click', () => { // Removed async as it's handled by .then()
                 const provider = new GoogleAuthProvider();
-                try {
-                    await signInWithPopup(auth, provider);
-                    showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
-                } catch (error) {
-                    console.error("Google login error:", error);
-                    let errorMessage = error.message;
-                    if (error.code === 'auth/unauthorized-domain') {
-                        errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].unauthorizedDomain.replace('{origin}', window.location.origin);
-                    }
-                    showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].googleLoginFailed}${errorMessage}`, 'error');
-                }
+                // **MODIFICATION STARTS HERE**
+                // Add the Google Drive scope for file access during sign-in
+                provider.addScope('https://www.googleapis.com/auth/drive.file');
+
+                signInWithPopup(auth, provider)
+                    .then((result) => {
+                        // This gives you a Google Access Token. You can use it to access the Google API.
+                        const credential = GoogleAuthProvider.credentialFromResult(result);
+                        const token = credential.accessToken;
+                        const user = result.user;
+                        
+                        console.log("Google Access Token:", token);
+                        console.log("User Info:", user);
+
+                        // Now you can store this token (e.g., in localStorage) to make API calls to Google Drive
+                        localStorage.setItem('googleDriveToken', token);
+                        
+                        // Show success message from translations
+                        showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].loggedInSuccess, 'success');
+                        
+                    }).catch((error) => {
+                        // Handle Errors here.
+                        console.error("Google login error:", error);
+                        let errorMessage = error.message;
+                        if (error.code === 'auth/unauthorized-domain') {
+                            errorMessage = translations[localStorage.getItem('selectedLanguage') || 'en'].unauthorizedDomain.replace('{origin}', window.location.origin);
+                        }
+                        showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].googleLoginFailed}${errorMessage}`, 'error');
+                    });
+                // **MODIFICATION ENDS HERE**
             });
         }
 
