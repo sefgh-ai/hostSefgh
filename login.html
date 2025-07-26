@@ -201,10 +201,10 @@
             <div class="w-full max-w-md mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <a href="https://sefgh.org" class="flex items-center gap-2 no-underline">
-                      <div class="flex items-center gap-2">
-                        <img src="https://v1.sefgh.org/assets/favicon.png" alt="SEFGH-AI Logo" class="w-8 h-8 rounded-full">
-                        <span class="text-2xl font-bold text-white">SEFGH-AI</span>
-                      </div>
+                        <div class="flex items-center gap-2">
+                            <img src="https://v1.sefgh.org/assets/favicon.png" alt="SEFGH-AI Logo" class="w-8 h-8 rounded-full">
+                            <span class="text-2xl font-bold text-white">SEFGH-AI</span>
+                        </div>
                     </a>
                     <div class="custom-select-wrapper">
                         <button class="custom-select-button" id="language-select-button">
@@ -275,14 +275,10 @@
                 <div id="user-info" class="text-center text-sm text-gray-400 mt-4 hidden">
                     Logged in as: <span id="user-id" class="font-medium text-purple-400"></span>
                     <div class="mt-4 flex flex-col sm:flex-row justify-center items-center gap-3">
-                        <button id="connect-drive-btn" class="w-full sm:w-auto flex items-center justify-center gap-2 py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            🔑 <span data-i18n="connectDrive">Connect Google Drive</span>
-                        </button>
                         <button id="logout-btn" class="w-full sm:w-auto text-red-400 hover:underline" data-i18n="logoutButton">Log out</button>
                     </div>
-                     <pre id="drive-files-output" class="hidden"></pre>
                 </div>
-            </div>
+                 </div>
         </div>
 
         <div class="promo-container relative flex flex-col items-center justify-center text-center text-white bg-[#1a1a1a] min-h-[400px] md:min-h-full order-first md:order-last md:pt-24 md:pb-8 promo-background-image">
@@ -594,46 +590,7 @@
             }, 3000);
         }
         
-        // --- Google Drive Connection Logic (for dedicated button after login) ---
-        const connectDriveBtn = document.getElementById('connect-drive-btn');
-        if (connectDriveBtn) {
-            connectDriveBtn.addEventListener('click', async () => {
-                const provider = new GoogleAuthProvider();
-
-                // Add broader scopes for the dedicated "Connect Drive" button
-                provider.addScope('https://www.googleapis.com/auth/drive');
-                provider.addScope('https://www.googleapis.com/auth/generative-language.result');
-
-                try {
-                    const result = await signInWithPopup(auth, provider);
-                    const credential = GoogleAuthProvider.credentialFromResult(result);
-                    const accessToken = credential.accessToken;
-
-                    if (accessToken) {
-                        console.log("Access Token for Drive API:", accessToken);
-                        // Store this more powerful token separately if needed, or overwrite
-                        localStorage.setItem('googleDriveToken', accessToken);
-                        showMessage(translations[localStorage.getItem('selectedLanguage') || 'en'].driveConnected, 'success');
-                        
-                        // Example use: List Google Drive files
-                        fetch('https://www.googleapis.com/drive/v3/files', {
-                            headers: {
-                                Authorization: 'Bearer ' + accessToken
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            const outputElement = document.getElementById('drive-files-output');
-                            outputElement.textContent = JSON.stringify(data, null, 2);
-                            outputElement.classList.remove('hidden');
-                        });
-                    }
-                } catch (error) {
-                    console.error("Google Drive connection error:", error);
-                    showMessage(`${translations[localStorage.getItem('selectedLanguage') || 'en'].driveConnectFailed}${error.message}`, 'error');
-                }
-            });
-        }
+        // --- Google Drive Connection Logic has been removed ---
 
 
         // --- Firebase Auth State Listener ---
@@ -647,7 +604,6 @@
             const welcomeText = document.getElementById('welcome-text');
             const welcomeSubtext = document.getElementById('welcome-subtext');
             const logoutBtn = document.getElementById('logout-btn');
-            const driveFilesOutput = document.getElementById('drive-files-output');
 
             if (user) {
                 // User is signed in
@@ -691,10 +647,9 @@
                 if (separator) separator.classList.remove('hidden');
                 if (signUpLink) signUpLink.classList.remove('hidden');
 
-                // Hide user info and Drive output
+                // Hide user info
                 if (userInfoDiv) userInfoDiv.classList.add('hidden');
                 if (userIdSpan) userIdSpan.textContent = '';
-                if (driveFilesOutput) driveFilesOutput.classList.add('hidden');
                 
                 // Reset welcome text
                 if (welcomeText) welcomeText.textContent = translations[localStorage.getItem('selectedLanguage') || 'en'].welcomeText;
