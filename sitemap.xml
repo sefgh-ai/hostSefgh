@@ -2,19 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Generated automatically with page titles for better readability -->
   <url>
-    <!-- Pricing -->
-    <loc>https://v1.sefgh.org/pricing.html</loc>
-    <lastmod>2025-07-05T04:38:02+05:30</lastmod>
+    <!-- Gemini API Setup -->
+    <loc>https://v1.sefgh.org/apiKeySetup.html</loc>
+    <lastmod>2025-07-01T15:06:34+05:30</lastmod>
   </url>
   <url>
-    <!-- 404 - Page Not Found | SEFGH - AI -->
-    <loc>https://v1.sefgh.org/404.html</loc>
-    <lastmod>2025-07-04T11:19:33+05:30</lastmod>
-  </url>
-  <url>
-    <!-- SEFGH - AI-Powered GitHub Repository Search -->
-    <loc>https://v1.sefgh.org/index.html</loc>
-    <lastmod>2025-07-05T00:36:38+05:30</lastmod>
+    <!-- Login -->
+    <loc>https://v1.sefgh.org/login.html</loc>
+    <lastmod>2025-07-29T18:54:06+05:30</lastmod>
   </url>
   <url>
     <!-- Searchpage -->
@@ -22,14 +17,24 @@
     <lastmod>2025-07-26T11:17:18+05:30</lastmod>
   </url>
   <url>
+    <!-- 404 - Page Not Found | SEFGH - AI -->
+    <loc>https://v1.sefgh.org/404.html</loc>
+    <lastmod>2025-07-04T11:19:33+05:30</lastmod>
+  </url>
+  <url>
+    <!-- Pricing -->
+    <loc>https://v1.sefgh.org/pricing.html</loc>
+    <lastmod>2025-07-05T04:38:02+05:30</lastmod>
+  </url>
+  <url>
     <!-- About -->
     <loc>https://v1.sefgh.org/about.html</loc>
     <lastmod>2025-07-05T05:00:00+05:30</lastmod>
   </url>
   <url>
-    <!-- Gemini API Setup -->
-    <loc>https://v1.sefgh.org/apiKeySetup.html</loc>
-    <lastmod>2025-07-01T15:06:34+05:30</lastmod>
+    <!-- sefgh-omni-downloads -->
+    <loc>https://v1.sefgh.org/downloads.html</loc>
+    <lastmod>2025-08-09T19:57:35+05:30</lastmod>
   </url>
   <url>
     <!-- Create Account -->
@@ -37,8 +42,8 @@
     <lastmod>2025-07-05T03:22:21+05:30</lastmod>
   </url>
   <url>
-    <!-- Login -->
-    <loc>https://v1.sefgh.org/login.html</loc>
-    <lastmod>2025-07-29T18:54:06+05:30</lastmod>
+    <!-- SEFGH - AI-Powered GitHub Repository Search -->
+    <loc>https://v1.sefgh.org/index.html</loc>
+    <lastmod>2025-07-05T00:36:38+05:30</lastmod>
   </url>
 </urlset>
