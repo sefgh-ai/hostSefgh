@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Base colors - Daylight Slate Light Theme: #F6F8FA, #0969DA, #24292F */
+    --background: 210 9% 98%;  /* #F6F8FA */
+    --foreground: 210 12% 16%; /* #24292F */
+
+    /* Surface colors */
+    --surface: 210 9% 96%;     /* Slightly darker than background */
+    --surface-elevated: 0 0% 100%; /* Pure white for elevated elements */
+    --surface-glass: 210 9% 98% / 0.8;
+
+    /* Card colors */
+    --card: 210 9% 96%;        /* Slightly differentiated from background */
+    --card-foreground: 210 12% 16%; /* #24292F */
+
+    /* Popover colors */
+    --popover: 0 0% 100%;     /* White for better contrast */
+    --popover-foreground: 210 12% 16%; /* #24292F */
+
+    /* Brand colors - Using primary as brand */
+    --brand: 212 95% 44%;     /* #0969DA */
+    --brand-foreground: 0 0% 100%; /* White text on brand */
+    --brand-muted: 212 95% 44% / 0.1;
+
+    /* Primary colors - Strong Blue */
+    --primary: 212 95% 44%;   /* #0969DA */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+
+    /* Secondary colors */
+    --secondary: 210 9% 94%;   /* Muted version of background */
+    --secondary-foreground: 210 12% 16%; /* #24292F */
+
+    /* Muted colors */
+    --muted: 210 9% 94%;       /* Lighter variation */
+    --muted-foreground: 210 12% 16% / 0.7; /* Primary text with opacity */
+
+    /* Accent colors - Burnt Orange */
+    --accent: 25 89% 47%;    /* #E36209 */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+
+    /* Destructive colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input */
+    --border: 210 12% 16% / 0.2; /* Primary text with low opacity */
+    --input: 210 9% 94%;       /* Muted background */
+    --ring: 212 95% 44%;      /* Primary color for focus rings */
+
+    --radius: 0.5rem;
+
+    /* Sidebar colors */
+    --sidebar-background: 210 9% 96%; /* Slightly differentiated */
+    --sidebar-foreground: 210 12% 16%; /* #24292F */
+    --sidebar-primary: 212 95% 44%;  /* #0969DA */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text */
+    --sidebar-accent: 210 9% 94%;     /* Muted */
+    --sidebar-accent-foreground: 210 12% 16%; /* #24292F */
+    --sidebar-border: 210 12% 16% / 0.2;
+    --sidebar-ring: 212 95% 44%;
+  }
+
+  .dark {
+    /* Base colors - Midnight Slate Dark Theme: #0D1117, #58A6FF, #C9D1D9 */
+    --background: 220 14% 7%;  /* #0D1117 */
+    --foreground: 210 10% 82%; /* #C9D1D9 */
+
+    /* Surface colors */
+    --surface: 220 14% 10%;     /* Slightly lighter than background */
+    --surface-elevated: 220 14% 13%; /* More elevated surfaces */
+    --surface-glass: 220 14% 7% / 0.8;
+
+    /* Card colors */
+    --card: 220 14% 10%;        /* Slightly differentiated from background */
+    --card-foreground: 210 10% 82%; /* #C9D1D9 */
+
+    /* Popover colors */
+    --popover: 220 14% 13%;     /* Elevated surface */
+    --popover-foreground: 210 10% 82%; /* #C9D1D9 */
+
+    /* Brand colors - Using primary as brand */
+    --brand: 212 100% 68%;      /* #58A6FF */
+    --brand-foreground: 220 14% 7%; /* Dark background for text on brand */
+    --brand-muted: 212 100% 68% / 0.1;
+
+    /* Primary colors - Bright Blue */
+    --primary: 212 100% 68%;    /* #58A6FF */
+    --primary-foreground: 220 14% 7%; /* Dark background */
+
+    /* Secondary colors */
+    --secondary: 220 14% 10%;   /* Slightly lighter than background */
+    --secondary-foreground: 210 10% 82%; /* #C9D1D9 */
+
+    /* Muted colors */
+    --muted: 220 14% 10%;       /* Lighter variation */
+    --muted-foreground: 210 10% 82% / 0.7; /* Light gray with opacity */
+
+    /* Accent colors - Orange */
+    --accent: 15 91% 69%;     /* #F78166 */
+    --accent-foreground: 220 14% 7%; /* Dark background */
+
+    /* Destructive colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and input */
+    --border: 210 10% 82% / 0.1;  /* Light gray with low opacity */
+    --input: 220 14% 10%;       /* Muted background */
+    --ring: 212 100% 68%;       /* Primary color for focus rings */
+
+    /* Sidebar colors */
+    --sidebar-background: 220 14% 10%; /* Slightly differentiated */
+    --sidebar-foreground: 210 10% 82%; /* #C9D1D9 */
+    --sidebar-primary: 212 100% 68%;  /* #58A6FF */
+    --sidebar-primary-foreground: 220 14% 7%; /* Dark background */
+    --sidebar-accent: 220 14% 13%;    /* Elevated */
+    --sidebar-accent-foreground: 210 10% 82%; /* #C9D1D9 */
+    --sidebar-border: 210 10% 82% / 0.1;
+    --sidebar-ring: 212 100% 68%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* Custom scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-surface;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/40;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/60;
+  }
+}
+
+@layer components {
+  /* Font variants */
+  .geo-regular {
+    font-family: "Geo", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+
+  .geo-regular-italic {
+    font-family: "Geo", sans-serif;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  /* Glass effect utilities */
+  .glass-effect {
+    @apply backdrop-blur-lg bg-surface-glass border border-border/50;
+  }
+
+  /* Panel resize handle */
+  .resize-handle {
+    @apply w-1 bg-border hover:bg-accent cursor-col-resize transition-colors relative;
+  }
+
+  .resize-handle:hover::after {
+    content: '';
+    @apply absolute inset-y-0 -left-1 -right-1 bg-accent/20;
+  }
+
+  /* Message bubble animations */
+  .message-bubble {
+    @apply animate-fade-in-up;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply bg-muted animate-pulse-fast rounded;
+  }
+
+  /* Rainbow text effect */
+  .rainbow-text {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbow-shine 3s ease-in-out infinite;
+  }
+
+  /* Notification styles */
+  .notification {
+    @apply fixed top-4 right-4 z-50 animate-slide-in-right;
+  }
+}
