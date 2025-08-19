@@ -3,24 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SEFGH-AI - AI-Powered GitHub Search Engine</title>
+    <title>Search Page | SEFGH-AI - AI-Powered GitHub Search Engine</title>
     <meta name="description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries, get detailed analysis, and explore repositories intelligently." />
     <meta name="keywords" content="GitHub search, AI, machine learning, repository finder, code search, developer tools, natural language search" />
     <meta name="author" content="SEFGH-AI Team" />
-    <link rel="canonical" href="https://sefgh-ai.com" />
+    <link rel="canonical" href="https://sefgh-ai.com/search" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sefgh-ai.com" />
-    <meta property="og:title" content="SEFGH-AI - AI-Powered GitHub Search Engine" />
+    <meta property="og:url" content="https://sefgh-ai.com/search" />
+    <meta property="og:title" content="Search | SEFGH-AI - AI-Powered GitHub Search Engine" />
     <meta property="og:description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries and get detailed analysis." />
     <meta property="og:image" content="https://sefgh-ai.com/og-image.png" />
     <meta property="og:site_name" content="SEFGH-AI" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://sefgh-ai.com" />
-    <meta name="twitter:title" content="SEFGH-AI - AI-Powered GitHub Search Engine" />
+    <meta name="twitter:url" content="https://sefgh-ai.com/search" />
+    <meta name="twitter:title" content="Search | SEFGH-AI - AI-Powered GitHub Search Engine" />
     <meta name="twitter:description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries and get detailed analysis." />
     <meta name="twitter:image" content="https://sefgh-ai.com/og-image.png" />
 
@@ -28,6 +28,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Fix for SPA routing -->
+    <script type="text/javascript">
+      // This script helps handle SPA routes when accessed directly
+      (function() {
+        // Store the current path to pass to the application
+        window.initialPath = window.location.pathname;
+        // If we're on searchpage, set a flag for the app to recognize
+        window.isSearchPage = window.location.pathname.includes('/searchpage');
+      })();
+    </script>
 
     <!-- Structured Data -->
     <script type="application/ld+json">
@@ -65,11 +76,40 @@
       ]
     }
     </script>
-  <script type="module" crossorigin src="./assets_new/index-CpI4sU1n.js"></script>
-<link rel="stylesheet" crossorigin href="./assets_new/index-BMdEPMyA.css">
+    <script type="module" crossorigin src="./assets_new/index-CpI4sU1n.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets_new/index-BMdEPMyA.css">
   </head>
 
   <body>
     <div id="root"></div>
+    
+    <!-- Fallback content in case JS doesn't load properly -->
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        <h1>SEFGH-AI Search</h1>
+        <p>Please enable JavaScript to use the SEFGH-AI search functionality.</p>
+      </div>
+    </noscript>
+    
+    <!-- Additional script to ensure the app recognizes this as the search page -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check if the application has been loaded
+        if (window.sefghApp && typeof window.sefghApp.navigateToSearch === 'function') {
+          // If the app has a specific function to navigate to search, call it
+          window.sefghApp.navigateToSearch();
+        }
+        
+        // This fallback handles the case where the app doesn't automatically
+        // recognize this is the search page from the URL
+        setTimeout(function() {
+          const appRoot = document.getElementById('root');
+          if (appRoot && (!appRoot.children || appRoot.children.length === 0)) {
+            console.log('Application may not have initialized correctly, attempting to redirect...');
+            window.location.href = '/';
+          }
+        }, 3000);
+      });
+    </script>
   </body>
 </html>
