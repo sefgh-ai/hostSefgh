@@ -1,0 +1,72 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    paths:
+      - 'react/**'
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+          cache-dependency-path: react/package-lock.json
+          
+      - name: Install dependencies
+        run: |
+          cd react
+          npm install
+          
+      - name: Build React app
+        run: |
+          cd react
+          npm run build
+          
+      - name: Backup any custom files
+        run: |
+          # Create backup of any custom-named files (like searchpage.html)
+          mkdir -p temp_backup
+          if [ -f "searchpage.html" ]; then
+            cp searchpage.html temp_backup/
+          fi
+          # Add any other custom files you want to preserve here
+          
+      - name: Deploy to repository
+        run: |
+          # Remove old dist files (if they exist)
+          rm -rf dist
+          
+          # Move the new build files to the correct location
+          # This assumes your React app's build output is in 'react/dist'
+          mv react/dist ./
+          
+          # Restore any custom files from backup
+          if [ -f "temp_backup/searchpage.html" ]; then
+            # If index.html should be renamed to searchpage.html
+            if [ -f "dist/index.html" ] && [ ! -f "dist/searchpage.html" ]; then
+              mv dist/index.html dist/searchpage.html
+            # Or if we should keep a separate copy
+            elif [ -f "dist/index.html" ]; then
+              cp temp_backup/searchpage.html dist/
+            fi
+          fi
+          
+          # Clean up the backup
+          rm -rf temp_backup
+          
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions@github.com'
+          git add dist
+          git commit -m "Update built React app" || echo "No changes to commit"
+          git push
