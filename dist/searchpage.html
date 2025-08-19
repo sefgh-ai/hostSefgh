@@ -3,112 +3,138 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Page | SEFGH-AI - AI-Powered GitHub Search Engine</title>
+    <title>SEFGH-AI - AI-Powered GitHub Search Engine</title>
     <meta name="description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries, get detailed analysis, and explore repositories intelligently." />
-    <meta name="keywords" content="GitHub search, AI, machine learning, repository finder, code search, developer tools, natural language search" />
-    <meta name="author" content="SEFGH-AI Team" />
-    <link rel="canonical" href="https://sefgh-ai.com/search" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://sefgh-ai.com/search" />
-    <meta property="og:title" content="Search | SEFGH-AI - AI-Powered GitHub Search Engine" />
-    <meta property="og:description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries and get detailed analysis." />
-    <meta property="og:image" content="https://sefgh-ai.com/og-image.png" />
-    <meta property="og:site_name" content="SEFGH-AI" />
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="https://sefgh-ai.com/search" />
-    <meta name="twitter:title" content="Search | SEFGH-AI - AI-Powered GitHub Search Engine" />
-    <meta name="twitter:description" content="Advanced GitHub repository search powered by AI. Find projects with natural language queries and get detailed analysis." />
-    <meta name="twitter:image" content="https://sefgh-ai.com/og-image.png" />
-
-    <!-- Google Fonts -->
+    <base href="/dist/">
+    
+    <!-- CSS and styling dependencies -->
+    <link rel="stylesheet" href="./assets_new/index-BMdEPMyA.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Geo:ital@0;1&display=swap" rel="stylesheet">
-
-    <!-- Fix for SPA routing -->
+    
+    <style>
+      /* Fallback styles in case the CSS doesn't load */
+      body {
+        font-family: 'Geo', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      .fallback-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+        padding: 0 20px;
+      }
+      .fallback-loader {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 2s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      /* This ensures the app UI is visible when loaded */
+      #root:not(:empty) + .fallback-content {
+        display: none;
+      }
+    </style>
+    
+    <!-- Fix for direct path access -->
     <script type="text/javascript">
-      // This script helps handle SPA routes when accessed directly
-      (function() {
-        // Store the current path to pass to the application
-        window.initialPath = window.location.pathname;
-        // If we're on searchpage, set a flag for the app to recognize
-        window.isSearchPage = window.location.pathname.includes('/searchpage');
-      })();
+      // Store current path for SPA routing
+      window.APP_CONFIG = {
+        initialPath: "/searchpage",
+        isSearchPage: true,
+        basePath: "/dist"
+      };
+      
+      // This function will attempt to correct path references if they're wrong
+      function fixAssetPaths() {
+        if (!document.querySelector('link[href="./assets_new/index-BMdEPMyA.css"]').sheet) {
+          // CSS failed to load, try alternative paths
+          const alternativePaths = [
+            "/dist/assets_new/index-BMdEPMyA.css",
+            "/assets_new/index-BMdEPMyA.css",
+            "../assets_new/index-BMdEPMyA.css"
+          ];
+          
+          alternativePaths.forEach(path => {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = path;
+            document.head.appendChild(link);
+          });
+        }
+      }
+      
+      // Run after a short delay to check if assets loaded
+      setTimeout(fixAssetPaths, 1000);
     </script>
-
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "SEFGH-AI",
-      "url": "https://sefgh-ai.com",
-      "description": "AI-powered GitHub repository search engine with natural language processing",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Web Browser",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "Natural language GitHub search",
-        "Detailed project analysis", 
-        "AI-powered repository recommendations",
-        "Advanced filtering and sorting"
-      ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "SEFGH-AI",
-      "url": "https://sefgh-ai.com",
-      "logo": "https://sefgh-ai.com/logo.png",
-      "sameAs": [
-        "https://github.com/sefgh-ai",
-        "https://twitter.com/sefgh_ai"
-      ]
-    }
-    </script>
-    <script type="module" crossorigin src="./assets_new/index-CpI4sU1n.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets_new/index-BMdEPMyA.css">
   </head>
-
   <body>
     <div id="root"></div>
     
-    <!-- Fallback content in case JS doesn't load properly -->
-    <noscript>
-      <div style="text-align: center; padding: 20px;">
-        <h1>SEFGH-AI Search</h1>
-        <p>Please enable JavaScript to use the SEFGH-AI search functionality.</p>
+    <!-- Fallback content that shows while loading or if app fails -->
+    <div class="fallback-content">
+      <div class="fallback-loader"></div>
+      <h1>SEFGH-AI Search</h1>
+      <p>Loading the search interface...</p>
+      <div id="error-message" style="color: red; margin-top: 20px; display: none;">
+        Failed to load the application. <a href="/">Return to homepage</a>
       </div>
-    </noscript>
+    </div>
     
-    <!-- Additional script to ensure the app recognizes this as the search page -->
+    <!-- Load the main app JavaScript -->
+    <script type="module" crossorigin src="./assets_new/index-CpI4sU1n.js"></script>
+    
+    <!-- Fallback script that handles loading errors -->
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Check if the application has been loaded
-        if (window.sefghApp && typeof window.sefghApp.navigateToSearch === 'function') {
-          // If the app has a specific function to navigate to search, call it
-          window.sefghApp.navigateToSearch();
-        }
-        
-        // This fallback handles the case where the app doesn't automatically
-        // recognize this is the search page from the URL
-        setTimeout(function() {
-          const appRoot = document.getElementById('root');
-          if (appRoot && (!appRoot.children || appRoot.children.length === 0)) {
-            console.log('Application may not have initialized correctly, attempting to redirect...');
-            window.location.href = '/';
+      // Monitor if the app loads successfully
+      let appLoaded = false;
+      
+      function checkAppLoaded() {
+        const rootEl = document.getElementById('root');
+        if (rootEl && rootEl.children && rootEl.children.length > 0) {
+          appLoaded = true;
+        } else {
+          // Try alternate JavaScript paths if the app didn't load
+          const alternativeScripts = [
+            "/dist/assets_new/index-CpI4sU1n.js",
+            "/assets_new/index-CpI4sU1n.js",
+            "../assets_new/index-CpI4sU1n.js"
+          ];
+          
+          // Try each alternative path
+          for (let i = 0; i < alternativeScripts.length; i++) {
+            const script = document.createElement('script');
+            script.type = "module";
+            script.crossOrigin = true;
+            script.src = alternativeScripts[i];
+            document.body.appendChild(script);
           }
-        }, 3000);
+          
+          // Show error message after waiting
+          setTimeout(() => {
+            if (!appLoaded) {
+              document.getElementById('error-message').style.display = 'block';
+            }
+          }, 5000);
+        }
+      }
+      
+      // Wait for load event then check if app initialized
+      window.addEventListener('load', () => {
+        setTimeout(checkAppLoaded, 2000);
       });
     </script>
   </body>
