@@ -26,76 +26,373 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18  # Using a more recent Node version
           
-      - name: Fix esbuild version issue
+      - name: Set up environment
+        run: |
+          echo "Current date: $(date +"%Y-%m-%d %H:%M:%S")"
+          echo "Node version: $(node -v)"
+          echo "NPM version: $(npm -v)"
+      
+      - name: Analyze package dependencies
+        id: analyze-deps
         run: |
           cd react
-          # Create or update package.json to include resolutions for esbuild
-          if [ -f "package.json" ]; then
-            # Check if we're using yarn
-            if [ -f "yarn.lock" ]; then
-              # Add resolutions field if it doesn't exist
-              if ! grep -q "resolutions" package.json; then
-                sed -i 's/{"name":/{"resolutions": {"esbuild": "0.25.0"},"name":/' package.json
-              elif ! grep -q "esbuild" package.json; then
-                sed -i 's/"resolutions": {/"resolutions": {"esbuild": "0.25.0",/' package.json
-              fi
+          
+          # Create a diagnostic script to analyze dependencies
+          cat > dependency-analyzer.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const { execSync } = require('child_process');
+          
+          // Read package.json
+          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          const allDependencies = {
+            ...packageJson.dependencies || {},
+            ...packageJson.devDependencies || {}
+          };
+          
+          console.log('Analyzing dependencies for conflicts...');
+          
+          // Check for nested dependencies with version conflicts
+          function findNestedDependencies() {
+            const conflicts = {};
+            
+            try {
+              // Run npm ls to find dependency conflicts
+              const output = execSync('npm ls --json', { encoding: 'utf8' });
+              const depTree = JSON.parse(output);
+              
+              function traverseTree(node, path = []) {
+                if (!node || !node.dependencies) return;
+                
+                Object.keys(node.dependencies).forEach(depName => {
+                  const dep = node.dependencies[depName];
+                  
+                  // Check if there's a version conflict
+                  if (dep.problems) {
+                    dep.problems.forEach(problem => {
+                      if (problem.includes('peer dep missing') || problem.includes('requires a peer')) {
+                        if (!conflicts[depName]) conflicts[depName] = [];
+                        conflicts[depName].push({
+                          path: [...path, depName].join(' > '),
+                          problem: problem
+                        });
+                      }
+                    });
+                  }
+                  
+                  // Continue traversing
+                  traverseTree(dep, [...path, depName]);
+                });
+              }
+              
+              traverseTree(depTree);
+            } catch (e) {
+              console.log('Error analyzing dependency tree:', e.message);
+            }
+            
+            return conflicts;
+          }
+          
+          // Find exact version requirements in nested dependencies
+          function findNeededVersions() {
+            const neededVersions = {};
+            
+            try {
+              // Find all package.json files in node_modules
+              const findCmd = execSync('find node_modules -name "package.json" | grep -v "node_modules/node_modules"', { encoding: 'utf8' });
+              const packageFiles = findCmd.trim().split('\n');
+              
+              packageFiles.forEach(file => {
+                try {
+                  const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
+                  
+                  // Check for esbuild and other common problematic packages
+                  ['esbuild', 'typescript', 'webpack', 'babel-loader', 'react', 'react-dom'].forEach(pkgName => {
+                    if (pkg.dependencies && pkg.dependencies[pkgName]) {
+                      const version = pkg.dependencies[pkgName];
+                      if (!neededVersions[pkgName]) neededVersions[pkgName] = {};
+                      neededVersions[pkgName][version] = (neededVersions[pkgName][version] || 0) + 1;
+                    }
+                  });
+                } catch (e) {
+                  // Skip invalid package.json
+                }
+              });
+            } catch (e) {
+              console.log('Error finding needed versions:', e.message);
+            }
+            
+            return neededVersions;
+          }
+          
+          // Update package.json with overrides/resolutions
+          function updatePackageJson(conflicts, neededVersions) {
+            // Initialize overrides if needed
+            if (!packageJson.overrides) packageJson.overrides = {};
+            
+            // Add overrides for conflicting packages
+            Object.keys(conflicts).forEach(pkgName => {
+              packageJson.overrides[pkgName] = '*';
+            });
+            
+            // Add specific version overrides for packages with clear version needs
+            Object.keys(neededVersions).forEach(pkgName => {
+              const versions = neededVersions[pkgName];
+              const entries = Object.entries(versions);
+              if (entries.length > 1) {
+                // Find most commonly required version
+                entries.sort((a, b) => b[1] - a[1]);
+                const mostCommonVersion = entries[0][0];
+                packageJson.overrides[pkgName] = mostCommonVersion;
+                console.log(`Setting ${pkgName} to version ${mostCommonVersion} (used ${entries[0][1]} times)`);
+              }
+            });
+            
+            // Write updated package.json
+            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+            console.log('Updated package.json with necessary overrides');
+          }
+          
+          // Run analysis and update
+          const conflicts = findNestedDependencies();
+          const neededVersions = findNeededVersions();
+          
+          updatePackageJson(conflicts, neededVersions);
+          
+          // Output results for the workflow
+          const results = {
+            conflictCount: Object.keys(conflicts).length,
+            overrideCount: Object.keys(packageJson.overrides).length
+          };
+          
+          console.log('ANALYSIS_RESULTS=' + JSON.stringify(results));
+          EOF
+          
+          # First attempt installation to get the dependency tree
+          npm install --no-package-lock || true
+          
+          # Run the analyzer script
+          node dependency-analyzer.js
+          
+      - name: Advanced dependency resolution
+        run: |
+          cd react
+          
+          # Create a smart installer script
+          cat > smart-installer.js << 'EOF'
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          
+          console.log('Starting smart dependency installation...');
+          
+          // First pass - clean install with highest compatibility
+          try {
+            console.log('\n--- ATTEMPT 1: Clean install with legacy peer deps ---');
+            execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
+          } catch (e) {
+            console.log('First install attempt failed, trying alternative approach...');
+            
+            try {
+              console.log('\n--- ATTEMPT 2: Force install ---');
+              execSync('npm install --force', { stdio: 'inherit' });
+            } catch (e) {
+              console.log('Second install attempt failed, trying individual packages...');
+              
+              try {
+                const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+                const allDeps = { ...pkg.dependencies || {}, ...pkg.devDependencies || {} };
+                
+                console.log('\n--- ATTEMPT 3: Installing essential packages ---');
+                // Install just the essential build packages
+                const essentialPackages = [
+                  'react', 'react-dom', 'typescript', 'esbuild', 
+                  '@types/react', '@types/node', 'webpack'
+                ].filter(pkg => allDeps[pkg]);
+                
+                if (essentialPackages.length) {
+                  execSync(`npm install ${essentialPackages.join(' ')} --force`, { stdio: 'inherit' });
+                }
+                
+                // Try to fix specific problematic packages
+                console.log('\n--- Fixing common problematic packages ---');
+                
+                // Special case for esbuild
+                try {
+                  console.log('Fixing esbuild...');
+                  execSync('npm install esbuild@latest --force', { stdio: 'inherit' });
+                } catch (err) {}
+                
+                // Try to install the rest of the dependencies
+                console.log('\n--- Installing remaining dependencies ---');
+                execSync('npm install --legacy-peer-deps --no-package-lock', { stdio: 'inherit' });
+                
+              } catch (e) {
+                console.log('Third installation attempt failed.');
+                console.log('Dependency installation could not be completed automatically.');
+                process.exit(1);
+              }
+            }
+          }
+          
+          // Fix any remaining issues with problematic packages
+          console.log('\n--- Fixing any remaining dependency issues ---');
+          
+          // Check if lovable-tagger is present and fix it
+          if (fs.existsSync('node_modules/lovable-tagger')) {
+            console.log('Fixing lovable-tagger...');
+            try {
+              // First, ensure the correct esbuild version is installed at the root
+              execSync('npm install esbuild@latest --no-save', { stdio: 'inherit' });
+              
+              // Copy esbuild from root node_modules to lovable-tagger's node_modules
+              if (!fs.existsSync('node_modules/lovable-tagger/node_modules')) {
+                fs.mkdirSync('node_modules/lovable-tagger/node_modules');
+              }
+              
+              if (!fs.existsSync('node_modules/lovable-tagger/node_modules/esbuild') && 
+                  fs.existsSync('node_modules/esbuild')) {
+                execSync('cp -r node_modules/esbuild node_modules/lovable-tagger/node_modules/', { stdio: 'inherit' });
+                console.log('Copied esbuild to lovable-tagger modules');
+              }
+            } catch (err) {
+              console.log('Error fixing lovable-tagger:', err.message);
+            }
+          }
+          
+          console.log('Smart installation completed!');
+          EOF
+          
+          # Run the smart installer
+          node smart-installer.js
+          
+      - name: Build React app with retry
+        run: |
+          cd react
+          
+          # Create a smart build script
+          cat > smart-build.js << 'EOF'
+          const { execSync } = require('child_process');
+          const fs = require('fs');
+          
+          console.log('Starting smart build process...');
+          
+          // Try multiple build approaches
+          const buildAttempts = [
+            {
+              name: 'Standard build',
+              command: 'npm run build',
+              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
+            },
+            {
+              name: 'Build with esbuild rebuild',
+              command: 'npm rebuild esbuild && npm run build',
+              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
+            },
+            {
+              name: 'Build with latest esbuild',
+              command: 'npm install esbuild@latest --no-save && npm run build',
+              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
+            },
+            {
+              name: 'Build with force flag',
+              command: 'npm run build -- --force',
+              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
+            }
+          ];
+          
+          let buildSuccessful = false;
+          
+          for (const attempt of buildAttempts) {
+            console.log(`\n--- BUILD ATTEMPT: ${attempt.name} ---`);
+            
+            try {
+              execSync(attempt.command, { 
+                stdio: 'inherit',
+                env: { ...process.env, ...attempt.env }
+              });
+              
+              // Check if build output exists
+              if (fs.existsSync('dist') || fs.existsSync('build')) {
+                console.log(`Build successful with: ${attempt.name}`);
+                buildSuccessful = true;
+                break;
+              } else {
+                console.log(`Build command completed but no output directory found`);
+              }
+            } catch (e) {
+              console.log(`Build attempt failed: ${e.message}`);
+            }
+          }
+          
+          if (!buildSuccessful) {
+            console.log('All build attempts failed. Build could not be completed automatically.');
+            process.exit(1);
+          }
+          
+          console.log('Smart build completed successfully!');
+          EOF
+          
+          # Run the smart build script
+          node smart-build.js
+          
+      - name: Identify build output
+        id: find-output
+        run: |
+          cd react
+          
+          if [ -d "dist" ]; then
+            echo "output_dir=dist" >> $GITHUB_OUTPUT
+            echo "Build output found in dist directory"
+          elif [ -d "build" ]; then
+            echo "output_dir=build" >> $GITHUB_OUTPUT
+            echo "Build output found in build directory"
+          else
+            # Look for any output directory as fallback
+            OUTPUT_DIR=$(find . -maxdepth 1 -type d | grep -v "^\.$" | grep -v "node_modules" | grep -v ".git" | head -n 1)
+            if [ -n "$OUTPUT_DIR" ]; then
+              OUTPUT_NAME=$(basename "$OUTPUT_DIR")
+              echo "output_dir=$OUTPUT_NAME" >> $GITHUB_OUTPUT
+              echo "Build output found in $OUTPUT_NAME directory"
             else
-              # For npm, we'll use overrides
-              if ! grep -q "overrides" package.json; then
-                sed -i 's/{"name":/{"overrides": {"esbuild": "0.25.0"},"name":/' package.json
-              elif ! grep -q "esbuild" package.json; then
-                sed -i 's/"overrides": {/"overrides": {"esbuild": "0.25.0",/' package.json
-              fi
+              echo "No build output directory found"
+              exit 1
             fi
           fi
           
-      - name: Install dependencies
+      - name: Deploy build to repository
         run: |
-          cd react
-          # Force clear cache before installing
-          rm -rf node_modules/.cache
-          # Use --force to ensure all dependencies are correctly installed with proper versions
-          npm install --force
+          # Get the output directory from previous step
+          OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
           
-      - name: Build React app
-        run: |
-          cd react
-          # Set NODE_OPTIONS to increase memory limit if needed
-          export NODE_OPTIONS=--max_old_space_size=4096
-          npm run build
-          
-      - name: Backup any custom files
-        run: |
-          # Create backup of any custom-named files (like searchpage.html)
+          # Backup any custom files
           mkdir -p temp_backup
           if [ -f "searchpage.html" ]; then
             cp searchpage.html temp_backup/
           fi
-          # Add any other custom files you want to preserve here
           
-      - name: Deploy to repository
-        run: |
-          # Remove old dist files (if they exist)
+          # Remove old dist directory if exists
           rm -rf dist
           
-          # Move the new build files to the correct location
-          # This assumes your React app's build output is in 'react/dist'
-          mv react/dist ./
+          # Move build output to dist
+          if [ -d "react/$OUTPUT_DIR" ]; then
+            mv "react/$OUTPUT_DIR" ./dist
+          else
+            echo "Build output directory not found"
+            exit 1
+          fi
           
           # Restore any custom files from backup
           if [ -f "temp_backup/searchpage.html" ]; then
-            # If index.html should be renamed to searchpage.html
             if [ -f "dist/index.html" ] && [ ! -f "dist/searchpage.html" ]; then
               mv dist/index.html dist/searchpage.html
-            # Or if we should keep a separate copy
             elif [ -f "dist/index.html" ]; then
               cp temp_backup/searchpage.html dist/
             fi
           fi
           
-          # Clean up the backup
+          # Clean up backup
           rm -rf temp_backup
           
       - name: Commit and push changes
@@ -103,7 +400,7 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'github-actions@github.com'
           git add dist
-          git commit -m "Update built React app" || echo "No changes to commit"
+          git commit -m "Update built React app [$(date +"%Y-%m-%d %H:%M:%S")]" || echo "No changes to commit"
           git push
 
       - name: Deploy to GitHub Pages
