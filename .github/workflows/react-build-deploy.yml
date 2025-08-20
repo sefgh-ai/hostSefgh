@@ -18,17 +18,43 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'npm'
-          cache-dependency-path: react/package-lock.json
+          
+      - name: Fix esbuild version issue
+        run: |
+          cd react
+          # Create or update package.json to include resolutions for esbuild
+          if [ -f "package.json" ]; then
+            # Check if we're using yarn
+            if [ -f "yarn.lock" ]; then
+              # Add resolutions field if it doesn't exist
+              if ! grep -q "resolutions" package.json; then
+                sed -i 's/{"name":/{"resolutions": {"esbuild": "0.25.0"},"name":/' package.json
+              elif ! grep -q "esbuild" package.json; then
+                sed -i 's/"resolutions": {/"resolutions": {"esbuild": "0.25.0",/' package.json
+              fi
+            else
+              # For npm, we'll use overrides
+              if ! grep -q "overrides" package.json; then
+                sed -i 's/{"name":/{"overrides": {"esbuild": "0.25.0"},"name":/' package.json
+              elif ! grep -q "esbuild" package.json; then
+                sed -i 's/"overrides": {/"overrides": {"esbuild": "0.25.0",/' package.json
+              fi
+            fi
+          fi
           
       - name: Install dependencies
         run: |
           cd react
-          npm install
+          # Force clear cache before installing
+          rm -rf node_modules/.cache
+          # Use --force to ensure all dependencies are correctly installed with proper versions
+          npm install --force
           
       - name: Build React app
         run: |
           cd react
+          # Set NODE_OPTIONS to increase memory limit if needed
+          export NODE_OPTIONS=--max_old_space_size=4096
           npm run build
           
       - name: Backup any custom files
