@@ -403,9 +403,10 @@ jobs:
           if [ -d "react/$OUTPUT_DIR" ]; then
             cp -r react/$OUTPUT_DIR/* _site/
             
-            # Ensure we have an index.html
-            if [ ! -f "_site/index.html" ] && [ -f "_site/searchpage.html" ]; then
-              cp _site/searchpage.html _site/index.html
+            # Rename index.html to searchpage.html if it exists
+            if [ -f "_site/index.html" ]; then
+              cp _site/index.html _site/searchpage.html
+              echo "Renamed index.html to searchpage.html"
             fi
             
             # Create .nojekyll file to disable Jekyll processing
@@ -454,6 +455,12 @@ jobs:
           OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
           if [ -d "react/$OUTPUT_DIR" ]; then
             cp -r react/$OUTPUT_DIR/* dist/
+            
+            # Rename index.html to searchpage.html in dist folder too
+            if [ -f "dist/index.html" ]; then
+              cp dist/index.html dist/searchpage.html
+              echo "Renamed index.html to searchpage.html in dist folder"
+            fi
             
             # Create .nojekyll file to disable Jekyll processing
             touch dist/.nojekyll
