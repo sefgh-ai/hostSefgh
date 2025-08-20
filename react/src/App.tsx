@@ -26,7 +26,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/shared/:shareId" element={<SharedChat />} />
             <Route path="/dist/searchpage" element={<SearchPage />} />
-            <Route path="/dist/searchpage" element={<searchPage />} />
+            
    
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
