@@ -39,14 +39,23 @@ jobs:
         run: |
           cd react
           
-          # Create a diagnostic script to analyze dependencies
-          cat > dependency-analyzer.js << 'EOF'
+          # Create a diagnostic script to analyze dependencies - using .cjs extension for CommonJS
+          cat > dependency-analyzer.cjs << 'EOF'
           const fs = require('fs');
           const path = require('path');
           const { execSync } = require('child_process');
           
           // Read package.json
           const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          
+          // Ensure we're not treating the project as ES modules if we need to use require
+          const originalType = packageJson.type;
+          if (packageJson.type === 'module') {
+            delete packageJson.type;
+            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+            console.log('Temporarily removed "type": "module" from package.json for compatibility');
+          }
+          
           const allDependencies = {
             ...packageJson.dependencies || {},
             ...packageJson.devDependencies || {}
@@ -150,6 +159,11 @@ jobs:
               }
             });
             
+            // Restore original type if it was set
+            if (originalType) {
+              packageJson.type = originalType;
+            }
+            
             // Write updated package.json
             fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
             console.log('Updated package.json with necessary overrides');
@@ -173,15 +187,15 @@ jobs:
           # First attempt installation to get the dependency tree
           npm install --no-package-lock || true
           
-          # Run the analyzer script
-          node dependency-analyzer.js
+          # Run the analyzer script with node (using CommonJS)
+          node dependency-analyzer.cjs
           
       - name: Advanced dependency resolution
         run: |
           cd react
           
-          # Create a smart installer script
-          cat > smart-installer.js << 'EOF'
+          # Create a smart installer script - using .cjs extension for CommonJS
+          cat > smart-installer.cjs << 'EOF'
           const { execSync } = require('child_process');
           const fs = require('fs');
           
@@ -265,14 +279,14 @@ jobs:
           EOF
           
           # Run the smart installer
-          node smart-installer.js
+          node smart-installer.cjs
           
       - name: Build React app with retry
         run: |
           cd react
           
-          # Create a smart build script
-          cat > smart-build.js << 'EOF'
+          # Create a smart build script - using .cjs extension for CommonJS
+          cat > smart-build.cjs << 'EOF'
           const { execSync } = require('child_process');
           const fs = require('fs');
           
@@ -335,7 +349,7 @@ jobs:
           EOF
           
           # Run the smart build script
-          node smart-build.js
+          node smart-build.cjs
           
       - name: Identify build output
         id: find-output
