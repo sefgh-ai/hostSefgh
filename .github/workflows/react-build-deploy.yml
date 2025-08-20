@@ -6,7 +6,7 @@ on:
       - 'react/**'
   workflow_dispatch:  # Allows manual triggering
 
-# Add permissions to allow the workflow to push to the repository
+# Add permissions to allow the workflow to push to the repository and deploy Pages
 permissions:
   contents: write
   pages: write
@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
+        uses: styfle/cancel-workflow-action@0.11.0  # Updated to latest version
         with:
           access_token: ${{ github.token }}
 
@@ -25,17 +25,23 @@ jobs:
     needs: cancel-previous
     runs-on: ubuntu-latest
     
+    # Environment for GitHub Pages deployment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Updated to v4
         with:
-          # Fetch all history for proper commits
           fetch-depth: 0
         
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4  # Updated to v4
         with:
-          node-version: 18  # Using a more recent Node version
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'react/package-lock.json'
           
       - name: Set up environment
         run: |
@@ -120,7 +126,7 @@ jobs:
             try {
               // Find all package.json files in node_modules
               const findCmd = execSync('find node_modules -name "package.json" | grep -v "node_modules/node_modules"', { encoding: 'utf8' });
-              const packageFiles = findCmd.trim().split('\n');
+              const packageFiles = findCmd.trim().split('\n').filter(Boolean);
               
               packageFiles.forEach(file => {
                 try {
@@ -271,7 +277,7 @@ jobs:
               
               // Copy esbuild from root node_modules to lovable-tagger's node_modules
               if (!fs.existsSync('node_modules/lovable-tagger/node_modules')) {
-                fs.mkdirSync('node_modules/lovable-tagger/node_modules');
+                fs.mkdirSync('node_modules/lovable-tagger/node_modules', { recursive: true });
               }
               
               if (!fs.existsSync('node_modules/lovable-tagger/node_modules/esbuild') && 
@@ -384,40 +390,56 @@ jobs:
             fi
           fi
           
-      - name: Deploy build to repository
+      # Prepare GitHub Pages artifact
+      - name: Prepare GitHub Pages artifact
         run: |
           # Get the output directory from previous step
           OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
           
-          # Backup any custom files
-          mkdir -p temp_backup
-          if [ -f "searchpage.html" ]; then
-            cp searchpage.html temp_backup/
-          fi
+          # Make directory for the artifact
+          mkdir -p _site
           
-          # Remove old dist directory if exists
-          rm -rf dist
-          
-          # Move build output to dist
+          # Copy build output to _site (GitHub Pages default directory)
           if [ -d "react/$OUTPUT_DIR" ]; then
-            mv "react/$OUTPUT_DIR" ./dist
+            cp -r react/$OUTPUT_DIR/* _site/
+            
+            # Ensure we have an index.html
+            if [ ! -f "_site/index.html" ] && [ -f "_site/searchpage.html" ]; then
+              cp _site/searchpage.html _site/index.html
+            fi
+            
+            # Create .nojekyll file to disable Jekyll processing
+            touch _site/.nojekyll
+            
+            # Create a CNAME file if using custom domain
+            if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
+              echo "${{ vars.CUSTOM_DOMAIN }}" > _site/CNAME
+            elif [ -f "CNAME" ]; then
+              cp CNAME _site/
+            fi
+            
+            echo "GitHub Pages artifact prepared successfully"
           else
             echo "Build output directory not found"
             exit 1
           fi
+
+      # Setup and configure GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      # Upload the artifact for GitHub Pages
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
           
-          # Restore any custom files from backup
-          if [ -f "temp_backup/searchpage.html" ]; then
-            if [ -f "dist/index.html" ] && [ ! -f "dist/searchpage.html" ]; then
-              mv dist/index.html dist/searchpage.html
-            elif [ -f "dist/index.html" ]; then
-              cp temp_backup/searchpage.html dist/
-            fi
-          fi
-          
-          # Clean up backup
-          rm -rf temp_backup
-          
+      # Deploy to GitHub Pages  
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
+      # Also commit to the repository for backup
       - name: Configure Git
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -425,6 +447,25 @@ jobs:
       
       - name: Commit and push changes
         run: |
+          # Create dist directory if not exists
+          mkdir -p dist
+          
+          # Copy build output to dist
+          OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
+          if [ -d "react/$OUTPUT_DIR" ]; then
+            cp -r react/$OUTPUT_DIR/* dist/
+            
+            # Create .nojekyll file to disable Jekyll processing
+            touch dist/.nojekyll
+            
+            # Create a CNAME file if using custom domain
+            if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
+              echo "${{ vars.CUSTOM_DOMAIN }}" > dist/CNAME
+            elif [ -f "CNAME" ]; then
+              cp CNAME dist/
+            fi
+          fi
+          
           # Use the github.token for authentication with correct permissions
           git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
           
@@ -441,11 +482,15 @@ jobs:
             git push --verbose
           }
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
-        with:
-          artifact_name: github-pages
+      - name: Job Summary
+        run: |
+          echo "## Build and Deploy Summary" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Build completed successfully**" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Deployed to GitHub Pages**" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 **Site URL:** [https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }})" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
+            echo "🌐 **Custom Domain:** [https://${{ vars.CUSTOM_DOMAIN }}](https://${{ vars.CUSTOM_DOMAIN }})" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "⏰ **Completed at:** $(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_STEP_SUMMARY
