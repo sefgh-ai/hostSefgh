@@ -6,6 +6,12 @@ on:
       - 'react/**'
   workflow_dispatch:  # Allows manual triggering
 
+# Add permissions to allow the workflow to push to the repository
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   cancel-previous:
     runs-on: ubuntu-latest
@@ -22,6 +28,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          # Fetch all history for proper commits
+          fetch-depth: 0
         
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -409,20 +418,34 @@ jobs:
           # Clean up backup
           rm -rf temp_backup
           
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+      
       - name: Commit and push changes
         run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'github-actions@github.com'
+          # Use the github.token for authentication with correct permissions
+          git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
+          
+          # Stage all changes in dist directory
           git add dist
+          
+          # Commit the changes
           git commit -m "Update built React app [$(date +"%Y-%m-%d %H:%M:%S")]" || echo "No changes to commit"
-          git push
+          
+          # Push with verbose output to help debugging
+          git push --verbose || {
+            echo "Push failed, trying to pull first"
+            git pull --rebase origin $(git rev-parse --abbrev-ref HEAD)
+            git push --verbose
+          }
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+        id: deployment
+        uses: actions/deploy-pages@v2
         with:
-          folder: dist  # The folder the action should deploy
-          branch: gh-pages  # The branch the action should deploy to
-          clean: true  # Automatically remove deleted files from the deploy branch
-          clean-exclude: |
-            .nojekyll
-            CNAME
+          artifact_name: github-pages
