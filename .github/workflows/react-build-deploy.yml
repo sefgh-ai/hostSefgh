@@ -7,7 +7,16 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
+  cancel-previous:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
   build-and-deploy:
+    needs: cancel-previous
     runs-on: ubuntu-latest
     
     steps:
@@ -96,3 +105,13 @@ jobs:
           git add dist
           git commit -m "Update built React app" || echo "No changes to commit"
           git push
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist  # The folder the action should deploy
+          branch: gh-pages  # The branch the action should deploy to
+          clean: true  # Automatically remove deleted files from the deploy branch
+          clean-exclude: |
+            .nojekyll
+            CNAME
