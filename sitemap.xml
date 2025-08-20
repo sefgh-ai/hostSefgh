@@ -12,14 +12,14 @@
     <lastmod>2025-07-29T18:54:06+05:30</lastmod>
   </url>
   <url>
-    <!-- SEFGH-AI - AI-Powered GitHub Search Engine -->
-    <loc>https://v1.sefgh.org/searchpage.html</loc>
-    <lastmod>2025-08-20T23:28:40+05:30</lastmod>
-  </url>
-  <url>
     <!-- 404 - Page Not Found | SEFGH - AI -->
     <loc>https://v1.sefgh.org/404.html</loc>
     <lastmod>2025-07-04T11:19:33+05:30</lastmod>
+  </url>
+  <url>
+    <!-- SEFGH-AI - AI-Powered GitHub Search Engine -->
+    <loc>https://v1.sefgh.org/dist/searchpage.html</loc>
+    <lastmod>2025-08-20T23:46:20+05:30</lastmod>
   </url>
   <url>
     <!-- Pricing -->
