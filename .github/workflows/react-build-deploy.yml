@@ -14,20 +14,18 @@ on:
   workflow_dispatch:
 
 # Ensures that only one workflow run is processed at a time for the same branch.
-# It will cancel any older, in-progress runs on the same branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Sets the necessary permissions for the workflow to deploy to GitHub Pages.
+# Sets the necessary permissions for the workflow.
 permissions:
-  contents: read # Allows checking out the repository.
-  pages: write # Allows deploying to GitHub Pages.
-  id-token: write # Required for authentication with GitHub Pages.
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-deploy:
-    # Specifies the environment for GitHub Pages.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -44,43 +42,34 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          # Specifies the path to the package-lock.json for caching dependencies
           cache-dependency-path: 'react/package-lock.json'
 
       # Step 3: Install project dependencies
       - name: Install dependencies
-        # 'npm ci' is used for continuous integration. It's faster and safer than 'npm install'
-        # because it installs the exact dependency versions from package-lock.json.
         run: npm ci
-        working-directory: ./react # Runs the command in the 'react' subdirectory
+        working-directory: ./react
 
       # Step 4: Build the React application
       - name: Build React app
-        # The PUBLIC_URL environment variable helps React correctly locate assets when
-        # deployed to a subdirectory (e.g., your-username.github.io/your-repo-name/).
         run: npm run build
         working-directory: ./react
-        env:
-          PUBLIC_URL: /${{ github.event.repository.name }}
 
       # Step 5: Prepare the artifact for GitHub Pages
       - name: Prepare for deployment
         run: |
-          # The default build output for Create React App is 'build'. If you use Vite, change this to 'dist'.
-          BUILD_DIR="react/build"
+          # The build output for Vite is 'dist'.
+          BUILD_DIR="react/dist"
 
-          # Create a .nojekyll file to prevent GitHub Pages from running the build output through Jekyll.
+          # Create a .nojekyll file.
           touch $BUILD_DIR/.nojekyll
 
-          # This logic was in your original workflow to rename index.html.
-          # This is optional but kept here for consistency.
+          # Rename index.html to searchpage.html for consistency.
           if [ -f "$BUILD_DIR/index.html" ]; then
             mv $BUILD_DIR/index.html $BUILD_DIR/searchpage.html
             echo "Renamed index.html to searchpage.html"
           fi
 
           # If you use a custom domain, create a CNAME file.
-          # For this to work, create a repository variable named CUSTOM_DOMAIN with your domain name.
           if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
             echo "${{ vars.CUSTOM_DOMAIN }}" > $BUILD_DIR/CNAME
             echo "CNAME file created for ${{ vars.CUSTOM_DOMAIN }}"
@@ -94,8 +83,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Specifies the directory to upload as the Pages artifact.
-          path: './react/build'
+          # Upload from the 'dist' directory.
+          path: './react/dist'
 
       # Step 8: Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
