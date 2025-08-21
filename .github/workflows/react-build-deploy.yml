@@ -1,503 +1,103 @@
+# A simplified and robust workflow to build and deploy a React app to GitHub Pages.
+
 name: Build and Deploy React App
 
 on:
+  # Triggers the workflow on push events but only for the main branch
   push:
+    branches:
+      - main
     paths:
-      - 'react/**'
-  workflow_dispatch:  # Allows manual triggering
+      - 'react/**' # Only run if files in the 'react' directory change
 
-# Add permissions to allow the workflow to push to the repository and deploy Pages
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Ensures that only one workflow run is processed at a time for the same branch.
+# It will cancel any older, in-progress runs on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Sets the necessary permissions for the workflow to deploy to GitHub Pages.
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: read # Allows checking out the repository.
+  pages: write # Allows deploying to GitHub Pages.
+  id-token: write # Required for authentication with GitHub Pages.
 
 jobs:
-  cancel-previous:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0  # Updated to latest version
-        with:
-          access_token: ${{ github.token }}
-
   build-and-deploy:
-    needs: cancel-previous
-    runs-on: ubuntu-latest
-    
-    # Environment for GitHub Pages deployment
+    # Specifies the environment for GitHub Pages.
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
+    runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Check out the repository code
       - name: Checkout repository
-        uses: actions/checkout@v4  # Updated to v4
-        with:
-          fetch-depth: 0
-        
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment
       - name: Set up Node.js
-        uses: actions/setup-node@v4  # Updated to v4
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
+          # Specifies the path to the package-lock.json for caching dependencies
           cache-dependency-path: 'react/package-lock.json'
-          
-      - name: Set up environment
+
+      # Step 3: Install project dependencies
+      - name: Install dependencies
+        # 'npm ci' is used for continuous integration. It's faster and safer than 'npm install'
+        # because it installs the exact dependency versions from package-lock.json.
+        run: npm ci
+        working-directory: ./react # Runs the command in the 'react' subdirectory
+
+      # Step 4: Build the React application
+      - name: Build React app
+        # The PUBLIC_URL environment variable helps React correctly locate assets when
+        # deployed to a subdirectory (e.g., your-username.github.io/your-repo-name/).
+        run: npm run build
+        working-directory: ./react
+        env:
+          PUBLIC_URL: /${{ github.event.repository.name }}
+
+      # Step 5: Prepare the artifact for GitHub Pages
+      - name: Prepare for deployment
         run: |
-          echo "Current date: $(date +"%Y-%m-%d %H:%M:%S")"
-          echo "Node version: $(node -v)"
-          echo "NPM version: $(npm -v)"
-      
-      - name: Analyze package dependencies
-        id: analyze-deps
-        run: |
-          cd react
-          
-          # Create a diagnostic script to analyze dependencies - using .cjs extension for CommonJS
-          cat > dependency-analyzer.cjs << 'EOF'
-          const fs = require('fs');
-          const path = require('path');
-          const { execSync } = require('child_process');
-          
-          // Read package.json
-          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          
-          // Ensure we're not treating the project as ES modules if we need to use require
-          const originalType = packageJson.type;
-          if (packageJson.type === 'module') {
-            delete packageJson.type;
-            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-            console.log('Temporarily removed "type": "module" from package.json for compatibility');
-          }
-          
-          const allDependencies = {
-            ...packageJson.dependencies || {},
-            ...packageJson.devDependencies || {}
-          };
-          
-          console.log('Analyzing dependencies for conflicts...');
-          
-          // Check for nested dependencies with version conflicts
-          function findNestedDependencies() {
-            const conflicts = {};
-            
-            try {
-              // Run npm ls to find dependency conflicts
-              const output = execSync('npm ls --json', { encoding: 'utf8' });
-              const depTree = JSON.parse(output);
-              
-              function traverseTree(node, path = []) {
-                if (!node || !node.dependencies) return;
-                
-                Object.keys(node.dependencies).forEach(depName => {
-                  const dep = node.dependencies[depName];
-                  
-                  // Check if there's a version conflict
-                  if (dep.problems) {
-                    dep.problems.forEach(problem => {
-                      if (problem.includes('peer dep missing') || problem.includes('requires a peer')) {
-                        if (!conflicts[depName]) conflicts[depName] = [];
-                        conflicts[depName].push({
-                          path: [...path, depName].join(' > '),
-                          problem: problem
-                        });
-                      }
-                    });
-                  }
-                  
-                  // Continue traversing
-                  traverseTree(dep, [...path, depName]);
-                });
-              }
-              
-              traverseTree(depTree);
-            } catch (e) {
-              console.log('Error analyzing dependency tree:', e.message);
-            }
-            
-            return conflicts;
-          }
-          
-          // Find exact version requirements in nested dependencies
-          function findNeededVersions() {
-            const neededVersions = {};
-            
-            try {
-              // Find all package.json files in node_modules
-              const findCmd = execSync('find node_modules -name "package.json" | grep -v "node_modules/node_modules"', { encoding: 'utf8' });
-              const packageFiles = findCmd.trim().split('\n').filter(Boolean);
-              
-              packageFiles.forEach(file => {
-                try {
-                  const pkg = JSON.parse(fs.readFileSync(file, 'utf8'));
-                  
-                  // Check for esbuild and other common problematic packages
-                  ['esbuild', 'typescript', 'webpack', 'babel-loader', 'react', 'react-dom'].forEach(pkgName => {
-                    if (pkg.dependencies && pkg.dependencies[pkgName]) {
-                      const version = pkg.dependencies[pkgName];
-                      if (!neededVersions[pkgName]) neededVersions[pkgName] = {};
-                      neededVersions[pkgName][version] = (neededVersions[pkgName][version] || 0) + 1;
-                    }
-                  });
-                } catch (e) {
-                  // Skip invalid package.json
-                }
-              });
-            } catch (e) {
-              console.log('Error finding needed versions:', e.message);
-            }
-            
-            return neededVersions;
-          }
-          
-          // Update package.json with overrides/resolutions
-          function updatePackageJson(conflicts, neededVersions) {
-            // Initialize overrides if needed
-            if (!packageJson.overrides) packageJson.overrides = {};
-            
-            // Add overrides for conflicting packages
-            Object.keys(conflicts).forEach(pkgName => {
-              packageJson.overrides[pkgName] = '*';
-            });
-            
-            // Add specific version overrides for packages with clear version needs
-            Object.keys(neededVersions).forEach(pkgName => {
-              const versions = neededVersions[pkgName];
-              const entries = Object.entries(versions);
-              if (entries.length > 1) {
-                // Find most commonly required version
-                entries.sort((a, b) => b[1] - a[1]);
-                const mostCommonVersion = entries[0][0];
-                packageJson.overrides[pkgName] = mostCommonVersion;
-                console.log(`Setting ${pkgName} to version ${mostCommonVersion} (used ${entries[0][1]} times)`);
-              }
-            });
-            
-            // Restore original type if it was set
-            if (originalType) {
-              packageJson.type = originalType;
-            }
-            
-            // Write updated package.json
-            fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-            console.log('Updated package.json with necessary overrides');
-          }
-          
-          // Run analysis and update
-          const conflicts = findNestedDependencies();
-          const neededVersions = findNeededVersions();
-          
-          updatePackageJson(conflicts, neededVersions);
-          
-          // Output results for the workflow
-          const results = {
-            conflictCount: Object.keys(conflicts).length,
-            overrideCount: Object.keys(packageJson.overrides).length
-          };
-          
-          console.log('ANALYSIS_RESULTS=' + JSON.stringify(results));
-          EOF
-          
-          # First attempt installation to get the dependency tree
-          npm install --no-package-lock || true
-          
-          # Run the analyzer script with node (using CommonJS)
-          node dependency-analyzer.cjs
-          
-      - name: Advanced dependency resolution
-        run: |
-          cd react
-          
-          # Create a smart installer script - using .cjs extension for CommonJS
-          cat > smart-installer.cjs << 'EOF'
-          const { execSync } = require('child_process');
-          const fs = require('fs');
-          
-          console.log('Starting smart dependency installation...');
-          
-          // First pass - clean install with highest compatibility
-          try {
-            console.log('\n--- ATTEMPT 1: Clean install with legacy peer deps ---');
-            execSync('npm install --legacy-peer-deps', { stdio: 'inherit' });
-          } catch (e) {
-            console.log('First install attempt failed, trying alternative approach...');
-            
-            try {
-              console.log('\n--- ATTEMPT 2: Force install ---');
-              execSync('npm install --force', { stdio: 'inherit' });
-            } catch (e) {
-              console.log('Second install attempt failed, trying individual packages...');
-              
-              try {
-                const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-                const allDeps = { ...pkg.dependencies || {}, ...pkg.devDependencies || {} };
-                
-                console.log('\n--- ATTEMPT 3: Installing essential packages ---');
-                // Install just the essential build packages
-                const essentialPackages = [
-                  'react', 'react-dom', 'typescript', 'esbuild', 
-                  '@types/react', '@types/node', 'webpack'
-                ].filter(pkg => allDeps[pkg]);
-                
-                if (essentialPackages.length) {
-                  execSync(`npm install ${essentialPackages.join(' ')} --force`, { stdio: 'inherit' });
-                }
-                
-                // Try to fix specific problematic packages
-                console.log('\n--- Fixing common problematic packages ---');
-                
-                // Special case for esbuild
-                try {
-                  console.log('Fixing esbuild...');
-                  execSync('npm install esbuild@latest --force', { stdio: 'inherit' });
-                } catch (err) {}
-                
-                // Try to install the rest of the dependencies
-                console.log('\n--- Installing remaining dependencies ---');
-                execSync('npm install --legacy-peer-deps --no-package-lock', { stdio: 'inherit' });
-                
-              } catch (e) {
-                console.log('Third installation attempt failed.');
-                console.log('Dependency installation could not be completed automatically.');
-                process.exit(1);
-              }
-            }
-          }
-          
-          // Fix any remaining issues with problematic packages
-          console.log('\n--- Fixing any remaining dependency issues ---');
-          
-          // Check if lovable-tagger is present and fix it
-          if (fs.existsSync('node_modules/lovable-tagger')) {
-            console.log('Fixing lovable-tagger...');
-            try {
-              // First, ensure the correct esbuild version is installed at the root
-              execSync('npm install esbuild@latest --no-save', { stdio: 'inherit' });
-              
-              // Copy esbuild from root node_modules to lovable-tagger's node_modules
-              if (!fs.existsSync('node_modules/lovable-tagger/node_modules')) {
-                fs.mkdirSync('node_modules/lovable-tagger/node_modules', { recursive: true });
-              }
-              
-              if (!fs.existsSync('node_modules/lovable-tagger/node_modules/esbuild') && 
-                  fs.existsSync('node_modules/esbuild')) {
-                execSync('cp -r node_modules/esbuild node_modules/lovable-tagger/node_modules/', { stdio: 'inherit' });
-                console.log('Copied esbuild to lovable-tagger modules');
-              }
-            } catch (err) {
-              console.log('Error fixing lovable-tagger:', err.message);
-            }
-          }
-          
-          console.log('Smart installation completed!');
-          EOF
-          
-          # Run the smart installer
-          node smart-installer.cjs
-          
-      - name: Build React app with retry
-        run: |
-          cd react
-          
-          # Create a smart build script - using .cjs extension for CommonJS
-          cat > smart-build.cjs << 'EOF'
-          const { execSync } = require('child_process');
-          const fs = require('fs');
-          
-          console.log('Starting smart build process...');
-          
-          // Try multiple build approaches
-          const buildAttempts = [
-            {
-              name: 'Standard build',
-              command: 'npm run build',
-              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
-            },
-            {
-              name: 'Build with esbuild rebuild',
-              command: 'npm rebuild esbuild && npm run build',
-              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
-            },
-            {
-              name: 'Build with latest esbuild',
-              command: 'npm install esbuild@latest --no-save && npm run build',
-              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
-            },
-            {
-              name: 'Build with force flag',
-              command: 'npm run build -- --force',
-              env: { NODE_OPTIONS: '--max_old_space_size=4096' }
-            }
-          ];
-          
-          let buildSuccessful = false;
-          
-          for (const attempt of buildAttempts) {
-            console.log(`\n--- BUILD ATTEMPT: ${attempt.name} ---`);
-            
-            try {
-              execSync(attempt.command, { 
-                stdio: 'inherit',
-                env: { ...process.env, ...attempt.env }
-              });
-              
-              // Check if build output exists
-              if (fs.existsSync('dist') || fs.existsSync('build')) {
-                console.log(`Build successful with: ${attempt.name}`);
-                buildSuccessful = true;
-                break;
-              } else {
-                console.log(`Build command completed but no output directory found`);
-              }
-            } catch (e) {
-              console.log(`Build attempt failed: ${e.message}`);
-            }
-          }
-          
-          if (!buildSuccessful) {
-            console.log('All build attempts failed. Build could not be completed automatically.');
-            process.exit(1);
-          }
-          
-          console.log('Smart build completed successfully!');
-          EOF
-          
-          # Run the smart build script
-          node smart-build.cjs
-          
-      - name: Identify build output
-        id: find-output
-        run: |
-          cd react
-          
-          if [ -d "dist" ]; then
-            echo "output_dir=dist" >> $GITHUB_OUTPUT
-            echo "Build output found in dist directory"
-          elif [ -d "build" ]; then
-            echo "output_dir=build" >> $GITHUB_OUTPUT
-            echo "Build output found in build directory"
-          else
-            # Look for any output directory as fallback
-            OUTPUT_DIR=$(find . -maxdepth 1 -type d | grep -v "^\.$" | grep -v "node_modules" | grep -v ".git" | head -n 1)
-            if [ -n "$OUTPUT_DIR" ]; then
-              OUTPUT_NAME=$(basename "$OUTPUT_DIR")
-              echo "output_dir=$OUTPUT_NAME" >> $GITHUB_OUTPUT
-              echo "Build output found in $OUTPUT_NAME directory"
-            else
-              echo "No build output directory found"
-              exit 1
-            fi
-          fi
-          
-      # Prepare GitHub Pages artifact
-      - name: Prepare GitHub Pages artifact
-        run: |
-          # Get the output directory from previous step
-          OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
-          
-          # Make directory for the artifact
-          mkdir -p _site
-          
-          # Copy build output to _site (GitHub Pages default directory)
-          if [ -d "react/$OUTPUT_DIR" ]; then
-            cp -r react/$OUTPUT_DIR/* _site/
-            
-            # Rename index.html to searchpage.html if it exists
-            if [ -f "_site/index.html" ]; then
-              cp _site/index.html _site/searchpage.html
-              echo "Renamed index.html to searchpage.html"
-            fi
-            
-            # Create .nojekyll file to disable Jekyll processing
-            touch _site/.nojekyll
-            
-            # Create a CNAME file if using custom domain
-            if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
-              echo "${{ vars.CUSTOM_DOMAIN }}" > _site/CNAME
-            elif [ -f "CNAME" ]; then
-              cp CNAME _site/
-            fi
-            
-            echo "GitHub Pages artifact prepared successfully"
-          else
-            echo "Build output directory not found"
-            exit 1
+          # The default build output for Create React App is 'build'. If you use Vite, change this to 'dist'.
+          BUILD_DIR="react/build"
+
+          # Create a .nojekyll file to prevent GitHub Pages from running the build output through Jekyll.
+          touch $BUILD_DIR/.nojekyll
+
+          # This logic was in your original workflow to rename index.html.
+          # This is optional but kept here for consistency.
+          if [ -f "$BUILD_DIR/index.html" ]; then
+            mv $BUILD_DIR/index.html $BUILD_DIR/searchpage.html
+            echo "Renamed index.html to searchpage.html"
           fi
 
-      # Setup and configure GitHub Pages
+          # If you use a custom domain, create a CNAME file.
+          # For this to work, create a repository variable named CUSTOM_DOMAIN with your domain name.
+          if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
+            echo "${{ vars.CUSTOM_DOMAIN }}" > $BUILD_DIR/CNAME
+            echo "CNAME file created for ${{ vars.CUSTOM_DOMAIN }}"
+          fi
+
+      # Step 6: Configure GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
-        
-      # Upload the artifact for GitHub Pages
-      - name: Upload Pages artifact
+
+      # Step 7: Upload the build artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '_site'
-          
-      # Deploy to GitHub Pages  
+          # Specifies the directory to upload as the Pages artifact.
+          path: './react/build'
+
+      # Step 8: Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        
-      # Also commit to the repository for backup
-      - name: Configure Git
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-      
-      - name: Commit and push changes
-        run: |
-          # Create dist directory if not exists
-          mkdir -p dist
-          
-          # Copy build output to dist
-          OUTPUT_DIR="${{ steps.find-output.outputs.output_dir }}"
-          if [ -d "react/$OUTPUT_DIR" ]; then
-            cp -r react/$OUTPUT_DIR/* dist/
-            
-            # Rename index.html to searchpage.html in dist folder too
-            if [ -f "dist/index.html" ]; then
-              cp dist/index.html dist/searchpage.html
-              echo "Renamed index.html to searchpage.html in dist folder"
-            fi
-            
-            # Create .nojekyll file to disable Jekyll processing
-            touch dist/.nojekyll
-            
-            # Create a CNAME file if using custom domain
-            if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
-              echo "${{ vars.CUSTOM_DOMAIN }}" > dist/CNAME
-            elif [ -f "CNAME" ]; then
-              cp CNAME dist/
-            fi
-          fi
-          
-          # Use the github.token for authentication with correct permissions
-          git remote set-url origin https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git
-          
-          # Stage all changes in dist directory
-          git add dist
-          
-          # Commit the changes
-          git commit -m "Update built React app [$(date +"%Y-%m-%d %H:%M:%S")]" || echo "No changes to commit"
-          
-          # Push with verbose output to help debugging
-          git push --verbose || {
-            echo "Push failed, trying to pull first"
-            git pull --rebase origin $(git rev-parse --abbrev-ref HEAD)
-            git push --verbose
-          }
-
-      - name: Job Summary
-        run: |
-          echo "## Build and Deploy Summary" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Build completed successfully**" >> $GITHUB_STEP_SUMMARY
-          echo "✅ **Deployed to GitHub Pages**" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 **Site URL:** [https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }})" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
-            echo "🌐 **Custom Domain:** [https://${{ vars.CUSTOM_DOMAIN }}](https://${{ vars.CUSTOM_DOMAIN }})" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "⏰ **Completed at:** $(date +"%Y-%m-%d %H:%M:%S")" >> $GITHUB_STEP_SUMMARY
