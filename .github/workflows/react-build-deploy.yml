@@ -13,12 +13,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Ensures that only one workflow run is processed at a time for the same branch.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Sets the necessary permissions for the workflow.
 permissions:
   contents: read
   pages: write
@@ -32,11 +30,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -44,49 +40,37 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'react/package-lock.json'
 
-      # Step 3: Install project dependencies
       - name: Install dependencies
         run: npm ci
         working-directory: ./react
 
-      # Step 4: Build the React application
       - name: Build React app
         run: npm run build
         working-directory: ./react
 
-      # Step 5: Prepare the artifact for GitHub Pages
+      # This new step copies the CNAME file to the correct location before deployment.
+      - name: Copy CNAME file
+        run: cp CNAME ./react/dist/CNAME
+
       - name: Prepare for deployment
         run: |
           # The build output for Vite is 'dist'.
           BUILD_DIR="react/dist"
-
-          # Create a .nojekyll file.
           touch $BUILD_DIR/.nojekyll
-
-          # Rename index.html to searchpage.html for consistency.
           if [ -f "$BUILD_DIR/index.html" ]; then
             mv $BUILD_DIR/index.html $BUILD_DIR/searchpage.html
             echo "Renamed index.html to searchpage.html"
           fi
 
-          # If you use a custom domain, create a CNAME file.
-          if [ "${{ vars.CUSTOM_DOMAIN }}" != "" ]; then
-            echo "${{ vars.CUSTOM_DOMAIN }}" > $BUILD_DIR/CNAME
-            echo "CNAME file created for ${{ vars.CUSTOM_DOMAIN }}"
-          fi
-
-      # Step 6: Configure GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # Step 7: Upload the build artifact
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload from the 'dist' directory.
+          # Upload from the correct 'dist' directory.
           path: './react/dist'
 
-      # Step 8: Deploy the artifact to GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
