@@ -4,6 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
+//new changes
 export default defineConfig(({ mode }) => ({
   // This is the line you need to add for relative paths
   base: './',
