@@ -1,80 +1,43 @@
-# This is the single, unified workflow to deploy your entire site.
-
-name: Build and Deploy Full Site
+# Simple workflow for deploying static content to GitHub Pages
+name: Deploy static content to Pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches:
-      - main
+    branches: ["main"]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
-  build-and-deploy:
+  # Single deploy job since we're just deploying
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the repository code
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
-
-      # Step 2: Set up Node.js for the React build
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: 'npm'
-          cache-dependency-path: 'react/package-lock.json'
-
-      # Step 3: Install dependencies for the React app
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./react
-
-      # Step 4: Build the React app
-      - name: Build React app
-        run: npm run build
-        working-directory: ./react
-
-      # Step 5: Prepare the final deployment package
-      - name: Prepare Final Deployment Directory
-        run: |
-          # Create a new, clean directory for the final site
-          mkdir _site
-          
-          # First, copy the entire built React app into a 'dist' subfolder
-          cp -r react/dist ./_site/dist
-          
-          # Now, copy all of the static files and folders from the root of your repository
-          # This is the functionality you wanted from the static.yml workflow.
-          cp 404.html CNAME about.html apiKeySetup.html downloads.html index.html login.html pricing.html signup.html sitemap.xml robots.txt ./_site/
-          
-          # Also copy the root-level assets folder
-          cp -r assets ./_site/assets
-
-      # Step 6: Configure GitHub Pages
       - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      # Step 7: Upload the final, combined artifact
+        uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # This path now points to our combined site directory
-          path: './_site'
-
-      # Step 8: Deploy to GitHub Pages
+          # Upload entire repository
+          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
