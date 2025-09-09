@@ -622,6 +622,12 @@
                 // User is signed in
                 userId = user.uid;
 
+                // Step 1: Get the secure Firebase ID token
+                const firebaseIdToken = await user.getIdToken();
+
+                // Step 2: Store the token in local storage
+                localStorage.setItem('firebaseIdToken', firebaseIdToken);
+
                 // Hide login elements and show user info
                 if (loginForm) loginForm.classList.add('hidden');
                 if (socialLogins) socialLogins.classList.add('hidden');
